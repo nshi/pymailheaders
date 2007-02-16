@@ -1,0 +1,10 @@
+* main
+** TODO multi-mailbox support
+** TODO config file support
+*** TODO verify SSL certificate
+*** TODO pop, mbox support
+
+* ui
+** TODO windows UI hack
+** TODO display multiple mailboxes
+*** TODO maybe elaborate the titile when hoverred

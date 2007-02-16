@@ -1,0 +1,207 @@
+#!/usr/bin/env python
+#
+# pymailheaders.py
+# Copyright 2007 Neil Shi <zeegeek@gmail.com>
+#
+# Main program of pymailheaders
+# This file creates mail fetching thread and gui thread.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+from threading import Thread
+from threading import Lock
+from threading import Event
+from optparse import OptionParser
+import re
+
+import gui
+import imapprl
+from exception import *
+
+# global varibals
+lock = Lock()
+
+class mail_thread(Thread):
+	"""This class creates the thread for fetching messages.
+
+	@note: Private member variables:
+		__interval
+		__mail_obj
+	"""
+
+	def __init__(self, server, uname, password, ssl, h, \
+		     interval, mbox = 'INBOX'):
+		"""Override constructor
+
+		@type server: string
+		@param server: mail server address
+		@type uname: string
+		@param uname: username
+		@type password: string
+		@param password: password
+		@type ssl: bool
+		@param ssl: if this is a secure connection
+		@type h: int
+		@param h: number of messages to fetch each time
+		@type interval: int
+		@param interval: time interval between updates
+		@type mbox: string
+		@param mbox: mailbox.
+			I{Default = 'INBOX'}
+		"""
+
+		Thread.__init__(self)
+		self.__interval = float(interval)
+		self.__mail_obj = imapprl.imap(server, uname, password, ssl, h, mbox)
+		self.timer = Event()
+
+	def __del__(self):
+		"""Override destructor
+
+		Should delete the objects created on construction properly.
+		"""
+
+		del self.__mail_obj
+
+	def fetch(self):
+		"""Check and get mails
+
+		This will set the global variables messages and new.
+		"""
+		
+		global messages
+		global new
+		global lock
+
+		try:
+			lock.acquire()
+			response = self.__mail_obj.check()
+			new = int(response[1])
+			messages = self.__mail_obj.get_mail(int(response[0]))
+			messages.reverse()
+			lock.release()
+		except Exception, strerr:
+			new = 0
+			messages = [('Error', str(strerr))]
+			lock.release()
+			self.connect()
+			
+	def connect(self):
+		"""Connect to the server.
+		"""
+
+		global messages
+		global new
+		global lock
+
+		try:
+			self.__mail_obj.connect()
+		except TryAgain:
+			lock.acquire()
+			new = 0
+			messages = [('Error', 'Network not available')]
+			lock.release()
+		except Exception, strerr:
+			lock.acquire()
+			new = 0
+			messages = [('Error', str(strerr))]
+			lock.release()
+
+	def run(self):
+		"""Connect to the server and fetch for the first time
+		"""
+
+		global gui_thr
+
+		self.connect()
+		while not self.timer.isSet():
+			self.fetch()
+			gui_thr.event_generate('<<Update>>', when = 'tail')
+			self.timer.wait(self.__interval)
+
+def main():
+	"""Main function
+	"""
+
+	# parse command-line arguments
+	usage = 'usage: %prog [options]... args...'
+	parser = OptionParser(usage)
+	parser.add_option('-s', '--server', dest = 'server', \
+			  help = 'server to connect to')
+	parser.add_option('-u', '--username', dest = 'username', \
+			  help = 'username to log onto the server')
+	parser.add_option('-p', '--password', dest = 'password', \
+			  help = 'password')
+	parser.add_option('-e', '--ssl', action = 'store_true', dest = 'ssl', \
+			  default = False, help = 'user SSL for the server')
+	parser.add_option('-i', '--interval', dest = 'interval', \
+			  default = 180, help = 'update interval in seconds')
+#	parser.add_option('-f', '--config-file', dest = 'config', \
+#			  default = '.pymailheadersrc', help = 'configuration file path')
+	parser.add_option('-g', '--geometry', dest = 'geometry', \
+			  default = '400x100+0+0', \
+			  help = 'geometry of the window')
+	parser.add_option('--bg', dest = 'bg', default = 'black', \
+			  help = 'backgound color')
+	parser.add_option('--fg', dest = 'fg', default = 'green', \
+			  help = 'foreground color')
+	parser.add_option('--fgn', dest = 'fg_new', default = 'yellow', \
+			  help = 'foreground color for new messages')
+	(options, args) = parser.parse_args()
+
+	# check args
+	if options.server == None or options.username == None or \
+	   options.password == None:
+		parser.error('server, username and password are required.')
+
+	global lock
+	global gui_thr
+	global messages
+	global new
+	
+	# create threads
+	gui_thr = gui.gui(options.geometry, options.fg, \
+			  options.bg, options.fg_new)
+	mail_thr = mail_thread(options.server, options.username, \
+			       options.password, options.ssl, \
+			       int(re.search('x(\d+)', options.geometry).group(1)) / gui_thr.get_font_size(), \
+			       options.interval)
+
+	# setup event handler
+	def update_event_handler(event):
+		global lock
+		global messages
+		global new
+		global gui_thr
+
+		lock.acquire()
+		gui_thr.display(messages, new)
+		lock.release()
+
+	gui_thr.bind('<<Update>>', update_event_handler)
+
+	try:
+		# start thread
+		mail_thr.start()
+		gui_thr.mainloop()
+	except KeyboardInterrupt:
+		pass
+
+	# stop mail thread
+	mail_thr.timer.set()
+
+	# clean up the mess
+	del mail_thr
+	del gui_thr
+	
+# rock n' roll
+if __name__ == '__main__':
+	main()

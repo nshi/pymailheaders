@@ -1,0 +1,24 @@
+Pymailheaders
+=============
+Author: Neil Shi <zeegeek@users.sf.net>
+
+Pymailheaders is a small X program which displays mail headers in your mail box.
+It was innovated by xmailheaders, with a few more handy features like new mail
+highlighting, lauching regardless of network connection status and
+auto-reconnecting.  Pymailheaders was written from scratch in Python for
+portability and easiness reasons.  Only IMAP4 protocol is supported now.  POP3
+support is on the way.
+
+
+INSTALL
+=======
+
+You do not need to install this program, just run pymailheaders.py with
+appropriate arguments.
+
+
+RUN
+===
+
+Run pymailheaders.py without any arguments will show you which arguments are
+mandatory.  Use 'pymailheaders.py -h' for full argument list.
