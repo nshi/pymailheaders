@@ -20,6 +20,7 @@ from threading import Thread
 from threading import Lock
 from threading import Event
 from optparse import OptionParser
+import sys
 import re
 
 import gui
@@ -67,6 +68,9 @@ class mail_thread(Thread):
 			self.__mail_obj = feedprl.feed(server, uname, password, ssl, h, mbox)
 		elif t == 'imap':
 			self.__mail_obj = imapprl.imap(server, uname, password, ssl, h, mbox)
+		else:
+			print >> sys.stderr, 'pymailheaders: unknown server type'
+			sys.exit(1)
 		self.timer = Event()
 
 	def __del__(self):

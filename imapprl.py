@@ -116,7 +116,7 @@ class imap:
 			else:
 				self.__connection = imaplib.IMAP4(self.__server)
 			response = self.__connection.login(self.__uname,
-							 self.__pass)
+							   self.__pass)
 			if response[0] != 'OK':
 				print >> stderr, 'imapprl:', response[1]
 				raise Exception(response[1])
@@ -197,4 +197,5 @@ class imap:
 		def b(x): return (re.search('From: ([^\r\n]+)', x[1].strip()).group(1), \
 				  re.search('Subject: ([^\r\n]+)', x[1].strip()).group(1))
 		messages = map(b, filter(a, mail_list[1]))
-		return messages.reverse()
+		messages.reverse()
+		return messages
