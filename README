@@ -6,8 +6,8 @@ Pymailheaders is a small X program which displays mail headers in your mail box.
 It was innovated by xmailheaders, with a few more handy features like new mail
 highlighting, lauching regardless of network connection status and
 auto-reconnecting.  Pymailheaders was written from scratch in Python for
-portability and easiness reasons.  Only IMAP4 protocol is supported now.  POP3
-support is on the way.
+portability and easiness reasons.  IMAP4 protocol and XML feeds are supported
+now.  POP3 support is on the way.
 
 
 INSTALL
@@ -22,3 +22,30 @@ RUN
 
 Run pymailheaders.py without any arguments will show you which arguments are
 mandatory.  Use 'pymailheaders.py -h' for full argument list.
+
+For IMAP4 mailboxes, you need to set server type as imap and provide server URL,
+username and password.  If your server supports encrypted connection, you also
+have to set the ssl option.  The following example establishes a secured
+connection,
+
+> pymailheaders.py -t imap -s express.cites.uiuc.edu -a -u zeegeek \
+  -p classified -e -i 60
+
+If you have a Gmail account and you want to check for new mails, just set server
+type to feed and server to gmail.  Then you need to give your username and
+password.  Here is an example,
+
+> pymailheaders.py -t feed -s gmail -a -u zeegeek -p classified -i 60
+
+You can also use pymailheaders to check for XML feeds in the formats of RSS 1.0,
+2.0 and Atom 0.3, 1.0.  If your feed provider does not require authentication,
+you do not need to provide username and password.  Example,
+
+> pymailheaders.py -t feed -s http://feedparser.org/docs/examples/atom10.xml
+
+
+HACK
+====
+
+XML feed support is powered by Mark Pilgrim's Universal Feed Parser.  It is
+included in the package.

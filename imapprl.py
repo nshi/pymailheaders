@@ -44,7 +44,6 @@ class imap:
 
 	def __init__(self, server, uname, password, ssl, h, mbox):
 		"""Constructor
-		Should connect to the mail server and select the mailbox.
 
 		@type server: string
 		@param server: mail server address
@@ -161,7 +160,7 @@ class imap:
 		@type num: int
 		@param num: total number of messages in the mailbox
 		@rtype: list
-		@return: List of tuples of sender addresses and subjects, oldest
+		@return: List of tuples of sender addresses and subjects, newest
 			message on top.
 		"""
 
@@ -197,4 +196,5 @@ class imap:
 		# command, it's arbitrary.
 		def b(x): return (re.search('From: ([^\r\n]+)', x[1].strip()).group(1), \
 				  re.search('Subject: ([^\r\n]+)', x[1].strip()).group(1))
-		return map(b, filter(a, mail_list[1]))
+		messages = map(b, filter(a, mail_list[1]))
+		return messages.reverse()

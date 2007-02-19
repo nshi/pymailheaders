@@ -24,6 +24,7 @@ import re
 
 import gui
 import imapprl
+import feedprl
 from exception import *
 
 # global varibals
@@ -37,10 +38,12 @@ class mail_thread(Thread):
 		__mail_obj
 	"""
 
-	def __init__(self, server, uname, password, ssl, h, \
+	def __init__(self, t, server, uname, password, ssl, h, \
 		     interval, mbox = 'INBOX'):
 		"""Override constructor
 
+		@type t: string
+		@param t: server type
 		@type server: string
 		@param server: mail server address
 		@type uname: string
@@ -60,7 +63,10 @@ class mail_thread(Thread):
 
 		Thread.__init__(self)
 		self.__interval = float(interval)
-		self.__mail_obj = imapprl.imap(server, uname, password, ssl, h, mbox)
+		if t == 'feed':
+			self.__mail_obj = feedprl.feed(server, uname, password, ssl, h, mbox)
+		elif t == 'imap':
+			self.__mail_obj = imapprl.imap(server, uname, password, ssl, h, mbox)
 		self.timer = Event()
 
 	def __del__(self):
@@ -86,7 +92,6 @@ class mail_thread(Thread):
 			response = self.__mail_obj.check()
 			new = int(response[1])
 			messages = self.__mail_obj.get_mail(int(response[0]))
-			messages.reverse()
 			lock.release()
 		except Exception, strerr:
 			new = 0
@@ -134,11 +139,16 @@ def main():
 	# parse command-line arguments
 	usage = 'usage: %prog [options]... args...'
 	parser = OptionParser(usage)
+	parser.add_option('-t', '--type', dest = 'server_type', \
+			  help = 'server type: imap, feed')
 	parser.add_option('-s', '--server', dest = 'server', \
 			  help = 'server to connect to')
-	parser.add_option('-u', '--username', dest = 'username', \
+	parser.add_option('-a', '--auth', action='store_true', \
+			  dest = 'auth', default = False, \
+			  help = 'server requires authentication')
+	parser.add_option('-u', '--username', dest = 'username', default = '', \
 			  help = 'username to log onto the server')
-	parser.add_option('-p', '--password', dest = 'password', \
+	parser.add_option('-p', '--password', dest = 'password', default = '', \
 			  help = 'password')
 	parser.add_option('-e', '--ssl', action = 'store_true', dest = 'ssl', \
 			  default = False, help = 'user SSL for the server')
@@ -158,9 +168,10 @@ def main():
 	(options, args) = parser.parse_args()
 
 	# check args
-	if options.server == None or options.username == None or \
-	   options.password == None:
-		parser.error('server, username and password are required.')
+	if options.server_type == None or options.server == None:
+		parser.error('server type and server are required.')
+	if options.auth and (options.username == '' or options.password == ''):
+		parser.error('username and password are needed for authentication.')
 
 	global lock
 	global gui_thr
@@ -170,10 +181,10 @@ def main():
 	# create threads
 	gui_thr = gui.gui(options.geometry, options.fg, \
 			  options.bg, options.fg_new)
-	mail_thr = mail_thread(options.server, options.username, \
-			       options.password, options.ssl, \
-			       int(re.search('x(\d+)', options.geometry).group(1)) / gui_thr.get_font_size(), \
-			       options.interval)
+	geometry = int(re.search('x(\d+)', options.geometry).group(1)) / gui_thr.get_font_size()
+	mail_thr = mail_thread(options.server_type, options.server, \
+			       options.username, options.password, \
+			       options.ssl, geometry, options.interval)
 
 	# setup event handler
 	def update_event_handler(event):

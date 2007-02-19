@@ -77,7 +77,11 @@ class gui(Tk):
 		@param new: number of new messages in the list
 		"""
 
-		def a(x): return x[0] + ': ' + x[1] + '\n'
+		def a(x):
+			if x[0]:
+				return x[0] + ': ' + x[1] + '\n'
+			else:
+				return x[1] + '\n'
 		def b(x, y): return x + y
 
 		# enable widget
