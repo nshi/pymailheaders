@@ -3,6 +3,15 @@
 ** TODO config file support
 *** TODO verify SSL certificate
 *** TODO pop, mbox support
+*** TODO clean up error messages
+
+Add verbose flag -v to pymailheaders.py argument list so that detailed error
+messages are not shown if this flag is not specified by the user.  In this case,
+the user will only see easily understandable error messages in the program
+window.  Nothing will be output to standard error.  On the other hand, if this
+flag is turned on.  All the detailed error messages will be output to the
+standard error.  What will be shown in the program window remains the same as in
+the first case.
 
 * ui
 ** TODO windows UI hack

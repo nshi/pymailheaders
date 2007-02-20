@@ -65,11 +65,14 @@ class mail_thread(Thread):
 		Thread.__init__(self)
 		self.__interval = float(interval)
 		if t == 'feed':
-			self.__mail_obj = feedprl.feed(server, uname, password, ssl, h, mbox)
+			self.__mail_obj = feedprl.feed(server, uname, \
+						       password, ssl, h, mbox)
 		elif t == 'imap':
-			self.__mail_obj = imapprl.imap(server, uname, password, ssl, h, mbox)
+			self.__mail_obj = imapprl.imap(server, uname, \
+						       password, ssl, h, mbox)
 		else:
-			print >> sys.stderr, 'pymailheaders: unknown server type'
+			print >> sys.stderr, \
+			      'pymailheaders: unknown server type'
 			sys.exit(1)
 		self.timer = Event()
 
@@ -175,7 +178,8 @@ def main():
 	if options.server_type == None or options.server == None:
 		parser.error('server type and server are required.')
 	if options.auth and (options.username == '' or options.password == ''):
-		parser.error('username and password are needed for authentication.')
+		parser.error('username and password are needed ' + \
+			     'for authentication.')
 
 	global lock
 	global gui_thr
@@ -185,7 +189,8 @@ def main():
 	# create threads
 	gui_thr = gui.gui(options.geometry, options.fg, \
 			  options.bg, options.fg_new)
-	geometry = int(re.search('x(\d+)', options.geometry).group(1)) / gui_thr.get_font_size()
+	geometry = int(re.search('x(\d+)', options.geometry).group(1)) / \
+		   gui_thr.get_font_size()
 	mail_thr = mail_thread(options.server_type, options.server, \
 			       options.username, options.password, \
 			       options.ssl, geometry, options.interval)

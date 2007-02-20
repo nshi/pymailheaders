@@ -98,7 +98,8 @@ class feed:
 			self.__feed = feedparser.parse(self.__url)
 			# check if it's a well formed feed
 			if self.__feed.bozo == 1:
-				raise Exception(self.__feed.bozo_exception.getMessage())
+				raise Exception(self.__feed.bozo_exception.\
+						getMessage())
 
 			l = len(self.__feed.entries)
 			return (l, l)

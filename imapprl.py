@@ -112,7 +112,8 @@ class imap:
 
 		try:
 			if self.__ssl:
-				self.__connection = imaplib.IMAP4_SSL(self.__server)
+				self.__connection = imaplib.IMAP4_SSL( \
+					self.__server)
 			else:
 				self.__connection = imaplib.IMAP4(self.__server)
 			response = self.__connection.login(self.__uname,
@@ -141,7 +142,8 @@ class imap:
 		"""
 
 		try:
-			response = self.__connection.status('INBOX', '(MESSAGES UNSEEN)')
+			response = self.__connection.status('INBOX', \
+							    '(MESSAGES UNSEEN)')
 			if response[0] != 'OK':
 				print >> stderr, 'imapprl:', response[1]
 				raise Exception(response[1])
@@ -170,11 +172,13 @@ class imap:
 			if self.__size < num:
 				mail_list = self.__connection.fetch( \
 					str(num - self.__size) + ':' + str(num), \
-					'(UID BODY.PEEK[HEADER.FIELDS (FROM SUBJECT)])')
+					'(UID BODY.PEEK[HEADER.FIELDS ' + \
+					'(FROM SUBJECT)])')
 			else:
 				mail_list = self.__connection.fetch( \
 					'1:' + str(num), \
-					'(UID BODY.PEEK[HEADER.FIELDS (FROM SUBJECT)])')
+					'(UID BODY.PEEK[HEADER.FIELDS ' + \
+					'(FROM SUBJECT)])')
 			if mail_list[0] != 'OK':
 				print >> stderr, 'imapprl:', response[1]
 				raise Exception(response[1])
@@ -194,8 +198,10 @@ class imap:
 		def a(x): return x != ')'
 		# ATTENTION: cannot rely on the order of the reply by fetch
 		# command, it's arbitrary.
-		def b(x): return (re.search('From: ([^\r\n]+)', x[1].strip()).group(1), \
-				  re.search('Subject: ([^\r\n]+)', x[1].strip()).group(1))
+		def b(x): return (re.search('From: ([^\r\n]+)', \
+					    x[1].strip()).group(1), \
+				  re.search('Subject: ([^\r\n]+)', \
+					    x[1].strip()).group(1))
 		messages = map(b, filter(a, mail_list[1]))
 		messages.reverse()
 		return messages
