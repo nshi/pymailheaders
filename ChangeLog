@@ -1,3 +1,10 @@
+2007-03-14  Neil Shi  <zeegeek@gmail.com>
+
+	* popprl.py: Added POP3 support.  But it's not storing new
+	messages' status correctly after rechecking.
+	* imapprl.py (imap.check): Moved this function to private.
+	* feedprl.py (feed.check): Deleted this function.
+
 2007-02-19  Neil Shi  <zeegeek@gmail.com>
 
 	* imapprl.py (imap.get_mail): fixed a bug which was introduced in

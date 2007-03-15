@@ -6,8 +6,8 @@ Pymailheaders is a small X program which displays mail headers in your mail box.
 It was innovated by xmailheaders, with a few more handy features like new mail
 highlighting, lauching regardless of network connection status and
 auto-reconnecting.  Pymailheaders was written from scratch in Python for
-portability and easiness reasons.  IMAP4 protocol and XML feeds are supported
-now.  POP3 support is on the way.
+portability and easiness reasons.  IMAP4, POP3 protocols and XML feeds are
+supported now.
 
 
 INSTALL
@@ -29,6 +29,13 @@ have to set the ssl option.  The following example establishes a secured
 connection,
 
 > pymailheaders.py -t imap -s express.cites.uiuc.edu -a -u zeegeek \
+  -p classified -e -i 60
+
+To use pymailheaders with POP3 mailbox, it is basically the same as doing it
+with IMAP4 mailbox.  The only thing you need to change is server type.  For
+example,
+
+> pymailheaders.py -t pop -s express.cites.uiuc.edu -a -u zeegeek \
   -p classified -e -i 60
 
 If you have a Gmail account and you want to check for new mails, just set server

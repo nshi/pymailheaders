@@ -25,6 +25,7 @@ import re
 
 import gui
 import imapprl
+import popprl
 import feedprl
 from exception import *
 
@@ -70,6 +71,9 @@ class mail_thread(Thread):
 		elif t == 'imap':
 			self.__mail_obj = imapprl.imap(server, uname, \
 						       password, ssl, h, mbox)
+		elif t == 'pop':
+			self.__mail_obj = popprl.pop(server, uname, \
+						     password, ssl, h, mbox)
 		else:
 			print >> sys.stderr, \
 			      'pymailheaders: unknown server type'
@@ -96,9 +100,8 @@ class mail_thread(Thread):
 
 		try:
 			lock.acquire()
-			response = self.__mail_obj.check()
-			new = int(response[1])
-			messages = self.__mail_obj.get_mail(int(response[0]))
+			messages = self.__mail_obj.get_mail()
+			new = self.__mail_obj.new
 			lock.release()
 		except Exception, strerr:
 			new = 0
@@ -147,7 +150,7 @@ def main():
 	usage = 'usage: %prog [options]... args...'
 	parser = OptionParser(usage)
 	parser.add_option('-t', '--type', dest = 'server_type', \
-			  help = 'server type: imap, feed')
+			  help = 'server type: imap, pop, feed')
 	parser.add_option('-s', '--server', dest = 'server', \
 			  help = 'server to connect to')
 	parser.add_option('-a', '--auth', action='store_true', \

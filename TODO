@@ -2,7 +2,7 @@
 ** TODO multi-mailbox support
 ** TODO config file support
 *** TODO verify SSL certificate
-*** TODO pop, mbox support
+*** TODO mbox support
 *** TODO clean up error messages
 
 Add verbose flag -v to pymailheaders.py argument list so that detailed error

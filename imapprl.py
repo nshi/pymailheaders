@@ -40,6 +40,9 @@ class imap:
 		__pass
 		__ssl
 		__connection
+
+	@note: Public member variables:
+		new
 	"""
 
 	def __init__(self, server, uname, password, ssl, h, mbox):
@@ -65,6 +68,7 @@ class imap:
 		self.__pass = password
 		self.__ssl = ssl
 		self.__size = h
+		self.new = 0
 
 	def __del__(self):
 		"""Destructor
@@ -74,14 +78,41 @@ class imap:
 		try:
 			response = self.__connection.logout()
 			if response[0] != 'BYE':
-				print >> stderr, 'imapprl:', response[1]
-				raise Exception(response[1])
+				print >> stderr, 'imapprl (__del__):', \
+				      response[1]
+				raise Exception('(__del__) ' + response[1])
 		except (socket.error, socket.gaierror, imaplib.IMAP4.error,
 			imaplib.IMAP4.abort), strerr:
-			print >> stderr, 'imapprl:', strerr
+			print >> stderr, 'imapprl (__del__):', strerr
 			raise Exception(strerr)
 		except:
 			raise
+
+	def __check(self):
+		"""Check if the mailbox has new messages.
+
+		@rtype: int
+		@return: total number of messages
+		"""
+
+		try:
+			response = self.__connection.status('INBOX', \
+							    '(MESSAGES UNSEEN)')
+			if response[0] != 'OK':
+				print >> stderr, 'imapprl (__check):', \
+				      response[1]
+				raise Exception('(__check) ' + response[1])
+		except (socket.error, socket.gaierror, imaplib.IMAP4.error,
+			imaplib.IMAP4.abort), strerr:
+			print >> stderr, 'imapprl (__check):', strerr
+			raise Exception('(__check) ' + strerr)
+		except:
+			raise
+
+		total_new = re.search('\D+(\d+)\D+(\d+)', \
+				      response[1][0]).groups()
+		self.new = int(total_new[1])
+		return int(total_new[0])
 
 	def __select_mailbox(self):
 		"""Select a mailbox
@@ -90,12 +121,14 @@ class imap:
 		try:
 			response = self.__connection.select(self.__mbox, True)
 			if response[0] != 'OK':
-				print >> stderr, 'imapprl:', response[1]
-				raise Exception(response[1])
+				print >> stderr, 'imapprl (__select_mailbox):',\
+				      response[1]
+				raise Exception('(__select_mailbox) ' + \
+						response[1])
 		except (socket.error, socket.gaierror, imaplib.IMAP4.error,
 			imaplib.IMAP4.abort), strerr:
-			print >> stderr, 'imapprl:', strerr
-			raise Exception(strerr)
+			print >> stderr, 'imapprl (__select_mailbox):', strerr
+			raise Exception('(__select_mailbox) ' + strerr)
 		except:
 			raise
 
@@ -119,54 +152,32 @@ class imap:
 			response = self.__connection.login(self.__uname,
 							   self.__pass)
 			if response[0] != 'OK':
-				print >> stderr, 'imapprl:', response[1]
-				raise Exception(response[1])
+				print >> stderr, 'imapprl (connect):', \
+				      response[1]
+				raise Exception('(connect) ' + response[1])
 		except socket.gaierror, (socket.EAI_AGAIN, strerr):
-			print >> stderr, 'imapprl:', strerr
+			print >> stderr, 'imapprl (connect):', strerr
 			raise TryAgain
 		except (socket.error, socket.gaierror, imaplib.IMAP4.error), \
 			strerr:
-			print >> stderr, 'imapprl:', strerr
-			raise Exception(strerr)
+			print >> stderr, 'imapprl (connect):', strerr
+			raise Exception('(connect) ' + strerr)
 		except:
 			raise
 
 		# set socket timeout to 30 seconds
 		self.__connection.socket().settimeout(10)
 
-	def check(self):
-		"""Check if the mailbox has new messages.
-
-		@rtype: tuple
-		@return: (total number of messages, number of new messages)
-		"""
-
-		try:
-			response = self.__connection.status('INBOX', \
-							    '(MESSAGES UNSEEN)')
-			if response[0] != 'OK':
-				print >> stderr, 'imapprl:', response[1]
-				raise Exception(response[1])
-		except (socket.error, socket.gaierror, imaplib.IMAP4.error,
-			imaplib.IMAP4.abort), strerr:
-			print >> stderr, 'imapprl:', strerr
-			raise Exception(strerr)
-		except:
-			raise
-
-		return re.match('\D+(\d+)\D+(\d+)', response[1][0]).groups()
-
-	def get_mail(self, num):
+	def get_mail(self):
 		"""Get mails.
 
-		@type num: int
-		@param num: total number of messages in the mailbox
 		@rtype: list
 		@return: List of tuples of sender addresses and subjects, newest
 			message on top.
 		"""
 
 		try:
+			num = self.__check()
 			self.__select_mailbox()
 			
 			if self.__size < num:
@@ -180,17 +191,19 @@ class imap:
 					'(UID BODY.PEEK[HEADER.FIELDS ' + \
 					'(FROM SUBJECT)])')
 			if mail_list[0] != 'OK':
-				print >> stderr, 'imapprl:', response[1]
-				raise Exception(response[1])
+				print >> stderr, 'imapprl (get_mail):', \
+				      response[1]
+				raise Exception('(get_mail)' + response[1])
 
 			response = self.__connection.close()
 			if response[0] != 'OK':
-				print >> stderr, 'imapprl:', response[1]
-				raise Exception(response[1])
+				print >> stderr, 'imapprl (get_mail):', \
+				      response[1]
+				raise Exception('(get_mail) ' + response[1])
 		except (socket.error, socket.gaierror, imaplib.IMAP4.error,
 			imaplib.IMAP4.abort), strerr:
-			print >> stderr, 'imapprl:', strerr
-			raise Exception(strerr)
+			print >> stderr, 'imapprl (get_mail):', strerr
+			raise Exception('(get_mail) ' + strerr)
 		except:
 			raise
 

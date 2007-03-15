@@ -39,6 +39,9 @@ class feed:
 		__ssl
 		__url
 		__feed
+
+	@note: Public member variables:
+		new
 	"""
 
 	def __init__(self, server, uname, password, ssl, h, mbox):
@@ -75,7 +78,7 @@ class feed:
 		self.__feed = {}
 
 	def connect(self):
-		"""Get feed.
+		"""Form URL.
 		"""
 
 		# assemble URL
@@ -87,13 +90,15 @@ class feed:
 			      self.__pass + '@' + \
 			      self.__server
 
-	def check(self):
-		"""Return the number of entries.
+	def get_mail(self):
+		"""Parse feed.
 
-		@rtype: tuple
-		@return: (number of new messages, number of new messages)
+		@rtype: list
+		@return: List of tuples of sender addresses and subjects, oldest
+			message on top.
 		"""
 
+		# get feed
 		try:
 			self.__feed = feedparser.parse(self.__url)
 			# check if it's a well formed feed
@@ -101,23 +106,11 @@ class feed:
 				raise Exception(self.__feed.bozo_exception.\
 						getMessage())
 
-			l = len(self.__feed.entries)
-			return (l, l)
+			# number of new messages
+			self.new = len(self.__feed.entries)
 		except:
 			raise
-
-		return re.match('\D+(\d+)\D+(\d+)', response[1][0]).groups()
-
-	def get_mail(self, num):
-		"""Parse feed.
-
-		@type num: int
-		@param num: dummy variable for compatibility
-		@rtype: list
-		@return: List of tuples of sender addresses and subjects, oldest
-			message on top.
-		"""
-
+		
 		# parse sender addresses and subjects
 		def a(x):
 			if x.has_key('author_detail'):
