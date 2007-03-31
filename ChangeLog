@@ -1,3 +1,9 @@
+2007-03-31  Neil Shi  <zeegeek@gmail.com>
+
+	* imapprl.py (imap.get_mail): Fixed the bug of highlighting wrong
+	messages if the new messages are not at the top.  Use a new data
+	structure to store message entries.
+
 2007-03-14  Neil Shi  <zeegeek@gmail.com>
 
 	* popprl.py: Added POP3 support.  But it's not storing new

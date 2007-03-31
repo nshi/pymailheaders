@@ -40,9 +40,6 @@ class pop:
 		__ssl
 		__connection
 		__message_dict
-
-	@note: Public member variables:
-		new
 	"""
 
 	def __init__(self, server, uname, password, ssl, h, mbox):
@@ -67,7 +64,6 @@ class pop:
 		self.__pass = password
 		self.__ssl = ssl
 		self.__size = h
-		self.new = 0
 		self.__message_dict = {}
 
 	def __disconnect(self):
@@ -142,8 +138,8 @@ class pop:
 		"""Get mails.
 
 		@rtype: list
-		@return: List of tuples of sender addresses and subjects, newest
-			message on top.
+		@return: List of tuples of flag, sender addresses and subjects.
+		         Newest message on top.
 		"""
 
 		# Steps: 1. connect to the server;
@@ -157,7 +153,6 @@ class pop:
 
 		header_list = []
 		uid_list = []
-		self.new = 0
 
 		try:
 			# 1. connect to the server
@@ -179,14 +174,16 @@ class pop:
 				if response[0:3] != '+OK':
 					print >> stderr, 'popprl (get_mail): ' \
 					      + 'Fetching message ID failed.'
-					raise Exception('(get_mail) Fetching ' + \
-							'message ID failed')
+					raise Exception('(get_mail) Fetching ' \
+							+ 'message ID failed')
 				uid = re.search('([\d\.]*)$', response).group(1)
 
 				# compare unique IDs with the ones we've already
 				# had
 				if not self.__message_dict.has_key(uid):
-					self.new += 1
+					flag = True
+				else:
+					flag = False
 				uid_list.append(uid)
 
 				# 4. get message hearders
@@ -215,7 +212,7 @@ class pop:
 				   None:
 					filtered_header.reverse()
 				header = map(c, filtered_header)
-				header_list.append((header[0], header[1]))
+				header_list.append((flag, header[0], header[1]))
 
 			# 5. disconnect from server. Don't keep POP3 server
 			# locking up the mailbox.

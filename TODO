@@ -1,7 +1,6 @@
 * main
 ** TODO multi-mailbox support
 ** TODO config file support
-*** TODO verify SSL certificate
 *** TODO mbox support
 *** TODO clean up error messages
 
@@ -14,6 +13,8 @@ standard error.  What will be shown in the program window remains the same as in
 the first case.
 
 * ui
+** DONE BUG: if new messages are not at the top, highlighting is incorrect.
+   CLOSED: [2007-03-31 Sat 18:55]
 ** TODO windows UI hack
 ** TODO display multiple mailboxes
 *** TODO maybe elaborate the titile when hoverred

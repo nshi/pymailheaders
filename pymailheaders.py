@@ -91,20 +91,17 @@ class mail_thread(Thread):
 	def fetch(self):
 		"""Check and get mails
 
-		This will set the global variables messages and new.
+		This will set the global variables messages.
 		"""
 		
 		global messages
-		global new
 		global lock
 
 		try:
 			lock.acquire()
 			messages = self.__mail_obj.get_mail()
-			new = self.__mail_obj.new
 			lock.release()
 		except Exception, strerr:
-			new = 0
 			messages = [('Error', str(strerr))]
 			lock.release()
 			self.connect()
@@ -114,19 +111,16 @@ class mail_thread(Thread):
 		"""
 
 		global messages
-		global new
 		global lock
 
 		try:
 			self.__mail_obj.connect()
 		except TryAgain:
 			lock.acquire()
-			new = 0
 			messages = [('Error', 'Network not available')]
 			lock.release()
 		except Exception, strerr:
 			lock.acquire()
-			new = 0
 			messages = [('Error', str(strerr))]
 			lock.release()
 
@@ -187,7 +181,6 @@ def main():
 	global lock
 	global gui_thr
 	global messages
-	global new
 	
 	# create threads
 	gui_thr = gui.gui(options.geometry, options.fg, \
@@ -202,11 +195,10 @@ def main():
 	def update_event_handler(event):
 		global lock
 		global messages
-		global new
 		global gui_thr
 
 		lock.acquire()
-		gui_thr.display(messages, new)
+		gui_thr.display(messages)
 		lock.release()
 
 	gui_thr.bind('<<Update>>', update_event_handler)

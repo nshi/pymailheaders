@@ -39,9 +39,6 @@ class feed:
 		__ssl
 		__url
 		__feed
-
-	@note: Public member variables:
-		new
 	"""
 
 	def __init__(self, server, uname, password, ssl, h, mbox):
@@ -94,8 +91,8 @@ class feed:
 		"""Parse feed.
 
 		@rtype: list
-		@return: List of tuples of sender addresses and subjects, oldest
-			message on top.
+		@return: List of tuples of flag, sender addresses and subjects.
+		         Oldest message on top.
 		"""
 
 		# get feed
@@ -105,9 +102,6 @@ class feed:
 			if self.__feed.bozo == 1:
 				raise Exception(self.__feed.bozo_exception.\
 						getMessage())
-
-			# number of new messages
-			self.new = len(self.__feed.entries)
 		except:
 			raise
 		
@@ -118,5 +112,5 @@ class feed:
 					 x.author_detail.email
 			else:
 				sender = ''
-			return (sender, x.title)
+			return (False, sender, x.title)
 		return map(a, self.__feed.entries)

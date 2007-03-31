@@ -67,37 +67,30 @@ class gui(Tk):
 
 		return int(re.search('(\d+)', self.__text['font']).group(1))
 
-	def display(self, messages, new):
+	def display(self, messages):
 		"""Display messages
 
 		@type messages: list
-		@param messages: list of tuples of sender addresses and
+		@param messages: list of tuples of flag, sender addresses and
 			subjects, newest first.
-		@type new: int
-		@param new: number of new messages in the list
 		"""
 
 		def a(x):
 			if x[0]:
-				return x[0] + ': ' + x[1] + '\n'
+				self.__text.insert(END, \
+						   x[1] + ': ' + x[2] + '\n', \
+						   'new')
 			else:
-				return x[1] + '\n'
-		def b(x, y): return x + y
-
+				self.__text.insert(END, \
+						   x[1] + ': ' + x[2] + '\n')
+					   
 		# enable widget
 		self.__text['state'] = NORMAL
 
 		# clear current view
 		self.__text.delete(1.0, END)
-		# display new messages
-		if new:
-			self.__text.insert(END, \
-					   reduce(b, map(a, messages[0:new])), \
-					   'new')
-		# display the rest
-		if len(messages) - new:
-			self.__text.insert(END, \
-					   reduce(b, map(a, messages[new:])))
+		# display messages
+		map(a, messages)
 		# redraw widget
 		self.__text.update_idletasks()
 

@@ -40,9 +40,6 @@ class imap:
 		__pass
 		__ssl
 		__connection
-
-	@note: Public member variables:
-		new
 	"""
 
 	def __init__(self, server, uname, password, ssl, h, mbox):
@@ -68,7 +65,6 @@ class imap:
 		self.__pass = password
 		self.__ssl = ssl
 		self.__size = h
-		self.new = 0
 
 	def __del__(self):
 		"""Destructor
@@ -89,7 +85,7 @@ class imap:
 			raise
 
 	def __check(self):
-		"""Check if the mailbox has new messages.
+		"""Get the total number of messages in a mailbox.
 
 		@rtype: int
 		@return: total number of messages
@@ -97,7 +93,7 @@ class imap:
 
 		try:
 			response = self.__connection.status('INBOX', \
-							    '(MESSAGES UNSEEN)')
+							    '(MESSAGES)')
 			if response[0] != 'OK':
 				print >> stderr, 'imapprl (__check):', \
 				      response[1]
@@ -109,10 +105,9 @@ class imap:
 		except:
 			raise
 
-		total_new = re.search('\D+(\d+)\D+(\d+)', \
-				      response[1][0]).groups()
-		self.new = int(total_new[1])
-		return int(total_new[0])
+		total = re.search('\D+(\d+)', \
+				  response[1][0]).group(1)
+		return int(total)
 
 	def __select_mailbox(self):
 		"""Select a mailbox
@@ -172,8 +167,10 @@ class imap:
 		"""Get mails.
 
 		@rtype: list
-		@return: List of tuples of sender addresses and subjects, newest
-			message on top.
+		@return: List of tuples of flag, sender addresses and subjects.
+		         newest message on top.
+
+	        @note: flag I{B{True}} for new messages
 		"""
 
 		try:
@@ -183,12 +180,12 @@ class imap:
 			if self.__size < num:
 				mail_list = self.__connection.fetch( \
 					str(num - self.__size) + ':' + str(num), \
-					'(UID BODY.PEEK[HEADER.FIELDS ' + \
+					'(FLAGS BODY.PEEK[HEADER.FIELDS ' + \
 					'(FROM SUBJECT)])')
 			else:
 				mail_list = self.__connection.fetch( \
 					'1:' + str(num), \
-					'(UID BODY.PEEK[HEADER.FIELDS ' + \
+					'(FLAGS BODY.PEEK[HEADER.FIELDS ' + \
 					'(FROM SUBJECT)])')
 			if mail_list[0] != 'OK':
 				print >> stderr, 'imapprl (get_mail):', \
@@ -211,10 +208,22 @@ class imap:
 		def a(x): return x != ')'
 		# ATTENTION: cannot rely on the order of the reply by fetch
 		# command, it's arbitrary.
-		def b(x): return (re.search('From: ([^\r\n]+)', \
-					    x[1].strip()).group(1), \
-				  re.search('Subject: ([^\r\n]+)', \
-					    x[1].strip()).group(1))
+		def b(x):
+			sender = re.search('From: ([^\r\n]+)', \
+					   x[1].strip()).group(1)
+			subject =  re.search('Subject: ([^\r\n]+)', \
+					     x[1].strip())
+			# subject might be empty
+			if subject == None:
+				subject = ''
+			else:
+				subject = subject.group(1)
+			# HACK: it's not supposed to be like this, but for some
+			# reason, python's imaplib will return empty flags while
+			# those messages are actually unread.
+			return (re.search('FLAGS \((.*\\Recent.*)|\B\)', \
+					  x[0].strip()) != None, \
+				sender, subject)
 		messages = map(b, filter(a, mail_list[1]))
 		messages.reverse()
 		return messages
