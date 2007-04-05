@@ -102,7 +102,7 @@ class mail_thread(Thread):
 			messages = self.__mail_obj.get_mail()
 			lock.release()
 		except Exception, strerr:
-			messages = [('Error', str(strerr))]
+			messages = [(True, 'Error', str(strerr))]
 			lock.release()
 			self.connect()
 			
@@ -117,11 +117,11 @@ class mail_thread(Thread):
 			self.__mail_obj.connect()
 		except TryAgain:
 			lock.acquire()
-			messages = [('Error', 'Network not available')]
+			messages = [(True, 'Error', 'Network not available')]
 			lock.release()
 		except Exception, strerr:
 			lock.acquire()
-			messages = [('Error', str(strerr))]
+			messages = [(True, 'Error', str(strerr))]
 			lock.release()
 
 	def run(self):
