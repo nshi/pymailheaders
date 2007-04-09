@@ -76,11 +76,12 @@ class imap:
 			if response[0] != 'BYE':
 				print >> stderr, 'imapprl (__del__):', \
 				      response[1]
-				raise Exception('(__del__) ' + response[1])
+				raise Exception('imapprl (__del__): ' + \
+						response[1])
 		except (socket.error, socket.gaierror, imaplib.IMAP4.error,
 			imaplib.IMAP4.abort), strerr:
 			print >> stderr, 'imapprl (__del__):', strerr
-			raise Exception(strerr)
+			raise Exception('imapprl (__del__): ' + str(strerr))
 		except:
 			raise
 
@@ -97,11 +98,12 @@ class imap:
 			if response[0] != 'OK':
 				print >> stderr, 'imapprl (__check):', \
 				      response[1]
-				raise Exception('(__check) ' + response[1])
+				raise Exception('imapprl (__check): ' + \
+						response[1])
 		except (socket.error, socket.gaierror, imaplib.IMAP4.error,
 			imaplib.IMAP4.abort), strerr:
 			print >> stderr, 'imapprl (__check):', strerr
-			raise Exception('(__check) ' + strerr)
+			raise Exception('imapprl (__check): ' + str(strerr))
 		except:
 			raise
 
@@ -118,12 +120,13 @@ class imap:
 			if response[0] != 'OK':
 				print >> stderr, 'imapprl (__select_mailbox):',\
 				      response[1]
-				raise Exception('(__select_mailbox) ' + \
-						response[1])
+				raise Exception('imapprl (__select_mailbox): ' \
+						+ response[1])
 		except (socket.error, socket.gaierror, imaplib.IMAP4.error,
 			imaplib.IMAP4.abort), strerr:
 			print >> stderr, 'imapprl (__select_mailbox):', strerr
-			raise Exception('(__select_mailbox) ' + strerr)
+			raise Exception('imapprl (__select_mailbox): ' + \
+					str(strerr))
 		except:
 			raise
 
@@ -149,14 +152,15 @@ class imap:
 			if response[0] != 'OK':
 				print >> stderr, 'imapprl (connect):', \
 				      response[1]
-				raise Exception('(connect) ' + response[1])
+				raise Exception('imapprl (connect): ' + \
+						response[1])
 		except socket.gaierror, (socket.EAI_AGAIN, strerr):
 			print >> stderr, 'imapprl (connect):', strerr
 			raise TryAgain
 		except (socket.error, socket.gaierror, imaplib.IMAP4.error), \
 			strerr:
 			print >> stderr, 'imapprl (connect):', strerr
-			raise Exception('(connect) ' + strerr)
+			raise Exception('imapprl (connect): ' + str(strerr))
 		except:
 			raise
 
@@ -179,7 +183,8 @@ class imap:
 			
 			if self.__size < num:
 				mail_list = self.__connection.fetch( \
-					str(num - self.__size) + ':' + str(num), \
+					str(num - self.__size) + ':' + \
+					str(num), \
 					'(FLAGS BODY.PEEK[HEADER.FIELDS ' + \
 					'(FROM SUBJECT)])')
 			else:
@@ -190,17 +195,19 @@ class imap:
 			if mail_list[0] != 'OK':
 				print >> stderr, 'imapprl (get_mail):', \
 				      response[1]
-				raise Exception('(get_mail)' + response[1])
+				raise Exception('imapprl (get_mail) ' + \
+						response[1])
 
 			response = self.__connection.close()
 			if response[0] != 'OK':
 				print >> stderr, 'imapprl (get_mail):', \
 				      response[1]
-				raise Exception('(get_mail) ' + response[1])
+				raise Exception('imapprl (get_mail) ' + \
+						response[1])
 		except (socket.error, socket.gaierror, imaplib.IMAP4.error,
 			imaplib.IMAP4.abort), strerr:
 			print >> stderr, 'imapprl (get_mail):', strerr
-			raise Exception('(get_mail) ' + strerr)
+			raise Exception('imapprl (get_mail): ' + str(strerr))
 		except:
 			raise
 
