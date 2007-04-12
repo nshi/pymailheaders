@@ -1,6 +1,7 @@
 * main
 ** TODO multi-mailbox support
-** TODO config file support
+** DONE config file support
+   CLOSED: [2007-04-12 Thu 01:19]
 *** TODO mbox support
 *** TODO clean up error messages
 

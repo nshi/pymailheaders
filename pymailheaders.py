@@ -22,11 +22,13 @@ from threading import Event
 from optparse import OptionParser
 import sys
 import re
+import os.path
 
 import gui
 import imapprl
 import popprl
 import feedprl
+import config
 from exception import *
 
 # global varibals
@@ -140,56 +142,81 @@ def main():
 	"""Main function
 	"""
 
+	global lock
+	global gui_thr
+	global messages
+
 	# parse command-line arguments
 	usage = 'usage: %prog [options]... args...'
 	parser = OptionParser(usage)
-	parser.add_option('-t', '--type', dest = 'server_type', \
+	parser.add_option('-t', '--type', dest = 'type', \
 			  help = 'server type: imap, pop, feed')
 	parser.add_option('-s', '--server', dest = 'server', \
 			  help = 'server to connect to')
 	parser.add_option('-a', '--auth', action='store_true', \
-			  dest = 'auth', default = False, \
+			  dest = 'auth', \
 			  help = 'server requires authentication')
-	parser.add_option('-u', '--username', dest = 'username', default = '', \
+	parser.add_option('-u', '--username', dest = 'username', \
 			  help = 'username to log onto the server')
-	parser.add_option('-p', '--password', dest = 'password', default = '', \
+	parser.add_option('-p', '--password', dest = 'password', \
 			  help = 'password')
-	parser.add_option('-e', '--ssl', action = 'store_true', dest = 'ssl', \
-			  default = False, help = 'user SSL for the server')
+	parser.add_option('-e', '--ssl', action = 'store_true', \
+			  dest = 'encrypted', help = 'user SSL for the server')
 	parser.add_option('-i', '--interval', dest = 'interval', \
-			  default = 180, help = 'update interval in seconds')
-#	parser.add_option('-f', '--config-file', dest = 'config', \
-#			  default = '.pymailheadersrc', help = 'configuration file path')
+			  help = 'update interval in seconds')
+	parser.add_option('-f', '--config-file', dest = 'config', \
+			  help = 'configuration file path')
 	parser.add_option('-g', '--geometry', dest = 'geometry', \
-			  default = '400x100+0+0', \
 			  help = 'geometry of the window')
-	parser.add_option('--bg', dest = 'bg', default = 'black', \
-			  help = 'backgound color')
-	parser.add_option('--fg', dest = 'fg', default = 'green', \
+	parser.add_option('--bg', dest = 'background', help = 'backgound color')
+	parser.add_option('--fg', dest = 'foreground', \
 			  help = 'foreground color')
-	parser.add_option('--fgn', dest = 'fg_new', default = 'yellow', \
+	parser.add_option('--fgn', dest = 'foreground new', \
 			  help = 'foreground color for new messages')
 	(options, args) = parser.parse_args()
 
+	if options.config:
+		config_file = os.path.expanduser(options.config)
+	else:
+		# default config file location
+		config_file = os.path.expanduser('~/.pymailheadersrc')
+
+	try:
+		# read in config file if there is any
+		conf = config.config(config_file)
+	except:
+		sys.exit(1)
+
+	# get all configurations
+	# 
+	# command line arguments have higher priorities, so they can overwrite
+	# config file options
+	opts = conf.get_all()
+
+	# this is way too ugly, it's not a proper use of optparse, but a hack.
+	options = options.__dict__.copy()
+
+	# don't use opts.update() because that will write all None values
+	for k in options.iterkeys():
+		if not opts.has_key(k) or options[k] != None:
+			opts[k] = options[k]
+
 	# check args
-	if options.server_type == None or options.server == None:
+	if opts['type'] == None or opts['server'] == None:
 		parser.error('server type and server are required.')
-	if options.auth and (options.username == '' or options.password == ''):
+	if opts['auth'] and (opts['username'] == None or \
+			     opts['password'] == None):
 		parser.error('username and password are needed ' + \
 			     'for authentication.')
-
-	global lock
-	global gui_thr
-	global messages
 	
 	# create threads
-	gui_thr = gui.gui(options.geometry, options.fg, \
-			  options.bg, options.fg_new)
-	geometry = int(re.search('x(\d+)', options.geometry).group(1)) / \
+	gui_thr = gui.gui(opts['geometry'], opts['foreground'], \
+			  opts['background'], opts['foreground new'])
+	geometry = int(re.search('x(\d+)', opts['geometry']).group(1)) / \
 		   gui_thr.get_font_size()
-	mail_thr = mail_thread(options.server_type, options.server, \
-			       options.username, options.password, \
-			       options.ssl, geometry, options.interval)
+	mail_thr = mail_thread(opts['type'], opts['server'], \
+			       opts['username'], opts['password'], \
+			       opts['encrypted'], geometry, opts['interval'])
 
 	# setup event handler
 	def update_event_handler(event):

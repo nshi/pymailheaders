@@ -18,6 +18,7 @@
 
 from ConfigParser import *
 from sys import stderr
+import os.path
 
 class config:
 	"""This class parses and saves the configuration file for pymailheaders.
@@ -36,9 +37,9 @@ class config:
 
 	__section = 'settings'
 
-	__defaults = {'auth': 'no',
-		      'encrypted': 'no',
-		      'interval': '180',
+	__defaults = {'auth': False,
+		      'encrypted': False,
+		      'interval': 180,
 		      'geometry': '400x100+0+0',
 		      'background': 'black',
 		      'foreground': 'green',
@@ -65,15 +66,26 @@ class config:
 		self.__config_file = filename
 
 		try:
-			self.__config.read(filename)
+			# if the file does not exist, create it and write
+			# default values to it.
+			if not os.path.isfile(self.__config_file):
+				for k, v in self.__defaults.iteritems():
+					self.set(k, v)
+				self.write()
+
+			# check if we have the correct permissions
+			fd = open(self.__config_file, 'rw')
+			fd.close()
+				
+			self.__config.read(self.__config_file)
 
 			# Insert default values
 			# I have to do this because ConfigParser will insert a
 			# section called DEFAULT if I use the defaults method.
 			for k, v in self.__defaults.iteritems():
 				if not self.__has(k): self.set(k, v)
-		except (ParsingError, \
-			MissingSectionHeaderError), strerr:
+		except (IOError, ParsingError, MissingSectionHeaderError), \
+			   strerr:
 			print >> stderr, 'config (__init__):', strerr
 			raise Exception('config (__init__): ' + str(strerr))
 		except:
@@ -183,7 +195,7 @@ class config:
 		"""
 
 		try:
-			fd = open(self.__config_file, 'w')
+			fd = open(self.__config_file, 'wU')
 
 			self.__config.write(fd)
 

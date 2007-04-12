@@ -1,3 +1,7 @@
+2007-04-12  Neil Shi  <zeegeek@gmail.com>
+
+	* config.py (config): Added configuration file support.
+
 2007-03-31  Neil Shi  <zeegeek@gmail.com>
 
 	* imapprl.py (imap.get_mail): Fixed the bug of highlighting wrong

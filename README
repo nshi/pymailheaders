@@ -20,8 +20,21 @@ appropriate arguments.
 RUN
 ===
 
-Run pymailheaders.py without any arguments will show you which arguments are
-mandatory.  Use 'pymailheaders.py -h' for full argument list.
+Pymailheaders will look for a configuration file called .pymailheadersrc in your
+home directory unless you use command line argument '-c' to specify another file
+explicitly.  If you have do not have a configuration file yet, Pymailheaders
+will create one for you in your home directory.  If you already have one, you
+can still use command line arguments to overwrite the options in the
+configuration file.  If mandatory options like server type, server address, user
+name and password are not provided in command line arguments nor in the
+configuration file, Pymailheaders will tell you which options are missing.
+
+Use 'pymailheaders.py -h' for full argument list.
+
+Once you have your configuration file set up, you can just use the following
+command to launch pymailheaders.
+
+> pymailheaders.py
 
 For IMAP4 mailboxes, you need to set server type as imap and provide server URL,
 username and password.  If your server supports encrypted connection, you also
