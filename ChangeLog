@@ -1,3 +1,13 @@
+2007-04-20  Neil Shi  <zeegeek@gmail.com>
+
+	* pymailheaders.py (main): Now it fetches all messages and pass
+	them to the GUI.
+
+	* config.py (config): Added settings for GTK+.
+
+	* gui.py (gui): Changed GUI to GTK+.
+	(gui): Added settings and about dialog.
+
 2007-04-12  Neil Shi  <zeegeek@gmail.com>
 
 	* config.py (config): Added configuration file support.

@@ -22,6 +22,7 @@ from threading import Event
 from optparse import OptionParser
 import sys
 import re
+import os
 import os.path
 
 import gui
@@ -29,10 +30,19 @@ import imapprl
 import popprl
 import feedprl
 import config
+import constants
 from exception import *
+
+basedir = os.path.dirname(os.path.realpath(__file__))
+if not os.path.exists(os.path.join(basedir, '%s.py' % constants.NAME)):
+	if os.path.exists(os.path.join(os.getcwd(), '%s.py' % constants.NAME)):
+		basedir = os.getcwd()
+sys.path.insert(0, basedir)
+os.chdir(basedir)
 
 # global varibals
 lock = Lock()
+messages = []
 
 class mail_thread(Thread):
 	"""This class creates the thread for fetching messages.
@@ -42,8 +52,8 @@ class mail_thread(Thread):
 		__mail_obj
 	"""
 
-	def __init__(self, t, server, uname, password, ssl, h, \
-		     interval, mbox = 'INBOX'):
+	def __init__(self, t, server, uname, password, ssl, interval, \
+		     mbox = 'INBOX'):
 		"""Override constructor
 
 		@type t: string
@@ -56,8 +66,6 @@ class mail_thread(Thread):
 		@param password: password
 		@type ssl: bool
 		@param ssl: if this is a secure connection
-		@type h: int
-		@param h: number of messages to fetch each time
 		@type interval: int
 		@param interval: time interval between updates
 		@type mbox: string
@@ -67,19 +75,15 @@ class mail_thread(Thread):
 
 		Thread.__init__(self)
 		self.__interval = float(interval)
-		if t == 'feed':
-			self.__mail_obj = feedprl.feed(server, uname, \
-						       password, ssl, h, mbox)
-		elif t == 'imap':
-			self.__mail_obj = imapprl.imap(server, uname, \
-						       password, ssl, h, mbox)
-		elif t == 'pop':
-			self.__mail_obj = popprl.pop(server, uname, \
-						     password, ssl, h, mbox)
-		else:
+		if not globals().has_key('%sprl' % t):
 			print >> sys.stderr, \
 			      'pymailheaders: unknown server type'
 			sys.exit(1)
+		self.__mail_obj = getattr(globals()['%sprl' % t], t)(server, \
+								     uname, \
+								     password, \
+								     ssl, \
+								     mbox)
 		self.timer = Event()
 
 	def __del__(self):
@@ -131,12 +135,21 @@ class mail_thread(Thread):
 		"""
 
 		global gui_thr
-
 		self.connect()
 		while not self.timer.isSet():
 			self.fetch()
-			gui_thr.event_generate('<<Update>>', when = 'tail')
+			gui.gobject.idle_add(update_gui)
 			self.timer.wait(self.__interval)
+
+# update GUI
+def update_gui():
+	global lock
+	global messages
+	global gui_thr
+
+	lock.acquire()
+	gui_thr.display(messages)
+	lock.release()
 
 def main():
 	"""Main function
@@ -163,11 +176,13 @@ def main():
 	parser.add_option('-e', '--ssl', action = 'store_true', \
 			  dest = 'encrypted', help = 'user SSL for the server')
 	parser.add_option('-i', '--interval', dest = 'interval', \
-			  help = 'update interval in seconds')
+			  type = 'int', help = 'update interval in seconds')
 	parser.add_option('-f', '--config-file', dest = 'config', \
 			  help = 'configuration file path')
-	parser.add_option('-g', '--geometry', dest = 'geometry', \
-			  help = 'geometry of the window')
+	parser.add_option('-w', '--width', dest = 'width', type = 'int', \
+			  help = 'width of the window')
+	parser.add_option('-g', '--height', dest = 'height', type = 'int', \
+			  help = 'height of the window')
 	parser.add_option('--bg', dest = 'background', help = 'backgound color')
 	parser.add_option('--fg', dest = 'foreground', \
 			  help = 'foreground color')
@@ -193,13 +208,16 @@ def main():
 	# config file options
 	opts = conf.get_all()
 
-	# this is way too ugly, it's not a proper use of optparse, but a hack.
+	# this is way too ugly, it's not a proper use of optparse, but had to
+	# use this hack to get arround.
 	options = options.__dict__.copy()
+	del options['config']
 
 	# don't use opts.update() because that will write all None values
 	for k in options.iterkeys():
 		if not opts.has_key(k) or options[k] != None:
 			opts[k] = options[k]
+	del options
 
 	# check args
 	if opts['type'] == None or opts['server'] == None:
@@ -210,35 +228,26 @@ def main():
 			     'for authentication.')
 	
 	# create threads
-	gui_thr = gui.gui(opts['geometry'], opts['foreground'], \
-			  opts['background'], opts['foreground new'])
-	geometry = int(re.search('x(\d+)', opts['geometry']).group(1)) / \
-		   gui_thr.get_font_size()
+	gui_thr = gui.gui(opts)
 	mail_thr = mail_thread(opts['type'], opts['server'], \
 			       opts['username'], opts['password'], \
-			       opts['encrypted'], geometry, opts['interval'])
-
-	# setup event handler
-	def update_event_handler(event):
-		global lock
-		global messages
-		global gui_thr
-
-		lock.acquire()
-		gui_thr.display(messages)
-		lock.release()
-
-	gui_thr.bind('<<Update>>', update_event_handler)
+			       opts['encrypted'], opts['interval'])
+	del opts
 
 	try:
 		# start thread
 		mail_thr.start()
-		gui_thr.mainloop()
+		gui.gtk.main()
 	except KeyboardInterrupt:
 		pass
 
 	# stop mail thread
 	mail_thr.timer.set()
+
+	# save settings
+	opts = gui_thr.get_settings()
+	for k, v in opts.iteritems():
+		conf.set(k, v)
 
 	# clean up the mess
 	del mail_thr

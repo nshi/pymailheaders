@@ -40,17 +40,40 @@ class config:
 	__defaults = {'auth': False,
 		      'encrypted': False,
 		      'interval': 180,
-		      'geometry': '400x100+0+0',
+		      # GUI settings
+		      'height': 100,
+		      'width': 400,
+		      'x': 0,
+		      'y': 0,
 		      'background': 'black',
 		      'foreground': 'green',
-		      'foreground new': 'yellow'}
+		      'foreground new': 'yellow',
+		      'font': 'Simsun 12',
+		      'border': 0,
+		      'decorated': True,
+		      'focus': True,
+		      'top': False,
+		      'pager': True,
+		      'taskbar': True,
+		      'sticky': False}
 
 	# boolean options
 	__bool_vals = ('auth',
-		       'encrypted')
+		       'encrypted',
+		       'decorated',
+		       'focus',
+		       'top',
+		       'pager',
+		       'taskbar',
+		       'sticky')
 
 	# integer options
-	__int_vals = ('interval')
+	__int_vals = ('interval',
+		      'height',
+		      'width',
+		      'x',
+		      'y',
+		      'border')
 
 	# stores configuration filename
 	__config_file = ''
@@ -91,8 +114,18 @@ class config:
 		except:
 			raise
 
+	def __del__(self):
+		"""Destructor
+
+		@note: make sure that changes are being written to the file.
+		"""
+		
+		self.write()
+
+		del self.__config
+
 	def __has(self, opt):
-		"""Determine if a option exists in the config file
+		"""Determine if an option exists in the config file
 
 		@type opt: string
 		@param opt: option name
@@ -195,6 +228,11 @@ class config:
 		"""
 
 		try:
+			# make sure that all options will be written into the
+			# config file
+			for k, v in self.__defaults.iteritems():
+				if not self.__has(k): self.set(k, v)
+				
 			fd = open(self.__config_file, 'wU')
 
 			self.__config.write(fd)

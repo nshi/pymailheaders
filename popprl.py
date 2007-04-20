@@ -33,7 +33,6 @@ class pop:
 	@warning: B{Have to call connect() method before doing anything else}
 
 	@note: Private member variables:
-		__size
 		__server
 		__uname
 		__pass
@@ -42,7 +41,7 @@ class pop:
 		__message_dict
 	"""
 
-	def __init__(self, server, uname, password, ssl, h, mbox):
+	def __init__(self, server, uname, password, ssl, mbox):
 		"""Constructor
 
 		@type server: string
@@ -53,8 +52,6 @@ class pop:
 		@param password: password
 		@type ssl: bool
 		@param ssl: if this is a secure connection
-		@type h: int
-		@param h: number of messages to fetch each time
 		@type mbox: string
 		@param mbox: dummy variable, POP3 only deals with INBOX.
 		"""
@@ -63,7 +60,6 @@ class pop:
 		self.__uname = uname
 		self.__pass = password
 		self.__ssl = ssl
-		self.__size = h
 		self.__message_dict = {}
 
 	def __disconnect(self):
@@ -163,11 +159,7 @@ class pop:
 			# there are.
 			total = self.__connection.stat()[0]
 			
-			if self.__size < total:
-				message_range = range(total, total - \
-						      self.__size, -1)
-			else:
-				message_range = range(total, 0, -1)
+			message_range = range(total, 0, -1)
 			for i in message_range:
 				# 3. get unique IDs
 				response = self.__connection.uidl(i)
@@ -176,7 +168,7 @@ class pop:
 					      + 'Fetching message ID failed.'
 					raise Exception('(get_mail) Fetching ' \
 							+ 'message ID failed')
-				uid = re.search('([\d\.]*)$', response).group(1)
+				uid = re.search('([\S]*)$', response).group(1)
 
 				# compare unique IDs with the ones we've already
 				# had
@@ -201,7 +193,7 @@ class pop:
 					else:
 						return True
 				def c(x):
-					r = re.search('^(From|Subject): (.*)', \
+					r = re.search('^(From|Subject):\s*(.*)', \
 						      x).group(2)
 					return r
 				# POP3 doesn't guarantee the order of header

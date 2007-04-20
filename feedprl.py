@@ -41,7 +41,7 @@ class feed:
 		__feed
 	"""
 
-	def __init__(self, server, uname, password, ssl, h, mbox):
+	def __init__(self, server, uname, password, ssl, mbox):
 		"""Constructor
 
 		@type server: string
@@ -52,8 +52,6 @@ class feed:
 		@param password: password
 		@type ssl: bool
 		@param ssl: dummy variable for compatibility
-		@type h: int
-		@param h: dummy variable for compatibility
 		@type mbox: string
 		@param mbox: Gmail label
 		"""

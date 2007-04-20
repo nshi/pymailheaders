@@ -33,7 +33,6 @@ class imap:
 	@warning: B{Have to call connect() method before doing anything else}
 
 	@note: Private member variables:
-		__size
 		__server
 		__mbox
 		__uname
@@ -42,7 +41,7 @@ class imap:
 		__connection
 	"""
 
-	def __init__(self, server, uname, password, ssl, h, mbox):
+	def __init__(self, server, uname, password, ssl, mbox):
 		"""Constructor
 
 		@type server: string
@@ -53,8 +52,6 @@ class imap:
 		@param password: password
 		@type ssl: bool
 		@param ssl: if this is a secure connection
-		@type h: int
-		@param h: number of messages to fetch each time
 		@type mbox: string
 		@param mbox: mailbox.
 		"""
@@ -64,7 +61,6 @@ class imap:
 		self.__uname = uname
 		self.__pass = password
 		self.__ssl = ssl
-		self.__size = h
 
 	def __del__(self):
 		"""Destructor
@@ -181,17 +177,10 @@ class imap:
 			num = self.__check()
 			self.__select_mailbox()
 			
-			if self.__size < num:
-				mail_list = self.__connection.fetch( \
-					str(num - self.__size) + ':' + \
-					str(num), \
-					'(FLAGS BODY.PEEK[HEADER.FIELDS ' + \
-					'(FROM SUBJECT)])')
-			else:
-				mail_list = self.__connection.fetch( \
-					'1:' + str(num), \
-					'(FLAGS BODY.PEEK[HEADER.FIELDS ' + \
-					'(FROM SUBJECT)])')
+			mail_list = self.__connection.fetch( \
+				'1:' + str(num), \
+				'(FLAGS BODY.PEEK[HEADER.FIELDS ' + \
+				'(FROM SUBJECT)])')
 			if mail_list[0] != 'OK':
 				print >> stderr, 'imapprl (get_mail):', \
 				      response[1]

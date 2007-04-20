@@ -18,3 +18,6 @@
 
 NAME = 'pymailheaders'
 VERSION = 'alpha'
+
+(IMAP, POP, FEED) = range(0, 3)
+(SIZE_SMALL, SIZE_MEDIUM, SIZE_BIG, SIZE_CUSTOM) = range(0, 4)
