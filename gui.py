@@ -186,9 +186,9 @@ class gui(gtk.Window):
 				# event.time argument, but it doesn't matter
 				# that much
 				self.__window.begin_move_drag(event.button, \
-						     event.x_root, \
-						     event.y_root, \
-						     event.time)
+							      int(event.x_root), \
+							      int(event.y_root), \
+							      event.time)
 			elif event.button == 3:
 				self.__menu.popup(None, None, None, \
 						  event.button, event.time)

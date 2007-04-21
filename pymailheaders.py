@@ -24,6 +24,7 @@ import sys
 import re
 import os
 import os.path
+import signal
 
 import gui
 import imapprl
@@ -151,6 +152,9 @@ def update_gui():
 	gui_thr.display(messages)
 	lock.release()
 
+def on_exit(signum = None, frame = None):
+	gui.gtk.quit()
+
 def main():
 	"""Main function
 	"""
@@ -226,6 +230,10 @@ def main():
 			     opts['password'] == None):
 		parser.error('username and password are needed ' + \
 			     'for authentication.')
+
+	# setup signal handler so that settings will be saved even if the
+	# process is killed
+	signal.signal(signal.SIGTERM, on_exit)
 	
 	# create threads
 	gui_thr = gui.gui(opts)
@@ -248,7 +256,7 @@ def main():
 	opts = gui_thr.get_settings()
 	for k, v in opts.iteritems():
 		conf.set(k, v)
-
+	
 	# clean up the mess
 	del mail_thr
 	del gui_thr
