@@ -17,7 +17,8 @@
 # GNU General Public License for more details.
 
 NAME = 'pymailheaders'
-VERSION = 'alpha'
+VERSION = 'Beta 0.4'
+HOMEPAGE = 'http://pymailheaders.sourceforge.net'
 
 (IMAP, POP, FEED) = range(0, 3)
 (SIZE_SMALL, SIZE_MEDIUM, SIZE_BIG, SIZE_CUSTOM) = range(0, 4)

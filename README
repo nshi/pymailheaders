@@ -2,12 +2,22 @@ Pymailheaders
 =============
 Author: Neil Shi <zeegeek@users.sf.net>
 
-Pymailheaders is a small X program which displays mail headers in your mail box.
-It was innovated by xmailheaders, with a few more handy features like new mail
-highlighting, lauching regardless of network connection status and
+Pymailheaders is a small GTK+ program which displays mail headers in your mail
+box.  It was innovated by xmailheaders, with a few more handy features like new
+mail highlighting, lauching regardless of network connection status and
 auto-reconnecting.  Pymailheaders was written from scratch in Python for
 portability and easiness reasons.  IMAP4, POP3 protocols and XML feeds are
 supported now.
+
+REQUIREMENTS
+============
+
+You need the following packages install on your system in order to run
+Pymailheaders,
+
+* Python 2.4 (or above) [http://www.python.org/download/]
+* PyGTK 2.6 (or above) [http://pygtk.org/downloads.html]
+* GTK 2.6 (or above) [http://gtk.org/download/]
 
 
 INSTALL
@@ -17,29 +27,40 @@ You do not need to install this program, just run pymailheaders.py with
 appropriate arguments.
 
 
-RUN
-===
+USAGE
+=====
 
 Pymailheaders will look for a configuration file called .pymailheadersrc in your
-home directory unless you use command line argument '-c' to specify another file
-explicitly.  If you have do not have a configuration file yet, Pymailheaders
-will create one for you in your home directory.  If you already have one, you
-can still use command line arguments to overwrite the options in the
-configuration file.  If mandatory options like server type, server address, user
-name and password are not provided in command line arguments nor in the
-configuration file, Pymailheaders will tell you which options are missing.
+home directory unless you use command line argument '-f' to specify another file
+explicitly.  If you do not have a configuration file yet, Pymailheaders will
+create one for you in your home directory.  If you already have one, you can
+still use command line arguments to overwrite the options in the configuration
+file.  If mandatory options like server type, server address, user name and
+password are not provided in command line arguments nor in the configuration
+file, Pymailheaders will tell you which options are missing.
 
 Use 'pymailheaders.py -h' for full argument list.
 
-Once you have your configuration file set up, you can just use the following
-command to launch pymailheaders.
+On the first time running Pymailheaders, you have to provide all mandatory
+options, namely server type, server address, user name and password (if
+required), from the command line.
+
+> pymailheaders.py -t imap -s express.cites.uiuc.edu -a -u zeegeek \
+  -p classified -e
+
+After successfully launching Pymailheaders, you can omit all arguments except
+for '-c' if you use another configuration file in future launches.  Everything
+else can be set using Pymailheaders' GTK+ settings dialog by right clicking on
+Pymailheaders' window.
 
 > pymailheaders.py
+
+The following demonstrates how to run Pymailheaders for different protocols on command line.
 
 For IMAP4 mailboxes, you need to set server type as imap and provide server URL,
 username and password.  If your server supports encrypted connection, you also
 have to set the ssl option.  The following example establishes a secured
-connection,
+connection with '-e' argument,
 
 > pymailheaders.py -t imap -s express.cites.uiuc.edu -a -u zeegeek \
   -p classified -e -i 60
@@ -64,8 +85,8 @@ you do not need to provide username and password.  Example,
 > pymailheaders.py -t feed -s http://feedparser.org/docs/examples/atom10.xml
 
 
-HACK
-====
+ACKNOWLEDGEMENT
+===============
 
 XML feed support is powered by Mark Pilgrim's Universal Feed Parser.  It is
 included in the package.

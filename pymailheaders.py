@@ -34,6 +34,9 @@ import config
 import constants
 from exception import *
 
+# switch to the directory where this file resides in, so that it can find the
+# glade file
+CWD = os.getcwd()
 basedir = os.path.dirname(os.path.realpath(__file__))
 if not os.path.exists(os.path.join(basedir, '%s.py' % constants.NAME)):
 	if os.path.exists(os.path.join(os.getcwd(), '%s.py' % constants.NAME)):
@@ -181,7 +184,7 @@ def main():
 			  dest = 'encrypted', help = 'user SSL for the server')
 	parser.add_option('-i', '--interval', dest = 'interval', \
 			  type = 'int', help = 'update interval in seconds')
-	parser.add_option('-f', '--config-file', dest = 'config', \
+	parser.add_option('-c', '--config-file', dest = 'config', \
 			  help = 'configuration file path')
 	parser.add_option('-w', '--width', dest = 'width', type = 'int', \
 			  help = 'width of the window')
@@ -195,7 +198,9 @@ def main():
 	(options, args) = parser.parse_args()
 
 	if options.config:
-		config_file = os.path.expanduser(options.config)
+		exp_path = os.path.expanduser(options.config)
+		config_file = os.path.isabs(exp_path) and exp_path or \
+			      os.path.join(CWD, exp_path)
 	else:
 		# default config file location
 		config_file = os.path.expanduser('~/.pymailheadersrc')

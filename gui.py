@@ -96,8 +96,9 @@ class gui(gtk.Window):
 
 		# setting up signal handlers
 		main_sigs = {'on_window_destroy': self.__close,
+			     'on_window_configure_event': self.__position_changed,
 			     'on_text_button_press_event': self.__button_press,
-			     'on_text_expose_event': self.__set_cursor_icon,
+			     'on_text_expose_event': self.__on_redraw,
 			     'on_text_drag_motion_event': self.__disable_drag}
 		menu_sigs = {'on_quit_activate': self.__close,
 			     'on_about_activate': self.__show_about,
@@ -168,9 +169,6 @@ class gui(gtk.Window):
 				      '%stick' % ((x and 's') or 'uns'))()}
 
 	def __close(self, widget):
-		# save position
-		(self.opts['x'], self.opts['y']) = self.__window.get_position()
-
 		self.__about.destroy()
 		self.__settings.destroy()
 		gtk.main_quit()
@@ -193,15 +191,26 @@ class gui(gtk.Window):
 				self.__menu.popup(None, None, None, \
 						  event.button, event.time)
 
-	def __set_cursor_icon(self, widget, event):
+	def __on_redraw(self, widget, event):
 		text_window =  self.__text.get_window(gtk.TEXT_WINDOW_TEXT)
 		text_window.set_cursor(gtk.gdk.Cursor(gtk.gdk.LEFT_PTR))
+
+	def __position_changed(self, widget, event):
+		# save position
+		(self.opts['x'], self.opts['y']) = self.__window.get_position()
 
 	def __disable_drag(self, widget, event):
 		print 'ah'
 		self.__text.emit_stop_by_name('drag_motion')
 
 	def __show_about(self, widget):
+		name = self.__tree.get_widget('name')
+		url = self.__tree.get_widget('website')
+
+		name.set_markup('<span size="xx-large"><b>%s %s</b></span>' % \
+				(NAME.capitalize(), VERSION))
+		url.set_text(HOMEPAGE)
+		
 		self.__about.run()
 		self.__about.hide()
 
@@ -385,6 +394,12 @@ class gui(gtk.Window):
 		self.__disp_opts.clear()
 
 	def get_settings(self):
+		"""Get all settings
+
+		@rtype: list
+		@return: all options
+		"""
+		
 		return self.opts
 
 	def get_font_size(self):
