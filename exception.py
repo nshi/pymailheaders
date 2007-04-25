@@ -17,5 +17,5 @@
 # GNU General Public License for more details.
 
 class TryAgain(Exception):
-	"""Network temporarily unavailable, try again."""
-	pass
+    """Network temporarily unavailable, try again."""
+    pass

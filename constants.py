@@ -19,6 +19,9 @@
 NAME = 'pymailheaders'
 VERSION = 'Beta 0.4'
 HOMEPAGE = 'http://pymailheaders.sourceforge.net'
+AUTHOR = 'Neil Shi'
+EMAIL = 'zeegeek@gmail.com'
+COPYRIGHT = '&#169;2007 %s ' % AUTHOR
 
 (IMAP, POP, FEED) = range(0, 3)
 (SIZE_SMALL, SIZE_MEDIUM, SIZE_BIG, SIZE_CUSTOM) = range(0, 4)
