@@ -227,7 +227,7 @@ class config:
             for k, v in self.__defaults.iteritems():
                 if not self.__has(k): self.set(k, v)
                 
-            fd = open(self.__config_file, 'wU')
+            fd = open(self.__config_file, 'w')
 
             self.__config.write(fd)
 

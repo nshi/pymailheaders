@@ -64,7 +64,7 @@ class gui(gtk.Window):
         """
 
         # have to start gtk thread before calling main()
-        gtk.threads_init()
+        gtk.gdk.threads_init()
 
         self.opts = opts
 

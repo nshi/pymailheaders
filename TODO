@@ -1,5 +1,6 @@
 * main
 ** TODO multi-mailbox support
+** TODO change default config file permission to 600
 ** DONE config file support
    CLOSED: [2007-04-12 Thu 01:19]
 *** TODO mbox support
