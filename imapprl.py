@@ -147,7 +147,7 @@ class imap:
             raise
 
         # set socket timeout to 30 seconds
-        self.__connection.socket().settimeout(10)
+        # self.__connection.socket().settimeout(10)
 
     def get_mail(self):
         """Get mails.
