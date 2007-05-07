@@ -19,6 +19,14 @@ Pymailheaders,
 * PyGTK 2.6 (or above) [http://pygtk.org/downloads.html]
 * GTK 2.6 (or above) [http://gtk.org/download/]
 
+For *ubuntu users, all you need to do is to install python-gtk2 package.  And
+then all the dependencies will be met by the package management system.  You can
+simply type the following command in a terminal to get it done.
+
+> sudo apt-get install python-gtk2
+
+It should be similar in other distributions.
+
 
 INSTALL
 =======
@@ -51,7 +59,8 @@ required), from the command line.
 After successfully launching Pymailheaders, you can omit all arguments except
 for '-c' if you use another configuration file in future launches.  Everything
 else can be set using Pymailheaders' GTK+ settings dialog by right clicking on
-Pymailheaders' window.
+Pymailheaders' window.  Add a '&' mark at the end of the command to make it run
+in background.
 
 > pymailheaders.py
 
