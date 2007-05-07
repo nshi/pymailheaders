@@ -38,8 +38,8 @@ from exception import *
 # glade file
 CWD = os.getcwd()
 basedir = os.path.dirname(os.path.realpath(__file__))
-if not os.path.exists(os.path.join(basedir, '%s.py' % constants.NAME)):
-    if os.path.exists(os.path.join(os.getcwd(), '%s.py' % constants.NAME)):
+if not os.path.exists(os.path.join(basedir, '%s.py' % constants.NAME.lower())):
+    if os.path.exists(os.path.join(os.getcwd(), '%s.py' % constants.NAME.lower())):
         basedir = os.getcwd()
 sys.path.insert(0, basedir)
 os.chdir(basedir)

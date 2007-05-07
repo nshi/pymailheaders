@@ -1,6 +1,5 @@
 Pymailheaders
 =============
-Author: Neil Shi <zeegeek@users.sf.net>
 
 Pymailheaders is a small GTK+ program which displays mail headers in your mail
 box.  It was innovated by xmailheaders, with a few more handy features like new
@@ -8,6 +7,7 @@ mail highlighting, lauching regardless of network connection status and
 auto-reconnecting.  Pymailheaders was written from scratch in Python for
 portability and easiness reasons.  IMAP4, POP3 protocols and XML feeds are
 supported now.
+
 
 REQUIREMENTS
 ============
@@ -85,8 +85,21 @@ you do not need to provide username and password.  Example,
 > pymailheaders.py -t feed -s http://feedparser.org/docs/examples/atom10.xml
 
 
-ACKNOWLEDGEMENT
-===============
+SCREENSHOT
+==========
 
-XML feed support is powered by Mark Pilgrim's Universal Feed Parser.  It is
-included in the package.
+* Pymailheaders running in FVWM [pymailheaders.png]
+* Pymailheaders' settings dialog [settings.png]
+* Pymailheaders' about dialog [about.png]
+
+
+DOWNLOAD
+========
+
+* Pymailheaders [http://sourceforge.net/project/platformdownload.php?group_id=189460]
+
+
+LINKS
+=====
+
+* My Homepage [http://ihome.ust.hk/~cs_snx/]
