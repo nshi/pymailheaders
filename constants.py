@@ -16,7 +16,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-NAME = 'pymailheaders'
+NAME = 'Pymailheaders'
 VERSION = 'Beta 0.4'
 HOMEPAGE = 'http://pymailheaders.sourceforge.net'
 AUTHOR = 'Neil Shi'
