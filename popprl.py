@@ -69,7 +69,7 @@ class pop:
 
         try:
             response = self.__connection.quit()
-            if response != '+OK':
+            if response[0:3] != '+OK':
                 print >> stderr, 'popprl (__disconnect): ' + 'Logout failed.'
                 raise Exception('(__disconnect) Logout failed')
         except (socket.error, socket.gaierror, poplib.error_proto,

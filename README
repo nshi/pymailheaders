@@ -8,6 +8,13 @@ auto-reconnecting.  Pymailheaders was written from scratch in Python for
 portability and easiness reasons.  IMAP4, POP3 protocols and XML feeds are
 supported now.
 
+If you found any bugs, you can either write me an "E-mail"
+[mailto://zeegeek@gmail.com] or submit a bug report at "bug report page"
+[http://sourceforge.net/tracker/?atid=929414&group_id=189460&func=browse].  For
+feature requests, you can submit them at "feature request page"
+[http://sourceforge.net/tracker/?atid=929417&group_id=189460&func=browse].
+Thank you.
+
 
 REQUIREMENTS
 ============
@@ -111,4 +118,5 @@ DOWNLOAD
 LINKS
 =====
 
+* Project Page [http://www.sourceforge.net/projects/pymailheaders]
 * My Homepage [http://ihome.ust.hk/~cs_snx/]

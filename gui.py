@@ -422,20 +422,16 @@ class gui(gtk.Window):
         """
 
         def a(x):
-            # convert string into unicode first
-            sender = unicode(x[1], 'utf-8')
-            subject = unicode(x[2], 'utf-8')
-
             i = self.__buffer.get_end_iter()
             if x[0]:
                 self.__buffer.insert_with_tags(i, \
-                                               sender + ': ' + \
-                                               subject + '\n',\
+                                               x[1] + ': ' + \
+                                               x[2] + '\n',\
                                                self.__new_tag)
             else:
                 self.__buffer.insert_with_tags(i, \
-                                               sender + ': ' + \
-                                               subject + '\n')
+                                               x[1] + ': ' + \
+                                               x[2] + '\n')
 
         # clear current view
         self.__buffer.delete(self.__buffer.get_start_iter(), \

@@ -41,6 +41,15 @@ class feed:
         __feed
     """
 
+
+    __server = ''
+    __mbox = ''
+    __uname = ''
+    __pass = ''
+    __ssl = False
+    __url = ''
+    __feed = {}
+
     def __init__(self, server, uname, password, ssl, mbox):
         """Constructor
 
@@ -62,15 +71,14 @@ class feed:
         else:
             # get rid of 'http[s]://'
             self.__server = re.sub('^[^/]*:/*', '', server)
-            self.__ssl = ssl
-        if mbox == 'INBOX':
-            self.__mbox = ''
-        else:
+            if ssl != None:
+                self.__ssl = ssl
+        if mbox != 'INBOX':
             self.__mbox = mbox
         # replace @ to html code
-        self.__uname = uname.replace('@', '%40')
-        self.__pass = password
-        self.__feed = {}
+        if uname and password:
+            self.__uname = uname.replace('@', '%40')
+            self.__pass = password
 
     def connect(self):
         """Form URL.
@@ -81,7 +89,9 @@ class feed:
             self.__url = 'https://'
         else:
             self.__url = 'http://'
-        self.__url += self.__uname + ':' + self.__pass + '@' + self.__server
+        if self.__uname and self.__pass:
+            self.__url += self.__uname + ':' + self.__pass + '@'
+        self.__url += self.__server
 
     def get_mail(self):
         """Parse feed.
@@ -96,15 +106,19 @@ class feed:
             self.__feed = feedparser.parse(self.__url)
             # check if it's a well formed feed
             if self.__feed.bozo == 1:
-                raise Exception(self.__feed.bozo_exception.getMessage())
+                a = self.__feed.bozo_exception
+                print a
+                raise Exception(a.getMessage())
         except:
             raise
         
         # parse sender addresses and subjects
         def a(x):
             if x.has_key('author_detail'):
-                sender = x.author_detail.name + ' ' + x.author_detail.email
+                sender = x.author_detail.name
+                if x.author_detail.has_key('email'):
+                    sender += ' ' + x.author_detail.email
             else:
                 sender = ''
-            return (False, sender, x.title)
+            return (True, sender, x.title)
         return map(a, self.__feed.entries)

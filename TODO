@@ -18,7 +18,6 @@ the first case.
 * ui
 ** DONE BUG: if new messages are not at the top, highlighting is incorrect.
    CLOSED: [2007-03-31 Sat 18:55]
-** TODO windows UI hack
 ** TODO display multiple mailboxes
 ** TODO display sender's name if there is one, otherwise display mail address
 *** TODO show full title in tooltip when hovered for 1 second
@@ -29,5 +28,7 @@ there're more mails not being displayed.  And clicking on it will expand the
 window vertically to fit the messages.  Moving the mouse out of the window will
 make it restore to normal.
 
+** TODO windows UI hack
 * project
-** TODO build project website
+** DONE build project website
+   CLOSED: [2007-05-10 Thu 23:59]
