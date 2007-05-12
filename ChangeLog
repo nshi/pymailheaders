@@ -1,3 +1,11 @@
+2007-05-11  Neil Shi  <zeegeek@gmail.com>
+
+	* imapprl.py (imap.get_mail): Displays sender's name only if there
+	is one.  Otherwise display the email address.
+
+	* popprl.py (pop.get_mail): Displays sender's name only if there
+	is one.  Otherwise display the email address.
+
 2007-04-24  Neil Shi  <zeegeek@gmail.com>
 
 	* gui.py (gui.__position_changed): Now it remembers position on

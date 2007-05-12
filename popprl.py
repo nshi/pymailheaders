@@ -194,7 +194,10 @@ class pop:
                 if re.search('^From', filtered_header[0]) == None:
                     filtered_header.reverse()
                 header = map(c, filtered_header)
-                header_list.append((flag, header[0], header[1]))
+                # get sender's name if there's one, otherwise get the email
+                # address
+                (name, addr) = re.search('("?([^"]*)"?\s)?<?(([a-zA-Z0-9_\-\.])+@(([0-2]?[0-5]?[0-5]\.[0-2]?[0-5]?[0-5]\.[0-2]?[0-5]?[0-5]\.[0-2]?[0-5]?[0-5])|((([a-zA-Z0-9\-])+\.)+([a-zA-Z\-])+)))?>?', header[0]).groups()[1:3]
+                header_list.append((flag, name and name or addr, header[1]))
 
             # 5. disconnect from server. Don't keep POP3 server
             # locking up the mailbox.

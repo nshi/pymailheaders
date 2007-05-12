@@ -188,6 +188,8 @@ class imap:
         # command, it's arbitrary.
         def b(x):
             sender = re.search('From: ([^\r\n]+)', x[1].strip()).group(1)
+            # get sender's name if there's one, otherwise get the email address
+            (name, addr) = re.search('("?([^"]*)"?\s)?<?(([a-zA-Z0-9_\-\.])+@(([0-2]?[0-5]?[0-5]\.[0-2]?[0-5]?[0-5]\.[0-2]?[0-5]?[0-5]\.[0-2]?[0-5]?[0-5])|((([a-zA-Z0-9\-])+\.)+([a-zA-Z\-])+)))?>?', sender).groups()[1:3]
             subject =  re.search('Subject: ([^\r\n]+)', x[1].strip())
             # subject might be empty
             if subject == None:
@@ -198,7 +200,8 @@ class imap:
             # reason, python's imaplib will return empty flags while
             # those messages are actually unread.
             return (re.search('FLAGS \((.*\\Recent.*)|\B\)', \
-                              x[0].strip()) != None, sender, subject)
+                              x[0].strip()) != None, \
+                    name and name or addr, subject)
         messages = map(b, filter(a, mail_list[1]))
         messages.reverse()
         return messages
