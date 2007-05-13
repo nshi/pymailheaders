@@ -1,5 +1,8 @@
 2007-05-12  Neil Shi  <zeegeek@gmail.com>
 
+	* gui.py (gui.__auth_toggled): Disable username and password entry
+	when authentication is unselected.
+
 	* config.py (config.write): Sets config file permissions to 0600.
 
 	* pymailheaders.py (main): Correctly handles unset variables.

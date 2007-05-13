@@ -276,7 +276,19 @@ class gui(gtk.Window):
         self.__acct_opts['server'] = widget.get_text()
 
     def __auth_toggled(self, widget):
+        u = self.__tree.get_widget('username')
+        p = self.__tree.get_widget('password')
+        
         self.__acct_opts['auth'] = widget.get_active()
+
+        if self.__acct_opts['auth']:
+            u.set_sensitive(True)
+            p.set_sensitive(True)
+        else:
+            u.set_sensitive(False)
+            p.set_sensitive(False)
+            u.set_text('')
+            p.set_text('')
 
     def __encrypted_toggled(self, widget):
         self.__acct_opts['encrypted'] = widget.get_active()
@@ -306,9 +318,9 @@ class gui(gtk.Window):
             w_box.set_sensitive(True)
             h_box.set_sensitive(True)
             return
-
-        w_box.set_sensitive(False)
-        h_box.set_sensitive(False)
+        else:
+            w_box.set_sensitive(False)
+            h_box.set_sensitive(False)
 
         if s == SIZE_SMALL:
             w.set_value(300)
