@@ -1,6 +1,7 @@
 * main
 ** TODO multi-mailbox support
-** TODO change default config file permission to 600
+** DONE change default config file permission to 600
+   CLOSED: [2007-05-12 Sat 21:38]
 ** TODO UTF-8 support
 ** DONE config file support
    CLOSED: [2007-04-12 Thu 01:19]

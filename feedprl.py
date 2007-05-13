@@ -114,11 +114,14 @@ class feed:
         
         # parse sender addresses and subjects
         def a(x):
+            sender = ''
+            
             if x.has_key('author_detail'):
-                sender = x.author_detail.name
-                if x.author_detail.has_key('email'):
-                    sender += ' ' + x.author_detail.email
-            else:
-                sender = ''
+                author = x.author_detail
+                if author.has_key('name'):
+                    sender = author.name
+                elif author.has_key('email'):
+                    sender = author.email
             return (True, sender, x.title)
+        
         return map(a, self.__feed.entries)

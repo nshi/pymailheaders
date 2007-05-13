@@ -1,3 +1,12 @@
+2007-05-12  Neil Shi  <zeegeek@gmail.com>
+
+	* config.py (config.write): Sets config file permissions to 0600.
+
+	* pymailheaders.py (main): Correctly handles unset variables.
+
+	* feedprl.py (feed.get_mail.a): Displays sender's name only if there
+	is one.  Otherwise display the email address.
+
 2007-05-11  Neil Shi  <zeegeek@gmail.com>
 
 	* imapprl.py (imap.get_mail): Displays sender's name only if there

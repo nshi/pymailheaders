@@ -18,6 +18,7 @@
 
 from ConfigParser import *
 from sys import stderr
+import os
 import os.path
 
 class config:
@@ -144,6 +145,7 @@ class config:
         """
 
         try:
+            # convert from boolean values
             if opt in self.__bool_vals:
                 if type(val) != bool:
                     raise TypeError
@@ -152,6 +154,7 @@ class config:
                     self.__config.set(self.__section, opt, 'yes')
                 else:
                     self.__config.set(self.__section, opt, 'no')
+            # convert from integers
             elif opt in self.__int_vals:
                 if type(val) != int:
                     raise TypeError
@@ -188,8 +191,10 @@ class config:
         """
 
         try:
+            # convert to boolean values
             if opt in self.__bool_vals:
                 return self.__config.get(self.__section, opt).lower() == 'yes'
+            # convert to integers
             elif opt in self.__int_vals:
                 return int(self.__config.get(self.__section, opt))
 
@@ -226,12 +231,16 @@ class config:
             # config file
             for k, v in self.__defaults.iteritems():
                 if not self.__has(k): self.set(k, v)
-                
-            fd = open(self.__config_file, 'w')
 
+            fd = open(self.__config_file, 'w')
+            
             self.__config.write(fd)
 
             fd.close()
+
+            # Set file permission bits to 0600
+            os.chmod(self.__config_file, 0600)
+
         except IOError, strerr:
             print >> stderr, 'config (write):', strerr
             raise Exception('config (write): ' + str(strerr))

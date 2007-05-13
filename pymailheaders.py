@@ -168,15 +168,15 @@ def main():
     # parse command-line arguments
     usage = 'usage: %prog [options]... args...'
     parser = OptionParser(usage)
-    parser.add_option('-t', '--type', dest = 'type', \
+    parser.add_option('-t', '--type', dest = 'type', default = '', \
                       help = 'server type: imap, pop, feed')
-    parser.add_option('-s', '--server', dest = 'server', \
+    parser.add_option('-s', '--server', dest = 'server', default = '', \
                       help = 'server to connect to')
     parser.add_option('-a', '--auth', action='store_true', dest = 'auth', \
                       help = 'server requires authentication')
-    parser.add_option('-u', '--username', dest = 'username', \
+    parser.add_option('-u', '--username', dest = 'username', default = '', \
                       help = 'username to log onto the server')
-    parser.add_option('-p', '--password', dest = 'password', \
+    parser.add_option('-p', '--password', dest = 'password', default = '', \
                       help = 'password')
     parser.add_option('-e', '--ssl', action = 'store_true', \
                       dest = 'encrypted', help = 'user SSL for the server')
@@ -222,15 +222,14 @@ def main():
 
     # don't use opts.update() because that will write all None values
     for k in options.iterkeys():
-        if not opts.has_key(k) or options[k] != None:
+        if not opts.has_key(k) or options[k]:
             opts[k] = options[k]
     del options
 
     # check args
-    if opts['type'] == None or opts['server'] == None:
+    if not opts['type'] or not opts['server']:
         parser.error('server type and server are required.')
-    if opts['auth'] and (opts['username'] == None or \
-                 opts['password'] == None):
+    if opts['auth'] and (not opts['username'] or not opts['password']):
         parser.error('username and password are needed ' + \
                  'for authentication.')
 
