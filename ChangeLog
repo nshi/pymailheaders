@@ -1,3 +1,8 @@
+2007-05-15  Neil Shi  <zeegeek@gmail.com>
+
+	* imapprl.py (imap.get_mail.b): Changed regex for detecting new
+	messages.
+
 2007-05-12  Neil Shi  <zeegeek@gmail.com>
 
 	* gui.py (gui.__auth_toggled): Disable username and password entry

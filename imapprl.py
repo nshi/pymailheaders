@@ -196,11 +196,10 @@ class imap:
                 subject = ''
             else:
                 subject = subject.group(1)
-            # HACK: it's not supposed to be like this, but for some
-            # reason, python's imaplib will return empty flags while
-            # those messages are actually unread.
-            return (re.search('FLAGS \((.*\\Recent.*)|\B\)', \
-                              x[0].strip()) != None, \
+            # ATTENTION: some mail agents will clear all the flags to indicate
+            # that a message is unread
+            return (re.search('FLAGS \(.*\\Seen.*\)', \
+                              x[0].strip()) == None, \
                     name and name or addr, subject)
         messages = map(b, filter(a, mail_list[1]))
         messages.reverse()
