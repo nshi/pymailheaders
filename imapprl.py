@@ -39,9 +39,10 @@ class imap:
         __pass
         __ssl
         __connection
+        __size
     """
 
-    def __init__(self, server, uname, password, ssl, mbox):
+    def __init__(self, server, uname, password, ssl, h, mbox):
         """Constructor
 
         @type server: string
@@ -52,6 +53,8 @@ class imap:
         @param password: password
         @type ssl: bool
         @param ssl: if this is a secure connection
+        @type h: int
+        @param h: number of messages displayable in the window
         @type mbox: string
         @param mbox: mailbox.
         """
@@ -61,6 +64,7 @@ class imap:
         self.__uname = uname
         self.__pass = password
         self.__ssl = ssl
+        self.__size = h
 
     def __del__(self):
         """Destructor
@@ -80,14 +84,14 @@ class imap:
             raise
 
     def __check(self):
-        """Get the total number of messages in a mailbox.
+        """Get the total number and the number of new messages in a mailbox.
 
-        @rtype: int
-        @return: total number of messages
+        @rtype: tuple
+        @return: (total number of messages, number of new messages)
         """
 
         try:
-            response = self.__connection.status('INBOX', '(MESSAGES)')
+            response = self.__connection.status('INBOX', '(MESSAGES UNSEEN)')
             if response[0] != 'OK':
                 print >> stderr, 'imapprl (__check):', response[1]
                 raise Exception('imapprl (__check): ' + response[1])
@@ -98,8 +102,8 @@ class imap:
         except:
             raise
 
-        total = re.search('\D+(\d+)', response[1][0]).group(1)
-        return int(total)
+        num = re.search('\D+(\d+)\D+(\d+)', response[1][0]).groups()
+        return (int(num[0]), int(num[1]))
 
     def __select_mailbox(self):
         """Select a mailbox
@@ -146,9 +150,6 @@ class imap:
         except:
             raise
 
-        # set socket timeout to 30 seconds
-        # self.__connection.socket().settimeout(10)
-
     def get_mail(self):
         """Get mails.
 
@@ -163,10 +164,18 @@ class imap:
             num = self.__check()
             self.__select_mailbox()
 
-            mail_list = self.__connection.fetch('1:' + str(num), \
-                                                '(FLAGS BODY.PEEK' + \
-                                                '[HEADER.FIELDS ' + \
-                                                '(FROM SUBJECT)])')
+            # if the number of new messages is more than what the window can
+            # hold, get them all.  Otherwise, fill up the whole window with old
+            # messages at the bottom.
+            if self.__size < num[1]:
+                num_to_fetch = str(num[0] - num[1])
+            else:
+                num_to_fetch = str(num[0] < self.__size and 1 \
+                                   or num[0] - self.__size)
+            mail_list = self.__connection.fetch(num_to_fetch + ':' + \
+                                                str(num[0]), '(FLAGS BODY.PEEK' \
+                                                + '[HEADER.FIELDS ' \
+                                                + '(FROM SUBJECT)])')
             if mail_list[0] != 'OK':
                 print >> stderr, 'imapprl (get_mail):', response[1]
                 raise Exception('imapprl (get_mail) ' + response[1])

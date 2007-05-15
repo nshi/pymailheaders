@@ -2,6 +2,8 @@
 
 	* imapprl.py (imap.get_mail.b): Changed regex for detecting new
 	messages.
+	(imap.get_mail): Now it only fetches all the new messages unless
+	the window is big enough to hold more messages.
 
 2007-05-12  Neil Shi  <zeegeek@gmail.com>
 

@@ -41,7 +41,7 @@ class pop:
         __message_dict
     """
 
-    def __init__(self, server, uname, password, ssl, mbox):
+    def __init__(self, server, uname, password, ssl, h, mbox):
         """Constructor
 
         @type server: string
@@ -52,6 +52,8 @@ class pop:
         @param password: password
         @type ssl: bool
         @param ssl: if this is a secure connection
+        @type h: int
+        @param h: dummy variable
         @type mbox: string
         @param mbox: dummy variable, POP3 only deals with INBOX.
         """

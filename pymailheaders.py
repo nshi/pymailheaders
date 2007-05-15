@@ -56,7 +56,7 @@ class mail_thread(Thread):
         __mail_obj
     """
 
-    def __init__(self, t, server, uname, password, ssl, interval, \
+    def __init__(self, t, server, uname, password, ssl, h, interval, \
              mbox = 'INBOX'):
         """Override constructor
 
@@ -70,6 +70,8 @@ class mail_thread(Thread):
         @param password: password
         @type ssl: bool
         @param ssl: if this is a secure connection
+        @type h: int
+        @param h: number of messages displayable in the window
         @type interval: int
         @param interval: time interval between updates
         @type mbox: string
@@ -86,6 +88,7 @@ class mail_thread(Thread):
                                                              uname, \
                                                              password, \
                                                              ssl, \
+                                                             h, \
                                                              mbox)
         self.timer = Event()
 
@@ -239,9 +242,10 @@ def main():
 
     # create threads
     gui_thr = gui.gui(opts)
+    h = opts['height'] / gui_thr.get_font_size()
     mail_thr = mail_thread(opts['type'], opts['server'], \
                            opts['username'], opts['password'], \
-                           opts['encrypted'], opts['interval'])
+                           opts['encrypted'], h, opts['interval'])
     del opts
 
     try:
