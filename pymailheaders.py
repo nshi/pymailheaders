@@ -241,7 +241,7 @@ def main():
     signal.signal(signal.SIGTERM, on_exit)
 
     # create threads
-    gui_thr = gui.gui(opts)
+    gui_thr = gui.gui(conf, opts)
     h = opts['height'] / gui_thr.get_font_size()
     mail_thr = mail_thread(opts['type'], opts['server'], \
                            opts['username'], opts['password'], \
@@ -257,11 +257,6 @@ def main():
 
     # stop mail thread
     mail_thr.timer.set()
-
-    # save settings
-    opts = gui_thr.get_settings()
-    for k, v in opts.iteritems():
-        conf.set(k, v)
 
     # clean up the mess
     del mail_thr

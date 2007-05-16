@@ -36,9 +36,6 @@ class gui(gtk.Window):
     """This class packs everything into the main window, and set up the
     alarm signal to check for new messages.
 
-    @note: Public member variables:
-        opts
-
     @note: Private member variables:
         __tree
         __window
@@ -51,14 +48,18 @@ class gui(gtk.Window):
         __acct_opts
         __disp_opts
         __set
+        __opts
+        __conf
     """
 
     __acct_opts = {}
     __disp_opts = {}
     __set = {}
 
-    def __init__(self, opts):
+    def __init__(self, conf, opts):
         """
+        @type conf: config object
+        @param conf: config file object handle
         @type opts: dict
         @param opts: a dictionary of all the settings
         """
@@ -66,7 +67,8 @@ class gui(gtk.Window):
         # have to start gtk thread before calling main()
         gtk.gdk.threads_init()
 
-        self.opts = opts
+        self.__opts = opts
+        self.__conf = conf
 
         # read glade file
         glade_file = 'glade/pymailheaders.glade'
@@ -196,7 +198,8 @@ class gui(gtk.Window):
 
     def __position_changed(self, widget, event):
         # save position
-        (self.opts['x'], self.opts['y']) = self.__window.get_position()
+        (self.__opts['x'], self.__opts['y']) = self.__window.get_position()
+        self.__settings_save()
 
     def __show_about(self, widget):
         name = self.__tree.get_widget('name')
@@ -215,7 +218,7 @@ class gui(gtk.Window):
         result = gtk.RESPONSE_CANCEL
 
         # initialize settings
-        for k, v in self.opts.iteritems():
+        for k, v in self.__opts.iteritems():
             w = self.__tree.get_widget(k)
             t = type(v)
             if t == bool:
@@ -304,7 +307,7 @@ class gui(gtk.Window):
 
     # GUI settings
     #
-    # don't save the following settings into self.opts until
+    # don't save the following settings into self.__opts until
     # __settings_save() is called.
 
     def __size_changed(self, widget):
@@ -393,26 +396,22 @@ class gui(gtk.Window):
     def __settings_cancel(self):
         self.__acct_opts.clear()
         for k in self.__disp_opts.iterkeys():
-            self.__set[k](self.opts[k])
+            self.__set[k](self.__opts[k])
         self.__disp_opts.clear()
 
     def __settings_save(self):
-        # move all settings into self.opts
-        self.opts.update(self.__acct_opts)
-        self.opts.update(self.__disp_opts)
+        # move all settings into self.__opts
+        self.__opts.update(self.__acct_opts)
+        self.__opts.update(self.__disp_opts)
 
         # clean temporary settings
         self.__acct_opts.clear()
         self.__disp_opts.clear()
 
-    def get_settings(self):
-        """Get all settings
-
-        @rtype: list
-        @return: all options
-        """
-
-        return self.opts
+        # write settings to config file
+        for k, v in self.__opts.iteritems():
+            self.__conf.set(k, v)
+        self.__conf.write()
 
     def get_font_size(self):
         """Get font size of text widget

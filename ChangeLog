@@ -1,5 +1,8 @@
 2007-05-15  Neil Shi  <zeegeek@gmail.com>
 
+	* gui.py (gui.__settings_save): It now saves settings to the
+	config file right away.
+
 	* imapprl.py (imap.get_mail.b): Changed regex for detecting new
 	messages.
 	(imap.get_mail): Now it only fetches all the new messages unless
