@@ -20,6 +20,7 @@ import imaplib
 import socket
 import re
 from sys import stderr
+from email.Header import decode_header
 
 from exception import *
 
@@ -209,7 +210,8 @@ class imap:
             # that a message is unread
             return (re.search('FLAGS \(.*\\Seen.*\)', \
                               x[0].strip()) == None, \
-                    name and name or addr, subject)
+                    name and decode_header(name)[0][0] or addr, \
+                    decode_header(subject)[0][0])
         messages = map(b, filter(a, mail_list[1]))
         messages.reverse()
         return messages

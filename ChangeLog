@@ -1,3 +1,11 @@
+2007-05-16  Neil Shi  <zeegeek@gmail.com>
+
+	* popprl.py (pop.get_mail): Correctly decodes into unicode.
+
+	* imapprl.py (imap.get_mail.b): Correctly decodes into unicode.
+
+	* feedprl.py (feed.get_mail): Improved encoding handling.
+
 2007-05-15  Neil Shi  <zeegeek@gmail.com>
 
 	* gui.py (gui.__settings_save): It now saves settings to the

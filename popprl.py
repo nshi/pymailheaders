@@ -20,6 +20,7 @@ import poplib
 import socket
 import re
 from sys import stderr
+from email.Header import decode_header
 
 from exception import *
 
@@ -199,7 +200,8 @@ class pop:
                 # get sender's name if there's one, otherwise get the email
                 # address
                 (name, addr) = re.search('("?([^"]*)"?\s)?<?(([a-zA-Z0-9_\-\.])+@(([0-2]?[0-5]?[0-5]\.[0-2]?[0-5]?[0-5]\.[0-2]?[0-5]?[0-5]\.[0-2]?[0-5]?[0-5])|((([a-zA-Z0-9\-])+\.)+([a-zA-Z\-])+)))?>?', header[0]).groups()[1:3]
-                header_list.append((flag, name and name or addr, header[1]))
+                header_list.append((flag, name and decode_header(name)[0][0] or \
+                                    addr, decode_header(header[1])[0][0]))
 
             # 5. disconnect from server. Don't keep POP3 server
             # locking up the mailbox.

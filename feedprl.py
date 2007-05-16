@@ -107,10 +107,15 @@ class feed:
         try:
             self.__feed = feedparser.parse(self.__url)
             # check if it's a well formed feed
-            if self.__feed.bozo == 1:
+            if self.__feed.bozo == 1 and \
+                   not isinstance(self.__feed.bozo_exception, \
+                                  feedparser.CharacterEncodingOverride) and \
+                   not isinstance(self.__feed.bozo_exception, \
+                                  feedparser.NonXMLContentType):
                 a = self.__feed.bozo_exception
                 print a
-                raise Exception(a.getMessage())
+                raise Exception(hasattr(a, 'getMessage') and a.getMessage() or \
+                                a)
         except:
             raise
         
@@ -124,6 +129,8 @@ class feed:
                     sender = author.name
                 elif author.has_key('email'):
                     sender = author.email
+            elif x.has_key('author'):
+                sender = x.author
             return (True, sender, x.title)
         
         return map(a, self.__feed.entries)
