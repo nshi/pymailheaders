@@ -1,5 +1,6 @@
 * main
 ** TODO multi-mailbox support
+** TODO better way to save password
 ** DONE change default config file permission to 600
    CLOSED: [2007-05-12 Sat 21:38]
 ** DONE UTF-8 support
