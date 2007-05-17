@@ -22,6 +22,7 @@ import re
 from sys import stderr
 from email.Header import decode_header
 
+import chardet
 from exception import *
 
 class pop:
@@ -181,6 +182,14 @@ class pop:
                     print >> stderr, 'popprl (get_mail): ' + \
                           'Fetching messages failed.'
                     raise Exception('Fetching messages failed')
+                
+                # decode mime headers
+                def d(x):
+                    y = decode_header(x)[0]
+                    if y[1]:
+                        return y[0].decode(chardet.detect(y[0])['encoding'])
+                    return y[0]
+                
                 def b(x):
                     r = re.search('^(From|Subject)', x)
                     if r == None:
@@ -200,8 +209,8 @@ class pop:
                 # get sender's name if there's one, otherwise get the email
                 # address
                 (name, addr) = re.search('("?([^"]*)"?\s)?<?(([a-zA-Z0-9_\-\.])+@(([0-2]?[0-5]?[0-5]\.[0-2]?[0-5]?[0-5]\.[0-2]?[0-5]?[0-5]\.[0-2]?[0-5]?[0-5])|((([a-zA-Z0-9\-])+\.)+([a-zA-Z\-])+)))?>?', header[0]).groups()[1:3]
-                header_list.append((flag, name and decode_header(name)[0][0] or \
-                                    addr, decode_header(header[1])[0][0]))
+                header_list.append((flag, name and d(name) or \
+                                    addr, d(header[1])))
 
             # 5. disconnect from server. Don't keep POP3 server
             # locking up the mailbox.

@@ -22,6 +22,7 @@ import re
 from sys import stderr
 from email.Header import decode_header
 
+import chardet
 from exception import *
 
 class imap:
@@ -192,6 +193,12 @@ class imap:
         except:
             raise
 
+        def d(x):
+            y = decode_header(x)[0]
+            if y[1]:
+                return y[0].decode(chardet.detect(y[0])['encoding'])
+            return y[0]
+
         # parse sender addresses and subjects
         def a(x): return x != ')'
         # ATTENTION: cannot rely on the order of the reply by fetch
@@ -200,18 +207,18 @@ class imap:
             sender = re.search('From: ([^\r\n]+)', x[1].strip()).group(1)
             # get sender's name if there's one, otherwise get the email address
             (name, addr) = re.search('("?([^"]*)"?\s)?<?(([a-zA-Z0-9_\-\.])+@(([0-2]?[0-5]?[0-5]\.[0-2]?[0-5]?[0-5]\.[0-2]?[0-5]?[0-5]\.[0-2]?[0-5]?[0-5])|((([a-zA-Z0-9\-])+\.)+([a-zA-Z\-])+)))?>?', sender).groups()[1:3]
-            subject =  re.search('Subject: ([^\r\n]+)', x[1].strip())
+            subject = re.search('Subject:\s*((.*\s*)+)', x[1].strip())
             # subject might be empty
             if subject == None:
                 subject = ''
             else:
-                subject = subject.group(1)
+                subject = re.sub('\r?\n?', '', subject.group(1))
             # ATTENTION: some mail agents will clear all the flags to indicate
             # that a message is unread
             return (re.search('FLAGS \(.*\\Seen.*\)', \
                               x[0].strip()) == None, \
-                    name and decode_header(name)[0][0] or addr, \
-                    decode_header(subject)[0][0])
+                    name and d(name) or addr, \
+                    d(subject))
         messages = map(b, filter(a, mail_list[1]))
         messages.reverse()
         return messages
