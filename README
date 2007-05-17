@@ -3,10 +3,10 @@ Pymailheaders
 
 Pymailheaders is a small GTK+ program which displays mail headers in your mail
 box.  It was innovated by xmailheaders, with a few more handy features like new
-mail highlighting, lauching regardless of network connection status and
-auto-reconnecting.  Pymailheaders was written from scratch in Python for
-portability and easiness reasons.  IMAP4, POP3 protocols and XML feeds are
-supported now.
+mail highlighting, multi-language support, lauching regardless of network
+connection status and auto-reconnecting.  Pymailheaders was written from scratch
+in Python for portability and easiness reasons.  IMAP4, POP3 protocols and XML
+feeds are supported now.
 
 If you find any bugs, you can either write me an "E-mail"
 [mailto://zeegeek@gmail.com] or submit a bug report at "bug report page"
