@@ -26,6 +26,7 @@ the first case.
    CLOSED: [2007-05-11 Fri 00:38]
 ** TODO windows UI hack
 *** TODO show full title in tooltip when hovered for 1 second
+*** TODO make sender's name and subject easily seperable
 *** TODO window expansion support
 
 display an expension arrow when the mouse moves to the bottom of the window if

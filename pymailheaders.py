@@ -117,6 +117,7 @@ class mail_thread(Thread):
             messages = [(True, 'Error', str(strerr))]
             lock.release()
             self.connect()
+            self.fetch()
 
     def connect(self):
         """Connect to the server.

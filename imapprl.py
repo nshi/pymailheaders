@@ -217,7 +217,7 @@ class imap:
             # that a message is unread
             return (re.search('FLAGS \(.*\\Seen.*\)', \
                               x[0].strip()) == None, \
-                    name and d(name) or addr, \
+                    name and d(name.strip()) or addr, \
                     d(subject))
         messages = map(b, filter(a, mail_list[1]))
         messages.reverse()
