@@ -198,8 +198,9 @@ class gui(gtk.Window):
 
     def __position_changed(self, widget, event):
         # save position
-        (self.__opts['x'], self.__opts['y']) = self.__window.get_position()
-        self.__settings_save()
+        if event.x != self.__opts['x'] or event.y != self.__opts['y']:
+            (self.__opts['x'], self.__opts['y']) = self.__window.get_position()
+            self.__settings_save()
 
     def __show_about(self, widget):
         name = self.__tree.get_widget('name')
