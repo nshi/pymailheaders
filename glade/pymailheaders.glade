@@ -1373,8 +1373,8 @@ Custom</property>
 		      <property name="pixels_above_lines">0</property>
 		      <property name="pixels_below_lines">0</property>
 		      <property name="pixels_inside_wrap">0</property>
-		      <property name="left_margin">0</property>
-		      <property name="right_margin">0</property>
+		      <property name="left_margin">3</property>
+		      <property name="right_margin">3</property>
 		      <property name="indent">0</property>
 		      <property name="text" translatable="yes">		    GNU GENERAL PUBLIC LICENSE
 		       Version 2, June 1991
