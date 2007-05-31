@@ -1,12 +1,12 @@
 * main
-** TODO multi-mailbox support
-** TODO better way to save password
+** TODO BUG: better way to handle reconnection, it might get into eternal loop
 ** DONE change default config file permission to 600
    CLOSED: [2007-05-12 Sat 21:38]
 ** DONE UTF-8 support
    CLOSED: [2007-05-16 Wed 00:18]
 ** DONE config file support
    CLOSED: [2007-04-12 Thu 01:19]
+*** TODO better way to save password
 *** TODO mbox support
 *** TODO clean up error messages
 
@@ -21,7 +21,7 @@ the first case.
 * ui
 ** DONE BUG: if new messages are not at the top, highlighting is incorrect.
    CLOSED: [2007-03-31 Sat 18:55]
-** TODO display multiple mailboxes
+** TODO better way to update and display error messages
 ** DONE display sender's name if there is one, otherwise display mail address
    CLOSED: [2007-05-11 Fri 00:38]
 ** TODO windows UI hack
