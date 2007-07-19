@@ -18,7 +18,7 @@
 
 from threading import Thread
 from threading import Lock
-from threading import Event
+from threading import Timer
 from optparse import OptionParser
 import sys
 import re
@@ -90,7 +90,6 @@ class mail_thread(Thread):
                                                              ssl, \
                                                              h, \
                                                              mbox)
-        self.timer = Event()
 
     def __del__(self):
         """Override destructor
@@ -143,10 +142,10 @@ class mail_thread(Thread):
 
         global gui_thr
         self.connect()
-        while not self.timer.isSet():
+        while:
             self.fetch()
             gui.gobject.idle_add(update_gui)
-            self.timer.wait(self.__interval)
+            self.timer = Timer(self.__interval, run)
 
 # update GUI
 def update_gui():
@@ -257,7 +256,7 @@ def main():
         pass
 
     # stop mail thread
-    mail_thr.timer.set()
+    mail_thr.timer.cancel()
 
     # clean up the mess
     del mail_thr
