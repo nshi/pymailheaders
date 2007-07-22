@@ -80,6 +80,8 @@ class mail_thread(Thread):
         """
 
         Thread.__init__(self)
+        self.setDaemon(True)
+
         self.__interval = float(interval)
         if not globals().has_key('%sprl' % t):
             print >> sys.stderr, 'pymailheaders: unknown server type'
@@ -90,6 +92,7 @@ class mail_thread(Thread):
                                                              ssl, \
                                                              h, \
                                                              mbox)
+        self.connected = False
 
     def __del__(self):
         """Override destructor
@@ -98,6 +101,12 @@ class mail_thread(Thread):
         """
 
         del self.__mail_obj
+
+    def __is_connected(self):
+        if self.connected == False:
+            self.connected = True
+            return False
+        return True
 
     def fetch(self):
         """Check and get mails
@@ -140,12 +149,13 @@ class mail_thread(Thread):
         """Connect to the server and fetch for the first time
         """
 
-        global gui_thr
-        self.connect()
-        while:
-            self.fetch()
-            gui.gobject.idle_add(update_gui)
-            self.timer = Timer(self.__interval, run)
+        if not self.__is_connected():
+            self.connect()
+
+        self.fetch()
+        gui.gobject.idle_add(update_gui)
+        self.timer = Timer(self.__interval, self.run)
+        self.timer.start()
 
 # update GUI
 def update_gui():
