@@ -194,10 +194,8 @@ class imap:
             raise
 
         def d(x):
-            y = decode_header(x)[0]
-            if y[1]:
-                return y[0].decode(chardet.detect(y[0])['encoding'])
-            return y[0]
+            y = decode_header(x)
+            return ' '.join(s[1] and s[0].decode(s[1]) or s[0] for s in y)
 
         # parse sender addresses and subjects
         def a(x): return x != ')'

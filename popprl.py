@@ -185,11 +185,9 @@ class pop:
                 
                 # decode mime headers
                 def d(x):
-                    y = decode_header(x)[0]
-                    if y[1]:
-                        return y[0].decode(chardet.detect(y[0])['encoding'])
-                    return y[0]
-                
+                    y = decode_header(x)
+                    return ' '.join(s[1] and s[0].decode(s[1]) or s[0] for s in y)
+
                 def b(x):
                     r = re.search('^(From|Subject)', x)
                     if r == None:
