@@ -154,6 +154,7 @@ class mail_thread(Thread):
 
         self.fetch()
         gui.gobject.idle_add(update_gui)
+        # Use g_timeout_add_seconds instead
         self.timer = Timer(self.__interval, self.run)
         self.timer.start()
 

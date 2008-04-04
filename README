@@ -30,7 +30,7 @@ For *ubuntu users, all you need to do is to install python-gtk2 package.  And
 then all the dependencies will be met by the package management system.  You can
 simply type the following command in a terminal to get it done.
 
-> sudo apt-get install python-gtk2
+> sudo apt-get install python-gtk2 python-glade2 python-gobject
 
 It should be similar in other distributions.
 
