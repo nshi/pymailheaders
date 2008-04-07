@@ -43,7 +43,6 @@ class gui(gtk.Window):
         __menu
         __buffer
         __new_tag
-        __about
         __settings
         __acct_opts
         __disp_opts
@@ -76,7 +75,6 @@ class gui(gtk.Window):
 
         self.__window = self.__tree.get_widget('window')
         self.__menu = self.__tree.get_widget('menu')
-        self.__about = self.__tree.get_widget('about')
         self.__settings = self.__tree.get_widget('settings')
         self.__text = self.__tree.get_widget('text')
         self.__buffer = self.__text.get_buffer()
@@ -170,7 +168,6 @@ class gui(gtk.Window):
                               '%stick' % ((x and 's') or 'uns'))()}
 
     def __close(self, widget):
-        self.__about.destroy()
         self.__settings.destroy()
         gtk.main_quit()
 
@@ -203,17 +200,19 @@ class gui(gtk.Window):
             self.__settings_save()
 
     def __show_about(self, widget):
-        name = self.__tree.get_widget('name')
-        copy = self.__tree.get_widget('copyright')
-        url = self.__tree.get_widget('website')
-
-        name.set_markup('<span size="xx-large"><b>%s %s</b></span>' % \
-                        (NAME.capitalize(), VERSION))
-        copy.set_markup(COPYRIGHT)
-        url.set_text(HOMEPAGE)
-
-        self.__about.run()
-        self.__about.hide()
+        about = gtk.AboutDialog()
+        about.set_transient_for(self)
+        about.set_name(NAME)
+        about.set_program_name(NAME)
+        about.set_version(VERSION)
+        about.set_comments(DESCRIPTION)
+        about.set_copyright(COPYRIGHT)
+        about.set_website_label('Homepage')
+        about.set_website(HOMEPAGE)
+        about.set_authors([AUTHOR])
+        about.set_license(LICENSE)
+        about.connect("response", lambda d, r: d.destroy())
+        about.show()
 
     def __show_settings(self, widget):
         result = gtk.RESPONSE_CANCEL
