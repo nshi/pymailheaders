@@ -17,7 +17,7 @@
 # GNU General Public License for more details.
 
 NAME = 'Pymailheaders'
-VERSION = 'Beta 0.4.2.2'
+VERSION = 'Beta 0.4.3'
 HOMEPAGE = 'http://pymailheaders.sourceforge.net'
 AUTHOR = 'Neil Shi'
 EMAIL = 'zeegeek@gmail.com'

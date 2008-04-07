@@ -1,5 +1,6 @@
 * main
-** TODO BUG: better way to handle reconnection, it might get into eternal loop
+** DONE BUG: better way to handle reconnection, it might get into eternal loop
+   CLOSED: [2008-04-07 Mon 16:59]
 ** DONE change default config file permission to 600
    CLOSED: [2007-05-12 Sat 21:38]
 ** DONE UTF-8 support
