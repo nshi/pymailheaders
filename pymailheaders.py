@@ -102,12 +102,6 @@ class mail_thread(Thread):
 
         del self.__mail_obj
 
-    def __is_connected(self):
-        if self.connected == False:
-            self.connected = True
-            return False
-        return True
-
     def fetch(self):
         """Check and get mails
 
@@ -125,7 +119,6 @@ class mail_thread(Thread):
             messages = [(True, 'Error', str(strerr))]
             lock.release()
             self.connect()
-            self.fetch()
 
     def connect(self):
         """Connect to the server.
@@ -136,11 +129,14 @@ class mail_thread(Thread):
 
         try:
             self.__mail_obj.connect()
+            self.connected = True
         except TryAgain:
+            self.connected = False
             lock.acquire()
             messages = [(True, 'Error', 'Network not available')]
             lock.release()
         except Exception, strerr:
+            self.connected = False
             lock.acquire()
             messages = [(True, 'Error', str(strerr))]
             lock.release()
@@ -149,10 +145,11 @@ class mail_thread(Thread):
         """Connect to the server and fetch for the first time
         """
 
-        if not self.__is_connected():
+        if not self.connected:
             self.connect()
+        if self.connected:
+            self.fetch()
 
-        self.fetch()
         gui.gobject.idle_add(update_gui)
         # Use g_timeout_add_seconds instead
         self.timer = Timer(self.__interval, self.run)
@@ -224,7 +221,7 @@ def main():
         sys.exit(1)
 
     # get all configurations
-    # 
+    #
     # command line arguments have higher priorities, so they can overwrite
     # config file options
     opts = conf.get_all()
