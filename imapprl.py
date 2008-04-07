@@ -35,6 +35,7 @@ class imap:
     @warning: B{Have to call connect() method before doing anything else}
 
     @note: Private member variables:
+        __TIMEOUT
         __server
         __mbox
         __uname
@@ -43,6 +44,8 @@ class imap:
         __connection
         __size
     """
+
+    __TIMEOUT = 10
 
     def __init__(self, server, uname, password, ssl, h, mbox):
         """Constructor
@@ -139,6 +142,8 @@ class imap:
                 self.__connection = imaplib.IMAP4_SSL(self.__server)
             else:
                 self.__connection = imaplib.IMAP4(self.__server)
+            self.__connection.socket().settimeout(self.__TIMEOUT)
+
             response = self.__connection.login(self.__uname, self.__pass)
             if response[0] != 'OK':
                 print >> stderr, 'imapprl (connect):', response[1]
