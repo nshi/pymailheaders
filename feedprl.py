@@ -41,7 +41,6 @@ class feed:
         __feed
     """
 
-
     __server = ''
     __mbox = ''
     __uname = ''
@@ -118,11 +117,11 @@ class feed:
                                 a)
         except:
             raise
-        
+
         # parse sender addresses and subjects
         def a(x):
             sender = ''
-            
+
             if x.has_key('author_detail'):
                 author = x.author_detail
                 if author.has_key('name'):
@@ -132,5 +131,5 @@ class feed:
             elif x.has_key('author'):
                 sender = x.author
             return (True, sender, x.title)
-        
+
         return map(a, self.__feed.entries)

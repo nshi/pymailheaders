@@ -282,7 +282,7 @@ class gui(gtk.Window):
     def __auth_toggled(self, widget):
         u = self.__tree.get_widget('username')
         p = self.__tree.get_widget('password')
-        
+
         self.__acct_opts['auth'] = widget.get_active()
 
         if self.__acct_opts['auth']:

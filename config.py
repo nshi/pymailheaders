@@ -26,7 +26,7 @@ class config:
 
     @attention: Put all boolean variables names in __bool_vals so that we
     can return them in the right type later.
-    
+
     @note: Private member variables:
         __section
         __defaults
@@ -100,7 +100,7 @@ class config:
             # check if we have the correct permissions
             fd = open(self.__config_file, 'rw')
             fd.close()
-                
+
             self.__config.read(self.__config_file)
 
             # Insert default values
@@ -119,7 +119,7 @@ class config:
 
         @note: make sure that changes are being written to the file.
         """
-        
+
         self.write()
 
         del self.__config
@@ -149,7 +149,7 @@ class config:
             if opt in self.__bool_vals:
                 if type(val) != bool:
                     raise TypeError
-                
+
                 if val:
                     self.__config.set(self.__section, opt, 'yes')
                 else:
@@ -211,7 +211,7 @@ class config:
         """
 
         optvals = {}
-        
+
         try:
             opts = self.__config.options(self.__section)
 
@@ -233,7 +233,7 @@ class config:
                 if not self.__has(k): self.set(k, v)
 
             fd = open(self.__config_file, 'w')
-            
+
             self.__config.write(fd)
 
             fd.close()

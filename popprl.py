@@ -182,7 +182,7 @@ class pop:
                     print >> stderr, 'popprl (get_mail): ' + \
                           'Fetching messages failed.'
                     raise Exception('Fetching messages failed')
-                
+
                 # decode mime headers
                 def d(x):
                     y = decode_header(x)
