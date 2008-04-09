@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# constants.py
+# config.py
 # Copyright 2007 Neil Shi <zeegeek@gmail.com>
 #
 # Configuration File Parser
