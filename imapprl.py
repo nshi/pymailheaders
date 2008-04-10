@@ -199,8 +199,10 @@ class imap:
             raise
 
         def d(x):
-            y = decode_header(x)
-            return ' '.join(s[1] and s[0].decode(s[1]) or s[0] for s in y)
+            # In case the string is not compliant with the standard, let's make
+            # it correct.
+            y = decode_header(re.sub(r'(=\?([^\?]*\?){3}=)', r' \1 ', x))
+            return ''.join(s[1] and s[0].decode(s[1]) or s[0] for s in y)
 
         # parse sender addresses and subjects
         def a(x): return x != ')'
