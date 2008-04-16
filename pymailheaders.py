@@ -18,7 +18,7 @@
 
 from threading import Thread
 from threading import Lock
-from threading import Timer
+from threading import Event
 from optparse import OptionParser
 import sys
 import re
@@ -47,6 +47,7 @@ os.chdir(basedir)
 # global varibals
 lock = Lock()
 messages = []
+JOIN_TIMEOUT = 1.0
 
 class mail_thread(Thread):
     """This class creates the thread for fetching messages.
@@ -79,7 +80,7 @@ class mail_thread(Thread):
             I{Default = 'INBOX'}
         """
 
-        Thread.__init__(self)
+        Thread.__init__(self, None, None, 'mail-thread', (), {})
         self.setDaemon(True)
 
         self.__interval = float(interval)
@@ -93,6 +94,7 @@ class mail_thread(Thread):
                                                              h, \
                                                              mbox)
         self.connected = False
+        self.timer = Event()
 
     def __del__(self):
         """Override destructor
@@ -145,15 +147,14 @@ class mail_thread(Thread):
         """Connect to the server and fetch for the first time
         """
 
-        if not self.connected:
-            self.connect()
-        if self.connected:
-            self.fetch()
+        while not self.timer.isSet():
+            if not self.connected:
+                self.connect()
+            if self.connected:
+                self.fetch()
 
-        gui.gobject.idle_add(update_gui)
-        # Use g_timeout_add_seconds instead
-        self.timer = Timer(self.__interval, self.run)
-        self.timer.start()
+            gui.gobject.idle_add(update_gui)
+            self.timer.wait(self.__interval)
 
 # update GUI
 def update_gui():
@@ -167,6 +168,14 @@ def update_gui():
 
 def on_exit(signum = None, frame = None):
     gui.gtk.quit()
+
+def is_posix():
+    if sys.platform == 'win32':
+        return False
+    elif sys.platform == 'win64':
+        return False
+    else:
+        return True
 
 def main():
     """Main function
@@ -212,7 +221,10 @@ def main():
                       os.path.join(CWD, exp_path)
     else:
         # default config file location
-        config_file = os.path.expanduser('~/.pymailheadersrc')
+        if is_posix():
+            config_file = os.path.expanduser('~/.pymailheadersrc')
+        else:
+            config_file = 'config.ini'
 
     try:
         # read in config file if there is any
@@ -259,12 +271,15 @@ def main():
     try:
         # start thread
         mail_thr.start()
+        gui.gtk.gdk.threads_enter()
         gui.gtk.main()
+        gui.gtk.gdk.threads_leave()
     except KeyboardInterrupt:
         pass
 
     # stop mail thread
-    mail_thr.timer.cancel()
+    mail_thr.timer.set()
+    mail_thr.join(JOIN_TIMEOUT)
 
     # clean up the mess
     del mail_thr

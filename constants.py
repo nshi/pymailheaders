@@ -19,9 +19,9 @@
 NAME = 'Pymailheaders'
 VERSION = 'Beta 0.4.3'
 HOMEPAGE = 'http://pymailheaders.sourceforge.net'
-AUTHOR = 'Ning Shi'
-EMAIL = 'zeegeek@gmail.com'
-COPYRIGHT = 'Copyright \xc2\xa9 2007 %s ' % AUTHOR
+MAINTAINER = 'Ning Shi'
+AUTHOR = ['Ning Shi <zeegeek@gmail.com>', 'Peter Zhou']
+COPYRIGHT = 'Copyright \xc2\xa9 2007 %s ' % MAINTAINER
 DESCRIPTION = 'A mail header fetching and monitoring program'
 LICENSE = """
 		    GNU GENERAL PUBLIC LICENSE

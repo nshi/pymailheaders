@@ -64,6 +64,7 @@ class gui(gtk.Window):
         """
 
         # have to start gtk thread before calling main()
+        gobject.threads_init()
         gtk.gdk.threads_init()
 
         self.__opts = opts
@@ -203,13 +204,12 @@ class gui(gtk.Window):
         about = gtk.AboutDialog()
         about.set_transient_for(self)
         about.set_name(NAME)
-        about.set_program_name(NAME)
         about.set_version(VERSION)
         about.set_comments(DESCRIPTION)
         about.set_copyright(COPYRIGHT)
         about.set_website_label('Homepage')
         about.set_website(HOMEPAGE)
-        about.set_authors([AUTHOR])
+        about.set_authors(AUTHOR)
         about.set_license(LICENSE)
         about.connect("response", lambda d, r: d.destroy())
         about.show()
