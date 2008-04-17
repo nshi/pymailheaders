@@ -142,17 +142,23 @@ class mail_thread(Thread):
             messages = [(True, 'Error', str(strerr))]
             lock.release()
 
+    def refresh(self):
+        """Fetches mail and updates the GUI.
+        """
+
+        if not self.__connected:
+                self.connect()
+        if self.__connected:
+                self.fetch()
+
+        gui.gobject.idle_add(update_gui)
+
     def run(self):
         """Connect to the server and fetch for the first time
         """
 
         while not self.timer.isSet():
-            if not self.__connected:
-                self.connect()
-            if self.__connected:
-                self.fetch()
-
-            gui.gobject.idle_add(update_gui)
+            self.refresh()
             self.timer.wait(self.__interval)
 
 # update GUI
@@ -164,6 +170,11 @@ def update_gui():
     lock.acquire()
     gui_thr.display(messages)
     lock.release()
+
+def on_refresh_activate():
+    global mail_thr
+
+    mail_thr.refresh()
 
 def on_account_changed(opts):
     global mail_thr
@@ -305,7 +316,8 @@ def main():
     new_mail_thr(opts)
 
     # set up signal handlers
-    handlers = {'on_config_save': on_config_save,
+    handlers = {'on_refresh_activate': on_refresh_activate,
+                'on_config_save': on_config_save,
                 'on_account_changed': on_account_changed}
     gui_thr.signal_autoconnect(handlers)
 

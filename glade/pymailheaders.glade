@@ -705,6 +705,15 @@ Custom</property>
   </widget>
   <widget class="GtkMenu" id="menu">
     <child>
+      <widget class="GtkImageMenuItem" id="Refresh">
+        <property name="visible">True</property>
+        <property name="label">gtk-refresh</property>
+        <property name="use_underline">True</property>
+        <property name="use_stock">True</property>
+        <signal name="activate" handler="on_refresh_activate"/>
+      </widget>
+    </child>
+    <child>
       <widget class="GtkImageMenuItem" id="Settings">
         <property name="visible">True</property>
         <property name="label">gtk-properties</property>

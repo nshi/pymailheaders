@@ -53,7 +53,8 @@ class gui(gtk.Window):
     __acct_opts = {}
     __disp_opts = {}
     __set = {}
-    __handlers = {'on_config_save': None,
+    __handlers = {'on_refresh_activate': None,
+                  'on_config_save': None,
                   'on_account_changed': None}
 
     def __init__(self, opts):
@@ -98,7 +99,8 @@ class gui(gtk.Window):
                      'on_window_configure_event': self.__position_changed,
                      'on_text_button_press_event': self.__button_press,
                      'on_text_expose_event': self.__on_redraw}
-        menu_sigs = {'on_quit_activate': self.__close,
+        menu_sigs = {'on_refresh_activate': self.__refresh,
+                     'on_quit_activate': self.__close,
                      'on_about_activate': self.__show_about,
                      'on_settings_activate': self.__show_settings}
         dial_sigs = {'on_type_changed': self.__type_changed,
@@ -165,6 +167,10 @@ class gui(gtk.Window):
                       'sticky': lambda x: \
                       getattr(self.__window,
                               '%stick' % ((x and 's') or 'uns'))()}
+
+    def __refresh(self, widget):
+        if self.__handlers['on_refresh_activate']:
+            self.__handlers['on_refresh_activate']()
 
     def __close(self, widget):
         self.__settings.destroy()
