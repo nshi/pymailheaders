@@ -25,7 +25,8 @@ the first case.
 ** TODO better way to update and display error messages
 ** DONE display sender's name if there is one, otherwise display mail address
    CLOSED: [2007-05-11 Fri 00:38]
-** TODO windows UI hack
+** DONE windows UI hack
+   CLOSED: [2008-04-16 Wed 23:48]
 *** TODO show full title in tooltip when hovered for 1 second
 *** TODO make sender's name and subject easily seperable
 *** TODO window expansion support
