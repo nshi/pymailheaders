@@ -57,6 +57,8 @@ JOIN_TIMEOUT = 1.0
 class mail_thread(Thread):
     """This class creates the thread for fetching messages.
 
+    @note: Public member variables:
+        timer
     @note: Private member variables:
         __interval
         __mail_obj
@@ -98,16 +100,8 @@ class mail_thread(Thread):
                                                              ssl, \
                                                              h, \
                                                              mbox)
-        self.connected = False
+        self.__connected = False
         self.timer = Event()
-
-    def __del__(self):
-        """Override destructor
-
-        Should delete the objects created on construction properly.
-        """
-
-        del self.__mail_obj
 
     def fetch(self):
         """Check and get mails
@@ -136,14 +130,14 @@ class mail_thread(Thread):
 
         try:
             self.__mail_obj.connect()
-            self.connected = True
+            self.__connected = True
         except TryAgain:
-            self.connected = False
+            self.__connected = False
             lock.acquire()
             messages = [(True, 'Error', 'Network not available')]
             lock.release()
         except Exception, strerr:
-            self.connected = False
+            self.__connected = False
             lock.acquire()
             messages = [(True, 'Error', str(strerr))]
             lock.release()
@@ -153,9 +147,9 @@ class mail_thread(Thread):
         """
 
         while not self.timer.isSet():
-            if not self.connected:
+            if not self.__connected:
                 self.connect()
-            if self.connected:
+            if self.__connected:
                 self.fetch()
 
             gui.gobject.idle_add(update_gui)
@@ -212,7 +206,6 @@ def delete_mail_thr():
     mail_thr.join(JOIN_TIMEOUT)
 
     # clean up the mess
-    del mail_thr
     mail_thr = None
 
 def is_posix():
@@ -295,7 +288,6 @@ def main():
     for k in options.iterkeys():
         if not opts.has_key(k) or options[k]:
             opts[k] = options[k]
-    del options
 
     # check args
     if not opts['type'] or not opts['server']:
@@ -312,8 +304,6 @@ def main():
     gui_thr = gui.gui(opts)
     new_mail_thr(opts)
 
-    del opts
-
     # set up signal handlers
     handlers = {'on_config_save': on_config_save,
                 'on_account_changed': on_account_changed}
@@ -329,8 +319,6 @@ def main():
         pass
 
     delete_mail_thr()
-    del gui_thr
-    del conf
 
 # rock n' roll
 if __name__ == '__main__':

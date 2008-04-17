@@ -122,8 +122,6 @@ class config:
 
         self.write()
 
-        del self.__config
-
     def __has(self, opt):
         """Determine if an option exists in the config file
 
