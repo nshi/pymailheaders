@@ -48,17 +48,16 @@ class gui(gtk.Window):
         __disp_opts
         __set
         __opts
-        __conf
     """
 
     __acct_opts = {}
     __disp_opts = {}
     __set = {}
+    __handlers = {'on_config_save': None,
+                  'on_account_changed': None}
 
-    def __init__(self, conf, opts):
+    def __init__(self, opts):
         """
-        @type conf: config object
-        @param conf: config file object handle
         @type opts: dict
         @param opts: a dictionary of all the settings
         """
@@ -68,7 +67,6 @@ class gui(gtk.Window):
         gtk.gdk.threads_init()
 
         self.__opts = opts
-        self.__conf = conf
 
         # read glade file
         glade_file = 'glade/pymailheaders.glade'
@@ -400,18 +398,40 @@ class gui(gtk.Window):
         self.__disp_opts.clear()
 
     def __settings_save(self):
+        acct_changed = False
+
+        for k, v in self.__acct_opts.iteritems():
+            if self.__opts[k] != self.__acct_opts[k]:
+                acct_changed = True
+                break
+
         # move all settings into self.__opts
         self.__opts.update(self.__acct_opts)
         self.__opts.update(self.__disp_opts)
+
+        if acct_changed and self.__handlers['on_account_changed']:
+            self.__handlers['on_account_changed'](self.__opts)
 
         # clean temporary settings
         self.__acct_opts.clear()
         self.__disp_opts.clear()
 
-        # write settings to config file
-        for k, v in self.__opts.iteritems():
-            self.__conf.set(k, v)
-        self.__conf.write()
+        if self.__handlers['on_config_save']:
+            self.__handlers['on_config_save'](self.__opts)
+
+    def signal_autoconnect(self, handlers):
+        """Autoconnects signal handlers.
+
+        @type handlers: dictionary
+        @param handlers: dictionary of signal names and corresponding handlers.
+        """
+
+        if type(handlers) != dict:
+            return
+
+        for k, v in handlers.iteritems():
+            if k in self.__handlers:
+                self.__handlers[k] = v
 
     def get_font_size(self):
         """Get font size of text widget

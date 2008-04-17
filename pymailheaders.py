@@ -45,8 +45,13 @@ sys.path.insert(0, basedir)
 os.chdir(basedir)
 
 # global varibals
+mail_thr = None
+gui_thr = None
+conf = None
+
 lock = Lock()
 messages = []
+
 JOIN_TIMEOUT = 1.0
 
 class mail_thread(Thread):
@@ -166,8 +171,49 @@ def update_gui():
     gui_thr.display(messages)
     lock.release()
 
+def on_account_changed(opts):
+    global mail_thr
+
+    delete_mail_thr()
+    new_mail_thr(opts)
+    mail_thr.start()
+
+def on_config_save(opts):
+    global conf
+
+    if type(opts) != dict:
+        return
+
+    # write settings to config file
+    for k, v in opts.iteritems():
+        conf.set(k, v)
+    conf.write()
+
 def on_exit(signum = None, frame = None):
     gui.gtk.quit()
+
+def new_mail_thr(opts):
+    global mail_thr
+    global gui_thr
+
+    if type(opts) != dict or mail_thr != None:
+        return
+
+    h = opts['height'] / gui_thr.get_font_size()
+    mail_thr = mail_thread(opts['type'], opts['server'], \
+                           opts['username'], opts['password'], \
+                           opts['encrypted'], h, opts['interval'])
+
+def delete_mail_thr():
+    global mail_thr
+
+    # stop mail thread
+    mail_thr.timer.set()
+    mail_thr.join(JOIN_TIMEOUT)
+
+    # clean up the mess
+    del mail_thr
+    mail_thr = None
 
 def is_posix():
     if sys.platform == 'win32':
@@ -182,7 +228,9 @@ def main():
     """
 
     global lock
+    global conf
     global gui_thr
+    global mail_thr
     global messages
 
     # parse command-line arguments
@@ -261,12 +309,15 @@ def main():
     signal.signal(signal.SIGTERM, on_exit)
 
     # create threads
-    gui_thr = gui.gui(conf, opts)
-    h = opts['height'] / gui_thr.get_font_size()
-    mail_thr = mail_thread(opts['type'], opts['server'], \
-                           opts['username'], opts['password'], \
-                           opts['encrypted'], h, opts['interval'])
+    gui_thr = gui.gui(opts)
+    new_mail_thr(opts)
+
     del opts
+
+    # set up signal handlers
+    handlers = {'on_config_save': on_config_save,
+                'on_account_changed': on_account_changed}
+    gui_thr.signal_autoconnect(handlers)
 
     try:
         # start thread
@@ -277,13 +328,9 @@ def main():
     except KeyboardInterrupt:
         pass
 
-    # stop mail thread
-    mail_thr.timer.set()
-    mail_thr.join(JOIN_TIMEOUT)
-
-    # clean up the mess
-    del mail_thr
+    delete_mail_thr()
     del gui_thr
+    del conf
 
 # rock n' roll
 if __name__ == '__main__':
