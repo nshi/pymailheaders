@@ -1,0 +1,98 @@
+Pymailheaders
+=============
+
+Pymailheaders是一个小巧实用的邮箱监视器。起初的设计灵感来自于xmailheaders程序。Pymailheaders具有多国语言支持，能显示邮件主
+题和发件人，并将新邮件高亮。目前支持IMAP4，POP3和XML聚合协议。
+
+如果在使用过程中发现有问题，既可以直接通过"E-mail"
+[mailto://zeegeek@gmail.com]的方式联系我，也可以将问题描述和错误信息贴到"错误报告页"[http://sourceforge.net
+/tracker/?atid=929414&group_id=189460&func=browse]
+。假如你有什么更好的点子想要加到Pymailheaders里，可以提交到"新特性申请页"[http://sourceforge.net/tracker/?
+atid=929417&group_id=189460&func=browse]。
+
+
+系统需求
+=======
+
+你需要在系统里安装以下包才能运行Pymailheaders,
+
+* Python 2.4 （或更高） [http://www.python.org/download/]
+* PyGTK 2.6 （或更高） [http://pygtk.org/downloads.html]
+* GTK 2.6 （或更高） [http://gtk.org/download/]
+
+使用*ubuntu的用户可以使用以下命令安装上面提到的包。
+
+> sudo apt-get install python-gtk2 python-glade2 python-gobject
+
+在其他发行版的安装方法应该雷同。
+
+
+如何安装
+=======
+
+Pymailheaders无需安装。将下载后的包解压之后，第一次启动加上特定参数即可。
+
+
+使用方法
+=======
+
+在没有给任何命令行参数的情况下，Pymailheaders会首先到用户主目录下寻找.pymailheadersrc配置文件。这个路径也可以通过添加'-c'参数来手动指定。如果这是第一次运行，还没有任何配置文件，Pymailheaders会自动为你创建一个放在用户主目录下。配置文件里的所有参数都可以通过命令行参数的形式传递给Pymailheaders。值得注意的是，如果你已经有一个配置文件存在，但又在命令行给出了不同的参数，那么Pymailheaders将会采用命令行给定的参数，而忽略配置文件的相应参数。
+
+在Pymailheaders启动时，有几个参数是必须存在的，包括服务类型、服务器地址、用户名和密码。假如这几项没有出现在配置文件里或者配置文件不存在，Pymailheaders就会告诉你现在缺少什么必要参数。
+
+用'pymailheaders.py -h'可以看到命令行的所有参数列表。
+
+在第一次启动Pymailheaders或者缺少必要参数时，可以参照以下命令来启动。
+
+> pymailheaders.py -t imap -s express.cites.uiuc.edu -a -u zeegeek \
+  -p classified -e
+
+只要成功启动了一次Pymailheaders，以后就不再需要通过命令行给参数了。它们会自动被记录到配置文件里。如果需要更改现有配置，直接通过右键点击Pymailheaders主窗口然后选择“选项”即可更改。
+
+下面针对每一种支持的服务类型给出相应的例子。
+
+假如你的邮箱支持IMAP4，那么服务类型为imap，并加上服务器地址、用户名和密码。如果服务器要求加密认证，则还需要通过提供'-e'参数来指定使用加密认证。
+
+> pymailheaders.py -t imap -s express.cites.uiuc.edu -a -u zeegeek \
+  -p classified -e -i 60
+
+使用POP3邮箱与使用IMAP4邮箱类似，区别仅仅在于服务类型不同。
+
+> pymailheaders.py -t pop -s express.cites.uiuc.edu -a -u zeegeek \
+  -p classified -e -i 60
+
+如果你使用的是Gmail，那么参数将非常简单。注意服务类型此时为feed。
+
+> pymailheaders.py -t feed -s gmail -a -u zeegeek -p classified -i 60
+
+同时你也可以使用Pymailheaders来监视XML聚合更新，支持的协议有RSS 1.0、2.0和Atom 0.3、1.0。如果获取聚合不需要认证，则使用以下命令即可。
+
+> pymailheaders.py -t feed -s http://feedparser.org/docs/examples/atom10.xml
+
+
+屏幕截图
+=======
+
+* Pymailheaders运行于FVWM窗口管理器 [pymailheaders.png]
+* Pymailheaders的设置对话框 [settings.png]
+* Pymailheaders的关于对话框 [about.png]
+
+
+下载
+====
+
+* Pymailheaders [http://sourceforge.net/project/platformdownload.php?group_id=189460]
+
+开发版的源代码并没有使用SourceForge的Subversion来管理。所有的源代码都放在"GIT库"[http://repo.or.cz/w/pymailheaders.git]内。
+
+
+链接
+====
+
+* 项目主页 [http://www.sourceforge.net/projects/pymailheaders]
+* 项目英文介绍 [http://pymailheaders.sourceforge.net/]
+* 源代码库 [http://repo.or.cz/w/pymailheaders.git]
+* 个人主页 [http://www.zeegeek.cn]
+* 博客 [http://eblog.zeegeek.cn]
+* 中文博客 [http://blog.zeegeek.cn]
+
