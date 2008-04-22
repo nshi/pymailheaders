@@ -174,14 +174,16 @@ def update_gui():
 def on_refresh_activate():
     global mail_thr
 
-    mail_thr.refresh()
+    if mail_thr:
+        mail_thr.refresh()
 
 def on_account_changed(opts):
     global mail_thr
 
     delete_mail_thr()
     new_mail_thr(opts)
-    mail_thr.start()
+    if mail_thr and not mail_thr.isAlive():
+        mail_thr.start()
 
 def on_config_save(opts):
     global conf
@@ -204,6 +206,11 @@ def new_mail_thr(opts):
     if type(opts) != dict or mail_thr != None:
         return
 
+    if not opts['type'] or not opts['server'] or \
+           (opts['auth'] and (not opts['username'] or not opts['password'])):
+        gui_thr.show_settings(None)
+        return
+
     h = opts['height'] / gui_thr.get_font_size()
     mail_thr = mail_thread(opts['type'], opts['server'], \
                            opts['username'], opts['password'], \
@@ -211,6 +218,9 @@ def new_mail_thr(opts):
 
 def delete_mail_thr():
     global mail_thr
+
+    if not mail_thr:
+        return
 
     # stop mail thread
     mail_thr.timer.set()
@@ -300,20 +310,12 @@ def main():
         if not opts.has_key(k) or options[k]:
             opts[k] = options[k]
 
-    # check args
-    if not opts['type'] or not opts['server']:
-        parser.error('server type and server are required.')
-    if opts['auth'] and (not opts['username'] or not opts['password']):
-        parser.error('username and password are needed ' + \
-                 'for authentication.')
-
     # setup signal handler so that settings will be saved even if the
     # process is killed
     signal.signal(signal.SIGTERM, on_exit)
 
     # create threads
     gui_thr = gui.gui(opts)
-    new_mail_thr(opts)
 
     # set up signal handlers
     handlers = {'on_refresh_activate': on_refresh_activate,
@@ -321,9 +323,12 @@ def main():
                 'on_account_changed': on_account_changed}
     gui_thr.signal_autoconnect(handlers)
 
+    new_mail_thr(opts)
+
     try:
         # start thread
-        mail_thr.start()
+        if mail_thr and not mail_thr.isAlive():
+            mail_thr.start()
         gui.gtk.gdk.threads_enter()
         gui.gtk.main()
         gui.gtk.gdk.threads_leave()

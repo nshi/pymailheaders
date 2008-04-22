@@ -102,7 +102,7 @@ class gui(gtk.Window):
         menu_sigs = {'on_refresh_activate': self.__refresh,
                      'on_quit_activate': self.__close,
                      'on_about_activate': self.__show_about,
-                     'on_settings_activate': self.__show_settings}
+                     'on_settings_activate': self.show_settings}
         dial_sigs = {'on_type_changed': self.__type_changed,
                      'on_server_changed': self.__server_changed,
                      'on_auth_toggled': self.__auth_toggled,
@@ -128,6 +128,7 @@ class gui(gtk.Window):
         self.__tree.signal_autoconnect(main_sigs)
         self.__tree.signal_autoconnect(menu_sigs)
         self.__tree.signal_autoconnect(dial_sigs)
+        self.__settings.connect('response', self.__on_settings_response)
 
         self.__window.show()
 
@@ -217,47 +218,6 @@ class gui(gtk.Window):
         about.set_license(LICENSE)
         about.connect("response", lambda d, r: d.destroy())
         about.show()
-
-    def __show_settings(self, widget):
-        result = gtk.RESPONSE_CANCEL
-
-        # initialize settings
-        for k, v in self.__opts.iteritems():
-            w = self.__tree.get_widget(k)
-            t = type(v)
-            if t == bool:
-                # toggles
-                w.set_active(v)
-                continue
-            elif t == int:
-                # spinbuttons
-                w and w.set_value(v)
-                continue
-            if k == 'type':
-                v == 'imap' and w.set_active(IMAP)
-                v == 'pop' and w.set_active(POP)
-                v == 'feed' and w.set_active(FEED)
-            elif k.find('ground') != -1:
-                # color settings
-                w.set_color(gtk.gdk.color_parse(v))
-            elif k == 'font':
-                not w.set_font_name(v) and \
-                    gtk.MessageDialog(type = gtk.MESSAGE_ERROR, \
-                                      message_format = \
-                                      'Font specified does not exist!', \
-                                      buttons = gtk.BUTTONS_OK)
-            else:
-                # normal strings
-                w.set_text(v)
-        self.__tree.get_widget('size').set_active(3)
-
-        result = self.__settings.run()
-        if result == gtk.RESPONSE_OK:
-            self.__settings_save()
-        else:
-            self.__settings_cancel()
-
-        self.__settings.hide()
 
     def __resize_height(self, h):
         self.__window.set_resizable(True)
@@ -424,6 +384,48 @@ class gui(gtk.Window):
 
         if self.__handlers['on_config_save']:
             self.__handlers['on_config_save'](self.__opts)
+
+    def __on_settings_response(self, dialog, response):
+        if response == gtk.RESPONSE_OK:
+            self.__settings_save()
+        else:
+            self.__settings_cancel()
+
+        self.__settings.hide()
+
+    def show_settings(self, widget):
+        result = gtk.RESPONSE_CANCEL
+
+        # initialize settings
+        for k, v in self.__opts.iteritems():
+            w = self.__tree.get_widget(k)
+            t = type(v)
+            if t == bool:
+                # toggles
+                w.set_active(v)
+                continue
+            elif t == int:
+                # spinbuttons
+                w and w.set_value(v)
+                continue
+            if k == 'type':
+                v == 'imap' and w.set_active(IMAP)
+                v == 'pop' and w.set_active(POP)
+                v == 'feed' and w.set_active(FEED)
+            elif k.find('ground') != -1:
+                # color settings
+                w.set_color(gtk.gdk.color_parse(v))
+            elif k == 'font':
+                not w.set_font_name(v) and \
+                    gtk.MessageDialog(type = gtk.MESSAGE_ERROR, \
+                                      message_format = \
+                                      'Font specified does not exist!', \
+                                      buttons = gtk.BUTTONS_OK)
+            else:
+                # normal strings
+                w.set_text(v)
+        self.__tree.get_widget('size').set_active(3)
+        self.__settings.show()
 
     def signal_autoconnect(self, handlers):
         """Autoconnects signal handlers.
