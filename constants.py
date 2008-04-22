@@ -23,7 +23,7 @@ MAINTAINER = 'Ning "ZeeGeek" Shi'
 EMAIL = 'zeegeek@gmail.com'
 AUTHOR = ['%s <%s>' % (MAINTAINER, EMAIL), \
           'Peter "Flying Eagle" Zhou <peterzhoulei@gmail.com>']
-COPYRIGHT = u'Copyright \xa9 2007 %s ' % MAINTAINER
+COPYRIGHT = u'Copyright \xa9 2008 %s ' % MAINTAINER
 DESCRIPTION = 'A mail header fetching and monitoring program'
 LICENSE = """
 		    GNU GENERAL PUBLIC LICENSE
