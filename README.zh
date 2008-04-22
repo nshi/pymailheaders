@@ -4,12 +4,7 @@ Pymailheaders
 Pymailheaders是一个小巧实用的邮箱监视器。起初的设计灵感来自于xmailheaders程序。Pymailheaders具有多国语言支持，能显示邮件主
 题和发件人，并将新邮件高亮。目前支持IMAP4，POP3和XML聚合协议。
 
-如果在使用过程中发现有问题，既可以直接通过
-"E-mail" [mailto://zeegeek@gmail.com]的方式联系我，也可以将问题描述和错误信息贴到 "错误报告页" [http://
-sourceforge.net
-/tracker/?atid=929414&group_id=189460&func=browse]
-。假如你有什么更好的点子想要加到Pymailheaders里，可以提交到 "新特性申请页" [http://sourceforge.net/tracker/?
-atid=929417&group_id=189460&func=browse]。
+如果在使用过程中发现有问题，既可以直接通过"E-mail"[mailto://zeegeek@gmail.com]的方式联系我，也可以将问题描述和错误信息贴到"错误报告页"[http://sourceforge.net/tracker/?atid=929414&group_id=189460&func=browse]。假如你有什么更好的点子想要加到Pymailheaders里，可以提交到"新特性申请页"[http://sourceforge.net/tracker/?atid=929417&group_id=189460&func=browse]。
 
 
 系统需求
@@ -90,6 +85,7 @@ Pymailheaders无需安装。将下载后的包解压之后，第一次启动加�
 链接
 ====
 
+* 英文主页 [http://pymailheaders.sourceforge.net]
 * 项目主页 [http://www.sourceforge.net/projects/pymailheaders]
 * 项目英文介绍 [http://pymailheaders.sourceforge.net/]
 * 源代码库 [http://repo.or.cz/w/pymailheaders.git]
