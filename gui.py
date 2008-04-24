@@ -90,6 +90,8 @@ class gui(gtk.Window):
         self.__window.move(opts['x'], opts['y'])
         self.__window.set_title(NAME)
 
+        self.__settings.set_transient_for(self)
+
         # apply saved settings
         for k, v in self.__set.iteritems():
             v(opts[k])
