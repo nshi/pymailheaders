@@ -76,7 +76,8 @@ Pymailheaders无需安装。将下载后的包解压之后，第一次启动加�
 下载
 ====
 
-* Pymailheaders [http://sourceforge.net/project/platformdownload.php?group_id=189460]
+* Pymailheaders——稳定版 [http://sourceforge.net/project/platformdownload.php?group_id=189460]
+* Pymailheaders——开发版 [http://repo.or.cz/w/pymailheaders.git?a=snapshot;h=HEAD;sf=tgz]
 
 开发版的源代码并没有使用SourceForge的Subversion来管理。所有的源代码都放在"GIT库"[http://repo.or.cz/w/pymailheaders.git]内。
 

@@ -111,7 +111,8 @@ SCREENSHOT
 DOWNLOAD
 ========
 
-* Pymailheaders [http://sourceforge.net/project/platformdownload.php?group_id=189460]
+* Pymailheaders - stable version [http://sourceforge.net/project/platformdownload.php?group_id=189460]
+* Pymailheaders - development snapshot [http://repo.or.cz/w/pymailheaders.git?a=snapshot;h=HEAD;sf=tgz]
 
 I'm not keeping the under-development code in SourceForge's Subversion
 repository any more.  All the code has been moved to a "GIT repository"
