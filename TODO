@@ -31,9 +31,9 @@ the first case.
 *** TODO make sender's name and subject easily seperable
 *** TODO window expansion support
 
-display an expension arrow when the mouse moves to the bottom of the window if
-there're more mails not being displayed.  And clicking on it will expand the
-window vertically to fit the messages.  Moving the mouse out of the window will
+display an expension arrow when the mouse moves into the window if there're more
+unread mails outside the window.  And clicking the window will expand it
+vertically to show all the messages.  Moving the mouse outside the window will
 make it restore to normal.
 
 * project
