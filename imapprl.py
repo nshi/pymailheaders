@@ -45,7 +45,7 @@ class imap:
         __size
     """
 
-    __TIMEOUT = 10
+    __TIMEOUT = 20
 
     def __init__(self, server, uname, password, ssl, h, mbox):
         """Constructor
