@@ -16,6 +16,9 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
+(IMAP, POP, FEED) = range(0, 3)
+(SIZE_SMALL, SIZE_MEDIUM, SIZE_BIG, SIZE_CUSTOM) = range(0, 4)
+
 NAME = 'Pymailheaders'
 VERSION = 'Beta 0.4.3'
 HOMEPAGE = 'http://pymailheaders.sourceforge.net'
@@ -366,6 +369,3 @@ consider it more useful to permit linking proprietary applications with the
 library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.
 """
-
-(IMAP, POP, FEED) = range(0, 3)
-(SIZE_SMALL, SIZE_MEDIUM, SIZE_BIG, SIZE_CUSTOM) = range(0, 4)
