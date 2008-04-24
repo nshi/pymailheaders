@@ -36,6 +36,12 @@ unread mails outside the window.  And clicking the window will expand it
 vertically to show all the messages.  Moving the mouse outside the window will
 make it restore to normal.
 
+*** TODO use pynotify to notify the user about new mails.
+
+Only new mails from last update will be shown in the notification. New mails
+from all accounts are grouped together to be shown in one single nofification,
+instead of one notification for each new mail.
+
 * project
 ** DONE build project website
    CLOSED: [2007-05-10 Thu 23:59]
