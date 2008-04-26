@@ -16,6 +16,24 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-class TryAgain(Exception):
+from sys import stderr
+
+class Error(Exception):
+    """Normal error.
+
+    @note: Public member variables:
+        where
+        what
+    """
+
+    def __init__(self, where, what):
+        self.where = where
+        self.what = what
+        print >> stderr, ': '.join([self.where, self.what])
+
+    def __str__(self):
+        return ': '.join([self.where, self.what])
+
+class TryAgain(Error):
     """Network temporarily unavailable, try again."""
     pass

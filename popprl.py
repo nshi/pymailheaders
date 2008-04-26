@@ -19,7 +19,6 @@
 import poplib
 import socket
 import re
-from sys import stderr
 from email.Header import decode_header
 
 import chardet
@@ -28,9 +27,8 @@ from exception import *
 class pop:
     """pop class
 
-    @attention: if an exception Exception is thrown by any of the method, by
-    disconnecting and connecting again, the problem should be
-    solved.
+    @attention: if an exception Error is thrown by any of the method, by
+    disconnecting and connecting again, the problem should be solved.
 
     @warning: B{Have to call connect() method before doing anything else}
 
@@ -74,12 +72,10 @@ class pop:
         try:
             response = self.__connection.quit()
             if response[0:3] != '+OK':
-                print >> stderr, 'popprl (__disconnect): ' + 'Logout failed.'
-                raise Exception('(__disconnect) Logout failed')
+                raise Error('popprl (__disconnect)', 'Logout failed')
         except (socket.error, socket.gaierror, poplib.error_proto,
                 AttributeError), strerr:
-            print >> stderr, 'popprl (__disconnect):', strerr
-            raise Exception('(__disconnect) ' + strerr)
+            raise Error('popprl (__disconnect)', strerr)
         except:
             raise
 
@@ -104,18 +100,14 @@ class pop:
             # text.
             response = self.__connection.user(self.__uname)
             if response[0:3] != '+OK':
-                print >> stderr, 'popprl (connect): ' + 'Login failed.'
-                raise Exception('(connect) Login failed')
+                raise Error('popprl (connect)', 'Login failed')
             response = self.__connection.pass_(self.__pass)
             if response[0:3] != '+OK':
-                print >> stderr, 'popprl (connect): ' + 'Login failed.'
-                raise Exception('(connect) Login failed')
+                raise Error('popprl (connect)', 'Login failed')
         except socket.gaierror, (socket.EAI_AGAIN, strerr):
-            print >> stderr, 'popprl (connect):', strerr
-            raise TryAgain
+            raise TryAgain('popprl (connect)', strerr)
         except (socket.error, socket.gaierror, poplib.error_proto), strerr:
-            print >> stderr, 'popprl (connect):', strerr
-            raise Exception('(connect) ' + strerr)
+            raise Error('popprl (connect)', strerr)
         except:
             raise
 
@@ -163,9 +155,8 @@ class pop:
                 # 3. get unique IDs
                 response = self.__connection.uidl(i)
                 if response[0:3] != '+OK':
-                    print >> stderr, 'popprl (get_mail): ' + \
-                          'Fetching message ID failed.'
-                    raise Exception('(get_mail) Fetching message ID failed')
+                    raise Error('popprl (get_mail)', \
+                                'Fetching message ID failed')
                 uid = re.search('([\S]*)$', response).group(1)
 
                 # compare unique IDs with the ones we've already
@@ -179,9 +170,7 @@ class pop:
                 # 4. get message hearders
                 response = self.__connection.top(i, 0)
                 if response[0][0:3] != '+OK':
-                    print >> stderr, 'popprl (get_mail): ' + \
-                          'Fetching messages failed.'
-                    raise Exception('Fetching messages failed')
+                    raise Error('popprl (get_mail)', 'Fetching messages failed')
 
                 # decode mime headers
                 def d(x):
@@ -214,8 +203,7 @@ class pop:
             # locking up the mailbox.
             self.__disconnect()
         except (socket.error, socket.gaierror, poplib.error_proto,), strerr:
-            print >> stderr, 'popprl (get_mail):', strerr
-            raise Exception('(get_mail) ' + strerr)
+            raise Error('popprl (get_mail)', strerr)
         except:
             raise
 

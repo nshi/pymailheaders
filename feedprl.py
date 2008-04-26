@@ -18,16 +18,14 @@
 
 import feedparser
 import re
-from sys import stderr
 
 from exception import *
 
 class feed:
     """feed class
 
-    @attention: if an exception Exception is thrown by any of the method, by
-    disconnecting and connecting again, the problem should be
-    solved.
+    @attention: if an exception Error is thrown by any of the method, by
+    disconnecting and connecting again, the problem should be solved.
 
     @warning: B{Have to call connect() method before doing anything else}
 
@@ -112,9 +110,8 @@ class feed:
                    not isinstance(self.__feed.bozo_exception, \
                                   feedparser.NonXMLContentType):
                 a = self.__feed.bozo_exception
-                print a
-                raise Exception(hasattr(a, 'getMessage') and a.getMessage() or \
-                                a)
+                raise Error('feedprl (get_mail)', \
+                            hasattr(a, 'getMessage') and a.getMessage() or a)
         except:
             raise
 

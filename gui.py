@@ -31,6 +31,7 @@ except:
 import re
 
 from constants import *
+from exception import *
 
 class gui(gtk.Window):
     """This class packs everything into the main window, and set up the
@@ -85,8 +86,8 @@ class gui(gtk.Window):
         self.__create_map()
 
         if not self.__window:
-            raise Exception('gui (__init__): Failed to get' + \
-                            'main window from glade file.')
+            raise Error('gui (__init__)', 'Failed to get main window from' + \
+                        'glade file.')
         self.__window.move(opts['x'], opts['y'])
         self.__window.set_title(NAME)
 

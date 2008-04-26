@@ -109,8 +109,7 @@ class config:
             for k, v in self.__defaults.iteritems():
                 if not self.__has(k): self.set(k, v)
         except (IOError, ParsingError, MissingSectionHeaderError), strerr:
-            print >> stderr, 'config (__init__):', strerr
-            raise Exception('config (__init__): ' + str(strerr))
+            raise Error('config (__init__)', str(strerr))
         except:
             raise
 
@@ -171,8 +170,7 @@ class config:
             # try to add the option
             self.set(opt, val)
         except TypeError:
-            print >> stderr, 'config (set):', 'invalid value type.'
-            raise Exception('config (set): ' + 'invalid value type')
+            raise Error('config (set)', 'invalid value type')
         except:
             raise
 
@@ -198,8 +196,7 @@ class config:
 
             return self.__config.get(self.__section, opt)
         except (NoSectionError, NoOptionError), strerr:
-            print >> stderr, 'config (get):', strerr
-            raise Exception('config (get): ' + str(strerr))
+            raise Error('config (get)', str(strerr))
 
     def get_all(self):
         """Get all options' values in the right type
@@ -240,5 +237,4 @@ class config:
             os.chmod(self.__config_file, 0600)
 
         except IOError, strerr:
-            print >> stderr, 'config (write):', strerr
-            raise Exception('config (write): ' + str(strerr))
+            raise Error('config (write)', str(strerr))

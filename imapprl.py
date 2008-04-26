@@ -19,7 +19,6 @@
 import imaplib
 import socket
 import re
-from sys import stderr
 from email.Header import decode_header
 
 import chardet
@@ -28,9 +27,8 @@ from exception import *
 class imap:
     """imap class
 
-    @attention: if an exception Exception is thrown by any of the method, by
-    disconnecting and connecting again, the problem should be
-    solved.
+    @attention: if an exception Error is thrown by any of the method, by
+    disconnecting and connecting again, the problem should be solved.
 
     @warning: B{Have to call connect() method before doing anything else}
 
@@ -79,12 +77,10 @@ class imap:
         try:
             response = self.__connection.logout()
             if response[0] != 'BYE':
-                print >> stderr, 'imapprl (__del__):', response[1]
-                raise Exception('imapprl (__del__): ' + response[1])
+                raise Error('imapprl (__del__)', response[1])
         except (socket.error, socket.gaierror, imaplib.IMAP4.error,
                 imaplib.IMAP4.abort), strerr:
-            print >> stderr, 'imapprl (__del__):', strerr
-            raise Exception('imapprl (__del__): ' + str(strerr))
+            raise Error('imapprl (__del__)', str(strerr))
         except:
             raise
 
@@ -98,12 +94,10 @@ class imap:
         try:
             response = self.__connection.status('INBOX', '(MESSAGES UNSEEN)')
             if response[0] != 'OK':
-                print >> stderr, 'imapprl (__check):', response[1]
-                raise Exception('imapprl (__check): ' + response[1])
+                raise Error('imapprl (__check)', response[1])
         except (socket.error, socket.gaierror, imaplib.IMAP4.error,
                 imaplib.IMAP4.abort), strerr:
-            print >> stderr, 'imapprl (__check):', strerr
-            raise Exception('imapprl (__check): ' + str(strerr))
+            raise Error('imapprl (__check)', str(strerr))
         except:
             raise
 
@@ -117,12 +111,10 @@ class imap:
         try:
             response = self.__connection.select(self.__mbox, True)
             if response[0] != 'OK':
-                print >> stderr, 'imapprl (__select_mailbox):', response[1]
-                raise Exception('imapprl (__select_mailbox): ' + response[1])
+                raise Error('imapprl (__select_mailbox)', response[1])
         except (socket.error, socket.gaierror, imaplib.IMAP4.error,
             imaplib.IMAP4.abort), strerr:
-            print >> stderr, 'imapprl (__select_mailbox):', strerr
-            raise Exception('imapprl (__select_mailbox): ' + str(strerr))
+            raise Error('imapprl (__select_mailbox)', str(strerr))
         except:
             raise
 
@@ -146,14 +138,11 @@ class imap:
 
             response = self.__connection.login(self.__uname, self.__pass)
             if response[0] != 'OK':
-                print >> stderr, 'imapprl (connect):', response[1]
-                raise Exception('imapprl (connect): ' + response[1])
+                raise Error('imapprl (connect)', response[1])
         except socket.gaierror, (socket.EAI_AGAIN, strerr):
-            print >> stderr, 'imapprl (connect):', strerr
-            raise TryAgain
+            raise TryAgain('imapprl (connect)', strerr)
         except (socket.error, socket.gaierror, imaplib.IMAP4.error), strerr:
-            print >> stderr, 'imapprl (connect):', strerr
-            raise Exception('imapprl (connect): ' + str(strerr))
+            raise Error('imapprl (connect)', str(strerr))
         except:
             raise
 
@@ -184,17 +173,14 @@ class imap:
                                                 + '[HEADER.FIELDS ' \
                                                 + '(FROM SUBJECT)])')
             if mail_list[0] != 'OK':
-                print >> stderr, 'imapprl (get_mail):', response[1]
-                raise Exception('imapprl (get_mail) ' + response[1])
+                raise Error('imapprl (get_mail)', response[1])
 
             response = self.__connection.close()
             if response[0] != 'OK':
-                print >> stderr, 'imapprl (get_mail):', response[1]
-                raise Exception('imapprl (get_mail) ' + response[1])
+                raise Error('imapprl (get_mail)', response[1])
         except (socket.error, socket.gaierror, imaplib.IMAP4.error,
                 imaplib.IMAP4.abort), strerr:
-            print >> stderr, 'imapprl (get_mail):', strerr
-            raise Exception('imapprl (get_mail): ' + str(strerr))
+            raise Error('imapprl (get_mail)', str(strerr))
         except:
             raise
 

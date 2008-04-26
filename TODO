@@ -9,7 +9,8 @@
    CLOSED: [2007-04-12 Thu 01:19]
 *** TODO better way to save password
 *** TODO mbox support
-*** TODO clean up error messages
+*** DONE clean up error messages
+    CLOSED: [2008-04-24 Thu 17:45]
 
 Add verbose flag -v to pymailheaders.py argument list so that detailed error
 messages are not shown if this flag is not specified by the user.  In this case,
@@ -22,7 +23,8 @@ the first case.
 * ui
 ** DONE BUG: if new messages are not at the top, highlighting is incorrect.
    CLOSED: [2007-03-31 Sat 18:55]
-** TODO better way to update and display error messages
+** DONE better way to update and display error messages
+   CLOSED: [2008-04-24 Thu 17:46]
 ** DONE display sender's name if there is one, otherwise display mail address
    CLOSED: [2007-05-11 Fri 00:38]
 ** DONE windows UI hack
