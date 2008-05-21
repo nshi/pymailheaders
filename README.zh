@@ -77,9 +77,9 @@ Pymailheaders无需安装。将下载后的包解压之后，第一次启动加�
 ====
 
 * Pymailheaders——稳定版 [http://sourceforge.net/project/platformdownload.php?group_id=189460]
-* Pymailheaders——开发版 [http://repo.or.cz/w/pymailheaders.git?a=snapshot;h=HEAD;sf=tgz]
+* Pymailheaders——开发版 [http://github.com/zeegeek/pymailheaders/tarball/master]
 
-开发版的源代码并没有使用SourceForge的Subversion来管理。所有的源代码都放在"GIT库"[http://repo.or.cz/w/pymailheaders.git]内。
+开发版的源代码并没有使用SourceForge的Subversion来管理。所有的源代码都放在"GIT库"[http://github.com/zeegeek/pymailheaders]内。
 
 
 链接
@@ -87,7 +87,7 @@ Pymailheaders无需安装。将下载后的包解压之后，第一次启动加�
 
 * 英文主页 [http://pymailheaders.sourceforge.net]
 * 项目主页 [http://www.sourceforge.net/projects/pymailheaders]
-* 源代码库 [http://repo.or.cz/w/pymailheaders.git]
+* 源代码库 [http://github.com/zeegeek/pymailheaders]
 * 个人主页 [http://www.zeegeek.cn]
 * 博客 [http://eblog.zeegeek.cn]
 * 中文博客 [http://blog.zeegeek.cn]
