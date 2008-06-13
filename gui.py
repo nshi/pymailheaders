@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # gui.py
-# Copyright 2007 Neil Shi <zeegeek@gmail.com>
+# Copyright 2008 Neil Shi <zeegeek@gmail.com>
 #
 # GTK+ GUI
 # This file defines how the GUI looks like.
