@@ -38,27 +38,30 @@ It should be similar in other distributions.
 INSTALL
 =======
 
-You do not need to install this program, just run pymailheaders.py with
-appropriate arguments.
+You do not need to install this program, just run pymailheaders.py.
 
 
 USAGE
 =====
 
-Pymailheaders will look for a configuration file called .pymailheadersrc in your
-home directory unless you use command line argument '-f' to specify another file
-explicitly.  If you do not have a configuration file yet, Pymailheaders will
-create one for you in your home directory.  If you already have one, you can
-still use command line arguments to overwrite the options in the configuration
-file.  If mandatory options like server type, server address, user name and
-password are not provided in command line arguments nor in the configuration
-file, Pymailheaders will tell you which options are missing.
+Recommended: Simply run pymailheaders.py without any arguments on the command
+prompt.
+
+Advanced: Pymailheaders will look for a configuration file called
+.pymailheadersrc in your home directory unless you use command line argument
+'-f' to specify another file explicitly.  If you do not have a configuration
+file yet, Pymailheaders will create one for you in your home directory.  If you
+already have one, you can still use command line arguments to overwrite the
+options in the configuration file.  If mandatory options like server type,
+server address, user name and password are not provided in command line
+arguments nor in the configuration file, Pymailheaders will tell you which
+options are missing by popping the settings dialog up.
 
 Use 'pymailheaders.py -h' for full argument list.
 
 On the first time running Pymailheaders, you have to provide all mandatory
 options, namely server type, server address, user name and password (if
-required), from the command line.
+required), or the settings dialog will pop up to ask for them.
 
 > pymailheaders.py -t imap -s express.cites.uiuc.edu -a -u zeegeek \
   -p classified -e
