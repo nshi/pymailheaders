@@ -72,7 +72,7 @@ class pop:
         try:
             response = self.__connection.quit()
             if response[0:3] != '+OK':
-                raise Error('popprl (__disconnect)', 'Logout failed')
+                raise Error('popprl (__disconnect)', _('Logout failed'))
         except (socket.error, socket.gaierror, poplib.error_proto,
                 AttributeError), strerr:
             raise Error('popprl (__disconnect)', strerr)
@@ -100,10 +100,10 @@ class pop:
             # text.
             response = self.__connection.user(self.__uname)
             if response[0:3] != '+OK':
-                raise Error('popprl (connect)', 'Login failed')
+                raise Error('popprl (connect)', _('Login failed'))
             response = self.__connection.pass_(self.__pass)
             if response[0:3] != '+OK':
-                raise Error('popprl (connect)', 'Login failed')
+                raise Error('popprl (connect)', _('Login failed'))
         except socket.gaierror, (socket.EAI_AGAIN, strerr):
             raise TryAgain('popprl (connect)', strerr)
         except (socket.error, socket.gaierror, poplib.error_proto), strerr:
@@ -156,7 +156,7 @@ class pop:
                 response = self.__connection.uidl(i)
                 if response[0:3] != '+OK':
                     raise Error('popprl (get_mail)', \
-                                'Fetching message ID failed')
+                                _('Fetching message ID failed'))
                 uid = re.search('([\S]*)$', response).group(1)
 
                 # compare unique IDs with the ones we've already
@@ -170,7 +170,8 @@ class pop:
                 # 4. get message hearders
                 response = self.__connection.top(i, 0)
                 if response[0][0:3] != '+OK':
-                    raise Error('popprl (get_mail)', 'Fetching messages failed')
+                    raise Error('popprl (get_mail)', \
+                                _('Fetching messages failed'))
 
                 # decode mime headers
                 def d(x):

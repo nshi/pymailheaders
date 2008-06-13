@@ -170,7 +170,7 @@ class config:
             # try to add the option
             self.set(opt, val)
         except TypeError:
-            raise Error('config (set)', 'invalid value type')
+            raise Error('config (set)', _('invalid value type'))
         except:
             raise
 

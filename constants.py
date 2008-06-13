@@ -22,12 +22,12 @@
 NAME = 'Pymailheaders'
 VERSION = 'Beta 0.4.3'
 HOMEPAGE = 'http://pymailheaders.sourceforge.net'
-MAINTAINER = 'Ning "ZeeGeek" Shi'
+MAINTAINER = _('Ning "ZeeGeek" Shi')
 EMAIL = 'zeegeek@gmail.com'
 AUTHOR = ['%s <%s>' % (MAINTAINER, EMAIL), \
-          'Peter "Flying Eagle" Zhou <peterzhoulei@gmail.com>']
-COPYRIGHT = u'Copyright \xa9 2008 %s ' % MAINTAINER
-DESCRIPTION = 'A mail header fetching and monitoring program'
+          _('Peter "Flying Eagle" Zhou') + '<peterzhoulei@gmail.com>']
+COPYRIGHT = _('Copyright') + u' \xa9 2008 %s ' % MAINTAINER
+DESCRIPTION = _('A mail header fetching and monitoring program')
 LICENSE = """
 		    GNU GENERAL PUBLIC LICENSE
 		       Version 2, June 1991

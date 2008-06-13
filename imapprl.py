@@ -191,7 +191,7 @@ class imap:
                 y = decode_header(re.sub(r'(=\?([^\?]*\?){3}=)', r' \1 ', x))
                 return ''.join(s[1] and s[0].decode(s[1]) or s[0] for s in y)
             except UnicodeDecodeError:
-                raise Error('imapprl (get_mail)', 'Invalid encoding')
+                raise Error('imapprl (get_mail)', _('Invalid encoding'))
 
         # parse sender addresses and subjects
         def a(x): return x != ')'

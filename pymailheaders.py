@@ -24,8 +24,37 @@ import sys
 import re
 import os
 import os.path
-import signal
+import locale
+import gettext
 
+# switch to the directory where this file resides in, so that it can find the
+# glade file
+app_name = 'pymailheaders'
+cwd = os.getcwd()
+basedir = os.path.dirname(os.path.realpath(__file__))
+if not os.path.exists(os.path.join(basedir, '%s.py' % app_name.lower())):
+    if os.path.exists(os.path.join(cwd, '%s.py' % app_name.lower())):
+        basedir = cwd
+sys.path.insert(0, basedir)
+os.chdir(basedir)
+
+# set to default locale
+locale.setlocale(locale.LC_ALL, '')
+
+# load translation file
+gettext.bindtextdomain(app_name, 'po')
+gettext.textdomain(app_name)
+import __builtin__
+__builtin__._ = lambda x: x
+try:
+    trans = gettext.translation(app_name, 'po',
+                                languages = [locale.getdefaultlocale()[0]])
+    if trans:
+        __builtin__._ = trans.ugettext
+except IOError:
+    pass
+
+import signal
 import gui
 import imapprl
 import popprl
@@ -33,16 +62,6 @@ import feedprl
 import config
 import constants
 from exception import *
-
-# switch to the directory where this file resides in, so that it can find the
-# glade file
-CWD = os.getcwd()
-basedir = os.path.dirname(os.path.realpath(__file__))
-if not os.path.exists(os.path.join(basedir, '%s.py' % constants.NAME.lower())):
-    if os.path.exists(os.path.join(os.getcwd(), '%s.py' % constants.NAME.lower())):
-        basedir = os.getcwd()
-sys.path.insert(0, basedir)
-os.chdir(basedir)
 
 # global varibals
 mail_thr = None
@@ -92,7 +111,7 @@ class mail_thread(Thread):
 
         self.__interval = float(interval)
         if not globals().has_key('%sprl' % t):
-            print >> sys.stderr, 'pymailheaders: unknown server type'
+            print >> sys.stderr, _('pymailheaders: unknown server type')
             sys.exit(1)
         self.__mail_obj = getattr(globals()['%sprl' % t], t)(server, \
                                                              uname, \
@@ -117,7 +136,7 @@ class mail_thread(Thread):
             messages = self.__mail_obj.get_mail()
             lock.release()
         except Error, strerr:
-            messages = [(True, 'Error', str(strerr))]
+            messages = [(True, _('Error'), str(strerr))]
             lock.release()
             self.connect()
 
@@ -134,12 +153,12 @@ class mail_thread(Thread):
         except TryAgain:
             self.__connected = False
             lock.acquire()
-            messages = [(True, 'Error', 'Network not available')]
+            messages = [(True, _('Error'), _('Network not available'))]
             lock.release()
         except Error, strerr:
             self.__connected = False
             lock.acquire()
-            messages = [(True, 'Error', str(strerr))]
+            messages = [(True, _('Error'), str(strerr))]
             lock.release()
 
     def refresh(self):
