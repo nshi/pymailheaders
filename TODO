@@ -45,5 +45,8 @@ from all accounts are grouped together to be shown in one single nofification,
 instead of one notification for each new mail.
 
 * project
+** TODO make windows installer.
+** TODO update Chinese homepage to use the screenshots of the translated version.
 ** DONE build project website
    CLOSED: [2007-05-10 Thu 23:59]
+*** TODO include News in the homepages.
