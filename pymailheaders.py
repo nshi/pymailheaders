@@ -194,7 +194,7 @@ def on_refresh_activate():
     global mail_thr
 
     if mail_thr:
-        mail_thr.refresh()
+        gui.gobject.idle_add(mail_thr.refresh)
 
 def on_account_changed(opts):
     global mail_thr
