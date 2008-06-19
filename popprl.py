@@ -19,7 +19,10 @@
 import poplib
 import socket
 import re
+from email import message_from_string
+from email.utils import parseaddr, parsedate_tz, mktime_tz
 from email.Header import decode_header
+from datetime import datetime
 
 import chardet
 from exception import *
@@ -37,9 +40,12 @@ class pop:
         __uname
         __pass
         __ssl
+        __size
         __connection
         __message_dict
     """
+
+    __message_dict = []
 
     def __init__(self, server, uname, password, ssl, h, mbox):
         """Constructor
@@ -53,7 +59,7 @@ class pop:
         @type ssl: bool
         @param ssl: if this is a secure connection
         @type h: int
-        @param h: dummy variable
+        @param h: number of messages displayable in the window
         @type mbox: string
         @param mbox: dummy variable, POP3 only deals with INBOX.
         """
@@ -62,7 +68,7 @@ class pop:
         self.__uname = uname
         self.__pass = password
         self.__ssl = ssl
-        self.__message_dict = {}
+        self.__size = h
 
     def __disconnect(self):
         """Destructor
@@ -124,9 +130,10 @@ class pop:
     def get_mail(self):
         """Get mails.
 
-        @rtype: list
-        @return: List of tuples of flag, sender addresses and subjects.
-        Newest message on top.
+        @rtype: tuple
+        @return: the tuple is in the following form
+        ([(datetime, sender, subject), ...],    <--- unread mails
+         [(datetime, sender, subject), ...])    <--- read mails
         """
 
         # Steps: 1. connect to the server;
@@ -138,8 +145,7 @@ class pop:
         #        4. get message headers;
         #        5. disconnect from server.
 
-        header_list = []
-        uid_list = []
+        messages = ([], [])
 
         try:
             # 1. connect to the server
@@ -152,6 +158,10 @@ class pop:
 
             message_range = range(total, 0, -1)
             for i in message_range:
+                # if the number of messages reaches the displayable max, stop
+                if (len(messages[0]) + len(messages[1])) == self.__size:
+                    break
+
                 # 3. get unique IDs
                 response = self.__connection.uidl(i)
                 if response[0:3] != '+OK':
@@ -159,46 +169,46 @@ class pop:
                                 _('Fetching message ID failed'))
                 uid = re.search('([\S]*)$', response).group(1)
 
-                # compare unique IDs with the ones we've already
-                # had
-                if not self.__message_dict.has_key(uid):
-                    flag = True
-                else:
-                    flag = False
-                uid_list.append(uid)
-
                 # 4. get message hearders
                 response = self.__connection.top(i, 0)
                 if response[0][0:3] != '+OK':
                     raise Error('popprl (get_mail)', \
                                 _('Fetching messages failed'))
 
-                # decode mime headers
                 def d(x):
-                    y = decode_header(x)
-                    return ' '.join(s[1] and s[0].decode(s[1]) or s[0] for s in y)
+                    # In case the string is not compliant with the standard,
+                    # let's make it correct.
+                    try:
+                        y = decode_header(re.sub(r'(=\?([^\?]*\?){3}=)',
+                                                 r' \1 ', x))
+                        return ''.join(s[1] and s[0].decode(s[1]) or
+                                       s[0] for s in y)
+                    except UnicodeDecodeError:
+                        raise Error('popprl (get_mail)', _('Invalid encoding'))
 
                 def b(x):
-                    r = re.search('^(From|Subject)', x)
+                    r = re.search('^(From|Subject|Date)', x)
                     if r == None:
                         return False
                     else:
                         return True
-                def c(x):
-                    r = re.search('^(From|Subject):\s*(.*)', x).group(2)
-                    return r
-                # POP3 doesn't guarantee the order of header
-                # fields returned, we'd have to determine it by
-                # ourselves.
+
                 filtered_header = filter(b, response[1])
-                if re.search('^From', filtered_header[0]) == None:
-                    filtered_header.reverse()
-                header = map(c, filtered_header)
-                # get sender's name if there's one, otherwise get the email
-                # address
-                (name, addr) = re.search('("?([^"]*)"?\s)?<?(([a-zA-Z0-9_\-\.])+@(([0-2]?[0-5]?[0-5]\.[0-2]?[0-5]?[0-5]\.[0-2]?[0-5]?[0-5]\.[0-2]?[0-5]?[0-5])|((([a-zA-Z0-9\-])+\.)+([a-zA-Z\-])+)))?>?', header[0]).groups()[1:3]
-                header_list.append((flag, name and d(name) or \
-                                    addr, d(header[1])))
+                msg = message_from_string('\r\n'.join(filtered_header))
+                subject = d(msg['subject'])
+                (sender, addr) = parseaddr(msg['from'])
+                sender = sender and d(sender) or addr
+                date = parsedate_tz(msg['date'])
+                dt = date and datetime.fromtimestamp(mktime_tz(date)) or \
+                    datetime.now()
+
+                if uid in self.__message_dict:
+                    # old message
+                    messages[1].append((dt, sender, subject))
+                else:
+                    # new message
+                    messages[0].append((dt, sender, subject))
+                    self.__message_dict.append(uid)
 
             # 5. disconnect from server. Don't keep POP3 server
             # locking up the mailbox.
@@ -208,8 +218,4 @@ class pop:
         except:
             raise
 
-        # refresh __message_dict
-        self.__message_dict.clear()
-        self.__message_dict = self.__message_dict.fromkeys(uid_list, None)
-
-        return header_list
+        return messages

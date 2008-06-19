@@ -48,18 +48,21 @@ class gui(gtk.Window):
         __buffer
         __new_tag
         __settings
+        __active_acct
         __acct_opts
         __disp_opts
         __set
         __opts
     """
 
+    __active_acct = None
     __acct_opts = {}
     __disp_opts = {}
     __set = {}
     __handlers = {'on_refresh_activate': None,
                   'on_config_save': None,
-                  'on_account_changed': None}
+                  'on_account_changed': None,
+                  'on_account_removed': None}
 
     def __init__(self, opts):
         """
@@ -109,7 +112,12 @@ class gui(gtk.Window):
                      'on_quit_activate': self.__close,
                      'on_about_activate': self.__show_about,
                      'on_settings_activate': self.show_settings}
-        dial_sigs = {'on_type_changed': self.__type_changed,
+        dial_sigs = {'on_account_name_changed': self.__account_name_changed,
+                     'on_account_name_edited': self.__account_name_edited,
+                     'on_account_name_focus_out': self.__account_name_edited,
+                     'on_add_account_clicked': self.__add_account,
+                     'on_remove_account_clicked': self.__remove_account,
+                     'on_type_changed': self.__type_changed,
                      'on_server_changed': self.__server_changed,
                      'on_auth_toggled': self.__auth_toggled,
                      'on_encrypted_toggled': self.__encrypted_toggled,
@@ -135,6 +143,7 @@ class gui(gtk.Window):
         self.__tree.signal_autoconnect(menu_sigs)
         self.__tree.signal_autoconnect(dial_sigs)
         self.__settings.connect('response', self.__on_settings_response)
+        self.__settings.connect('delete-event', self.__on_settings_response)
 
         self.__window.show()
 
@@ -235,26 +244,119 @@ class gui(gtk.Window):
         self.__text.set_property('width-request', w)
         self.__window.set_resizable(False)
 
+    def __clear_acct(self):
+        self.__tree.get_widget('account_name').set_active(-1)
+        self.__tree.get_widget('account_name_entry').set_text('')
+        self.__tree.get_widget('type').set_active(-1)
+        self.__tree.get_widget('server').set_text('')
+        self.__tree.get_widget('auth').set_active(False)
+        self.__tree.get_widget('encrypted').set_active(False)
+        self.__tree.get_widget('username').set_text('')
+        self.__tree.get_widget('password').set_text('')
+        self.__tree.get_widget('interval').set_value(60)
+
+    def __account_name_changed(self, widget):
+        active = widget.get_active()
+        name = widget.get_active_text()
+
+        if active is -1 or name not in self.__opts['accounts']:
+            return
+
+        self.__active_acct = name
+
+        for k, v in self.__opts['accounts'][name].iteritems():
+            w = self.__tree.get_widget(k)
+            if isinstance(v, bool):
+                # toggles
+                w.set_active(v)
+            elif isinstance(v, int):
+                # spinbuttons
+                w and w.set_value(v)
+            elif k == 'type':
+                v == 'imap' and w.set_active(IMAP)
+                v == 'pop' and w.set_active(POP)
+                v == 'feed' and w.set_active(FEED)
+            else:
+                # normal strings
+                w.set_text(v)
+
+    def __account_name_edited(self, widget, event = None):
+        t = widget.get_text()
+        w = self.__tree.get_widget('account_name')
+
+        if not t:
+            return
+        if not self.__active_acct:
+            self.__active_acct = t
+            return
+        if self.__active_acct not in self.__acct_opts:
+            self.__acct_opts[self.__active_acct] = {}
+
+        if self.__active_acct not in self.__opts['accounts']:
+            self.__acct_opts[t] = self.__acct_opts[self.__active_acct]
+            del self.__acct_opts[self.__active_acct]
+            return
+
+        w.get_model().clear()
+        for name in self.__opts['accounts'].iterkeys():
+            if name in self.__acct_opts:
+                w.append_text(t)
+            else:
+                w.append_text(name)
+
+        self.__acct_opts[self.__active_acct]['name'] = t
+
+    def __add_account(self, widget):
+        self.__clear_acct()
+
+    def __remove_account(self, widget):
+        w = self.__tree.get_widget('account_name')
+
+        if self.__active_acct not in self.__opts['accounts']:
+            return
+
+        self.__clear_acct()
+        if self.__active_acct in self.__acct_opts:
+            del self.__acct_opts[self.__active_acct]
+        del self.__opts['accounts'][self.__active_acct]
+
+        w.get_model().clear()
+        for name in self.__opts['accounts'].iterkeys():
+            w.append_text(name)
+
+        if self.__handlers['on_account_removed']:
+            self.__handlers['on_account_removed'](self.__active_acct)
+
+        self.__active_acct = None
+
     def __type_changed(self, widget):
         t = widget.get_active()
 
+        if not self.__active_acct:
+            return
+        if self.__active_acct not in self.__acct_opts:
+            self.__acct_opts[self.__active_acct] = {}
+
         if t == IMAP:
-            self.__acct_opts['type'] = 'imap'
+            self.__acct_opts[self.__active_acct]['type'] = 'imap'
         elif t == POP:
-            self.__acct_opts['type'] = 'pop'
+            self.__acct_opts[self.__active_acct]['type'] = 'pop'
         elif t == FEED:
-            self.__acct_opts['type'] = 'feed'
+            self.__acct_opts[self.__active_acct]['type'] = 'feed'
 
     def __server_changed(self, widget):
-        self.__acct_opts['server'] = widget.get_text()
+        if not self.__active_acct:
+            return
+        if self.__active_acct not in self.__acct_opts:
+            self.__acct_opts[self.__active_acct] = {}
+
+        self.__acct_opts[self.__active_acct]['server'] = widget.get_text()
 
     def __auth_toggled(self, widget):
         u = self.__tree.get_widget('username')
         p = self.__tree.get_widget('password')
 
-        self.__acct_opts['auth'] = widget.get_active()
-
-        if self.__acct_opts['auth']:
+        if widget.get_active():
             u.set_sensitive(True)
             p.set_sensitive(True)
         else:
@@ -263,17 +365,45 @@ class gui(gtk.Window):
             u.set_text('')
             p.set_text('')
 
+        if not self.__active_acct:
+            return
+        if self.__active_acct not in self.__acct_opts:
+            self.__acct_opts[self.__active_acct] = {}
+
+        self.__acct_opts[self.__active_acct]['auth'] = widget.get_active()
+
     def __encrypted_toggled(self, widget):
-        self.__acct_opts['encrypted'] = widget.get_active()
+        if not self.__active_acct:
+            return
+        if self.__active_acct not in self.__acct_opts:
+            self.__acct_opts[self.__active_acct] = {}
+
+        self.__acct_opts[self.__active_acct]['encrypted'] = widget.get_active()
 
     def __username_changed(self, widget):
-        self.__acct_opts['username'] = widget.get_text()
+        if not self.__active_acct:
+            return
+        if self.__active_acct not in self.__acct_opts:
+            self.__acct_opts[self.__active_acct] = {}
+
+        self.__acct_opts[self.__active_acct]['username'] = widget.get_text()
 
     def __password_changed(self, widget):
-        self.__acct_opts['password'] = widget.get_text()
+        if not self.__active_acct:
+            return
+        if self.__active_acct not in self.__acct_opts:
+            self.__acct_opts[self.__active_acct] = {}
+
+        self.__acct_opts[self.__active_acct]['password'] = widget.get_text()
 
     def __interval_changed(self, widget):
-        self.__acct_opts['interval'] = int(widget.get_value())
+        if not self.__active_acct:
+            return
+        if self.__active_acct not in self.__acct_opts:
+            self.__acct_opts[self.__active_acct] = {}
+
+        self.__acct_opts[self.__active_acct]['interval'] = \
+            int(widget.get_value())
 
     # GUI settings
     #
@@ -364,29 +494,47 @@ class gui(gtk.Window):
         self.__set['sticky'](self.__disp_opts['sticky'])
 
     def __settings_cancel(self):
+        self.__active_acct = None
         self.__acct_opts.clear()
         for k in self.__disp_opts.iterkeys():
             self.__set[k](self.__opts[k])
         self.__disp_opts.clear()
 
     def __settings_save(self):
-        acct_changed = False
-
         for k, v in self.__acct_opts.iteritems():
-            if self.__opts[k] != self.__acct_opts[k]:
-                acct_changed = True
-                break
+            if 'name' in v and v['name'] == k:
+                del v['name']
+
+            # if new account added
+            if k not in self.__opts['accounts']:
+                # if no interval set, make it 60 seconds
+                if 'interval' not in v:
+                    v['interval'] = 60
+
+                self.__opts['accounts'][k] = v
+            # if no account settings changed, then skip
+            if self.__opts['accounts'][k] == self.__acct_opts[k]:
+                continue
+
+            self.__opts['accounts'][k].update(v)
+            v.update(self.__opts['accounts'][k])
+
+            # if account name changed
+            if 'name' in v:
+                del self.__opts['accounts'][k]['name']
+                self.__opts['accounts'][v['name']] = self.__opts['accounts'][k]
+                del self.__opts['accounts'][k]
 
         # move all settings into self.__opts
-        self.__opts.update(self.__acct_opts)
         self.__opts.update(self.__disp_opts)
 
-        if acct_changed and self.__handlers['on_account_changed']:
-            self.__handlers['on_account_changed'](self.__opts)
+        if self.__acct_opts and self.__handlers['on_account_changed']:
+            self.__handlers['on_account_changed'](self.__acct_opts)
 
         # clean temporary settings
         self.__acct_opts.clear()
         self.__disp_opts.clear()
+        self.__active_acct = None
 
         if self.__handlers['on_config_save']:
             self.__handlers['on_config_save'](self.__opts)
@@ -398,26 +546,18 @@ class gui(gtk.Window):
             self.__settings_cancel()
 
         self.__settings.hide()
+        return True
 
     def show_settings(self, widget):
-        result = gtk.RESPONSE_CANCEL
-
         # initialize settings
         for k, v in self.__opts.iteritems():
             w = self.__tree.get_widget(k)
-            t = type(v)
-            if t == bool:
+            if isinstance(v, bool):
                 # toggles
                 w.set_active(v)
-                continue
-            elif t == int:
+            elif isinstance(v, int):
                 # spinbuttons
                 w and w.set_value(v)
-                continue
-            if k == 'type':
-                v == 'imap' and w.set_active(IMAP)
-                v == 'pop' and w.set_active(POP)
-                v == 'feed' and w.set_active(FEED)
             elif k.find('ground') != -1:
                 # color settings
                 w.set_color(gtk.gdk.color_parse(v))
@@ -427,6 +567,15 @@ class gui(gtk.Window):
                                       message_format = \
                                       _('Font specified does not exist!'), \
                                       buttons = gtk.BUTTONS_OK)
+            elif k == 'accounts':
+                w = self.__tree.get_widget('account_name')
+                w.get_model().clear()
+                w.get_child().set_text('')
+
+                for name in v.iterkeys():
+                    w.append_text(name)
+
+                self.__clear_acct()
             else:
                 # normal strings
                 w.set_text(v)
@@ -458,6 +607,15 @@ class gui(gtk.Window):
         size = context.get_font_description().get_size()
         return size / pango.SCALE
 
+    def get_max_messages(self):
+        """Gets the max number of messages possible for the current window size
+
+        @rtype: int
+        @return: max number of messages
+        """
+
+        return int(self.__opts['height'] / self.get_font_size())
+
     def display(self, messages):
         """Display messages
 
@@ -466,20 +624,21 @@ class gui(gtk.Window):
             subjects, newest first.
         """
 
-        def a(x):
+        def a(x, highlight):
             i = self.__buffer.get_end_iter()
-            if x[0]:
-                self.__buffer.insert_with_tags(i, \
-                                               x[1] + ': ' + \
-                                               x[2] + '\n',\
-                                               self.__new_tag)
-            else:
-                self.__buffer.insert_with_tags(i, \
-                                               x[1] + ': ' + \
-                                               x[2] + '\n')
+
+            for msg in x:
+                line = ''.join(['[', msg[0], ']', ' ', msg[2], ': ',
+                                msg[3], '\n'])
+
+                if highlight:
+                    self.__buffer.insert_with_tags(i, line, self.__new_tag)
+                else:
+                    self.__buffer.insert_with_tags(i, line)
 
         # clear current view
         self.__buffer.delete(self.__buffer.get_start_iter(), \
                              self.__buffer.get_end_iter())
         # display messages
-        map(a, messages)
+        a(messages[0], True)
+        a(messages[1], False)

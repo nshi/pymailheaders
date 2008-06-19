@@ -21,6 +21,8 @@ from sys import stderr
 import os
 import os.path
 
+from exception import *
+
 class config:
     """This class parses and saves the configuration file for pymailheaders.
 
@@ -29,6 +31,7 @@ class config:
 
     @note: Private member variables:
         __section
+        __acct_opts
         __defaults
         __bool_vals
         __int_vals
@@ -37,6 +40,14 @@ class config:
     """
 
     __section = 'settings'
+
+    __acct_opts = ('type',
+                   'server',
+                   'username',
+                   'password',
+                   'auth',
+                   'encrypted',
+                   'interval')
 
     __defaults = {'auth': False,
                   'encrypted': False,
@@ -94,7 +105,8 @@ class config:
             # default values to it.
             if not os.path.isfile(self.__config_file):
                 for k, v in self.__defaults.iteritems():
-                    self.set(k, v)
+                    if k not in self.__acct_opts:
+                        self.set(k, v)
                 self.write()
 
             # check if we have the correct permissions
@@ -107,7 +119,8 @@ class config:
             # I have to do this because ConfigParser will insert a
             # section called DEFAULT if I use the defaults method.
             for k, v in self.__defaults.iteritems():
-                if not self.__has(k): self.set(k, v)
+                if k not in self.__acct_opts and not self.__has(k):
+                    self.set(k, v)
         except (IOError, ParsingError, MissingSectionHeaderError), strerr:
             raise Error('config (__init__)', str(strerr))
         except:
@@ -121,24 +134,51 @@ class config:
 
         self.write()
 
-    def __has(self, opt):
+    def __has(self, opt, acct = __section):
         """Determine if an option exists in the config file
 
         @type opt: string
         @param opt: option name
+        @type acct: string
+        @param acct: account name
         @rtype: bool
         @return: True if it has the option, False otherwise.
         """
 
-        return self.__config.has_option(self.__section, opt)
+        return self.__config.has_option(acct, opt)
 
-    def set(self, opt, val):
+    def remove_account(self, acct):
+        """Removes an account
+
+        @type acct: string
+        @param acct: account name
+        """
+
+        self.__config.remove_section(acct)
+
+    def remove_option(self, opt, acct = __section):
+        """Removes an option from an account
+
+        @type opt: string
+        @param opt: option name
+        @type acct: string
+        @param acct: account name
+        """
+
+        try:
+            self.__config.remove_option(acct, opt)
+        except NoSectionError, strerr:
+            raise Error('config (remove_option)', _('invalid account name'))
+
+    def set(self, opt, val, acct = __section):
         """Set option's value to value
 
         @type opt: string
         @param opt: option name
         @type val: string or bool or int
         @param val: option's value
+        @type acct: string
+        @param acct: account name
         """
 
         try:
@@ -148,40 +188,45 @@ class config:
                     raise TypeError
 
                 if val:
-                    self.__config.set(self.__section, opt, 'yes')
+                    self.__config.set(acct, opt, 'yes')
                 else:
-                    self.__config.set(self.__section, opt, 'no')
+                    self.__config.set(acct, opt, 'no')
             # convert from integers
             elif opt in self.__int_vals:
                 if type(val) != int:
                     raise TypeError
 
-                self.__config.set(self.__section, opt, str(val))
+                self.__config.set(acct, opt, str(val))
             elif type(val) == bool or type(val) == int:
                 raise TypeError
             else:
-                self.__config.set(self.__section, opt, val)
+                self.__config.set(acct, opt, val)
         except NoSectionError, strerr:
             print >> stderr, 'config (set):', strerr
             print >> stderr, 'config (set): creating...'
 
             # create section
-            self.__config.add_section(self.__section)
+            self.__config.add_section(acct)
             # try to add the option
-            self.set(opt, val)
+            self.set(opt, val, acct)
         except TypeError:
             raise Error('config (set)', _('invalid value type'))
         except:
             raise
 
-    def get(self, opt):
+    def get(self, opt, acct = __section):
         """Get option's value
 
         If the option has a boolean value, convert it into boolean type.
         If it's a integer value, convert it to integer type.
 
+        If you want to migrate the old style config file to the new format, use
+        get_all method.
+
         @type opt: string
         @param opt: option name
+        @type acct: string
+        @param acct: account name
         @rtype: string or bool or int
         @return: option's value
         """
@@ -189,29 +234,52 @@ class config:
         try:
             # convert to boolean values
             if opt in self.__bool_vals:
-                return self.__config.get(self.__section, opt).lower() == 'yes'
+                return self.__config.getboolean(acct, opt)
             # convert to integers
             elif opt in self.__int_vals:
-                return int(self.__config.get(self.__section, opt))
+                return self.__config.getint(acct, opt)
 
-            return self.__config.get(self.__section, opt)
-        except (NoSectionError, NoOptionError), strerr:
+            return self.__config.get(acct, opt)
+        except (NoSectionError, NoOptionError, ValueError), strerr:
             raise Error('config (get)', str(strerr))
 
     def get_all(self):
-        """Get all options' values in the right type
+        """Get all options' values in the right type.
+
+        Only this method migrates the old style config file to the new format.
 
         @rtype: dictionary
-        @return: options' values
+        @return: options' values stored in 'global' for GUI settings, account
+        settings are stored in 'accounts' as accounts' dict.
         """
 
-        optvals = {}
+        optvals = {'accounts': {}}
 
         try:
-            opts = self.__config.options(self.__section)
+            secs = self.__config.sections()
+            for sec in secs:
+                opts = self.__config.options(sec)
 
-            for k in opts:
-                optvals[k] = self.get(k)
+                for k in opts:
+                    if k in self.__acct_opts:
+                        # migrate old config file to the new format
+                        old_sec = None
+                        if sec == self.__section:
+                            old_sec = sec
+                            sec = 'account 1'
+                            self.set(k, self.get(k), sec)
+                            self.remove_option(k)
+
+                        if sec not in optvals['accounts']:
+                            optvals['accounts'][sec] = {}
+                        optvals['accounts'][sec][k] = self.get(k, sec)
+
+                        # restore the section name we set earlier
+                        if old_sec:
+                            sec = old_sec
+                            old_sec = None
+                    else:
+                        optvals[k] = self.get(k, sec)
         except:
             raise
 
@@ -225,7 +293,8 @@ class config:
             # make sure that all options will be written into the
             # config file
             for k, v in self.__defaults.iteritems():
-                if not self.__has(k): self.set(k, v)
+                if k not in self.__acct_opts and not self.__has(k):
+                    self.set(k, v)
 
             fd = open(self.__config_file, 'w')
 

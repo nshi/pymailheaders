@@ -18,6 +18,8 @@
 
 import feedparser
 import re
+from time import mktime
+from datetime import datetime
 
 from exception import *
 
@@ -35,15 +37,12 @@ class feed:
         __uname
         __pass
         __ssl
+        __size
         __url
         __feed
     """
 
-    __server = ''
     __mbox = ''
-    __uname = ''
-    __pass = ''
-    __ssl = False
     __url = ''
     __feed = {}
 
@@ -59,7 +58,7 @@ class feed:
         @type ssl: bool
         @param ssl: dummy variable for compatibility
         @type h: int
-        @param h: dummy variable
+        @param h: number of messages displayable in the window
         @type mbox: string
         @param mbox: Gmail label
         """
@@ -78,6 +77,7 @@ class feed:
         if uname and password:
             self.__uname = uname.replace('@', '%40')
             self.__pass = password
+        self.__size = h
 
     def connect(self):
         """Form URL.
@@ -95,9 +95,10 @@ class feed:
     def get_mail(self):
         """Parse feed.
 
-        @rtype: list
-        @return: List of tuples of flag, sender addresses and subjects.
-                 Oldest message on top.
+        @rtype: tuple
+        @return: the tuple is in the following form
+        ([(datetime, sender, subject), ...],    <--- unread mails
+         [(datetime, sender, subject), ...])    <--- read mails
         """
 
         # get feed
@@ -127,6 +128,13 @@ class feed:
                     sender = author.email
             elif x.has_key('author'):
                 sender = x.author
-            return (True, sender, x.title)
 
-        return map(a, self.__feed.entries)
+            if x.has_key('updated_parsed'):
+                date = x.updated_parsed
+            else:
+                date = x.published_parsed
+            return (datetime.fromtimestamp(mktime(date)), sender, x.title)
+
+        messages = map(a, self.__feed.entries)
+        messages.sort(lambda x, y: cmp(x[0], y[0]), reverse = True)
+        return (messages[:self.__size], [])

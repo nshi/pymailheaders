@@ -19,7 +19,10 @@
 import imaplib
 import socket
 import re
+from email import message_from_string
+from email.utils import parseaddr, parsedate_tz, mktime_tz
 from email.Header import decode_header
+from datetime import datetime
 
 import chardet
 from exception import *
@@ -149,12 +152,13 @@ class imap:
     def get_mail(self):
         """Get mails.
 
-        @rtype: list
-        @return: List of tuples of flag, sender addresses and subjects.
-        newest message on top.
-
-            @note: flag I{B{True}} for new messages
+        @rtype: tuple
+        @return: the tuple is in the following form
+        ([(datetime, sender, subject), ...],    <--- unread mails
+         [(datetime, sender, subject), ...])    <--- read mails
         """
+
+        messages = ([], [])
 
         try:
             num = self.__check()
@@ -171,7 +175,7 @@ class imap:
             mail_list = self.__connection.fetch(num_to_fetch + ':' + \
                                                 str(num[0]), '(FLAGS BODY.PEEK' \
                                                 + '[HEADER.FIELDS ' \
-                                                + '(FROM SUBJECT)])')
+                                                + '(DATE FROM SUBJECT)])')
             if mail_list[0] != 'OK':
                 raise Error('imapprl (get_mail)', response[1])
 
@@ -193,26 +197,25 @@ class imap:
             except UnicodeDecodeError:
                 raise Error('imapprl (get_mail)', _('Invalid encoding'))
 
-        # parse sender addresses and subjects
         def a(x): return x != ')'
-        # ATTENTION: cannot rely on the order of the reply by fetch
-        # command, it's arbitrary.
-        def b(x):
-            sender = re.search('From: ([^\r\n]+)', x[1].strip()).group(1)
-            # get sender's name if there's one, otherwise get the email address
-            (name, addr) = re.search('("?([^"]*)"?\s)?<?(([a-zA-Z0-9_\-\.])+@(([0-2]?[0-5]?[0-5]\.[0-2]?[0-5]?[0-5]\.[0-2]?[0-5]?[0-5]\.[0-2]?[0-5]?[0-5])|((([a-zA-Z0-9\-])+\.)+([a-zA-Z\-])+)))?>?', sender).groups()[1:3]
-            subject = re.search('Subject:\s*((.*\s*)+)', x[1].strip())
-            # subject might be empty
-            if subject == None:
-                subject = ''
+
+        results = filter(a, mail_list[1])
+        for header in results:
+            msg = message_from_string(header[1])
+            flags = imaplib.ParseFlags(header[0])
+            subject = d(msg['subject'])
+            (sender, addr) = parseaddr(msg['from'])
+            sender = sender and d(sender) or addr
+            date = parsedate_tz(msg['date'])
+            dt = date and datetime.fromtimestamp(mktime_tz(date)) or \
+                datetime.now()
+
+            if '\\Seen' in flags:
+                messages[1].append((dt, sender, subject))
             else:
-                subject = re.sub('\r?\n?', '', subject.group(1))
-            # ATTENTION: some mail agents will clear all the flags to indicate
-            # that a message is unread
-            return (re.search('FLAGS \(.*\\Seen.*\)', \
-                              x[0].strip()) == None, \
-                    name and d(name.strip()) or addr, \
-                    d(subject))
-        messages = map(b, filter(a, mail_list[1]))
-        messages.reverse()
+                messages[0].append((dt, sender, subject))
+
+        messages[0].reverse()
+        messages[1].reverse()
+
         return messages

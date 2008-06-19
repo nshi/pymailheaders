@@ -20,6 +20,7 @@ from threading import Thread
 from threading import Lock
 from threading import Event
 from optparse import OptionParser
+from datetime import datetime
 import sys
 import re
 import os
@@ -64,12 +65,12 @@ import constants
 from exception import *
 
 # global varibals
-mail_thr = None
+mail_thrs = {}
 gui_thr = None
 conf = None
 
 lock = Lock()
-messages = []
+messages = ({}, {})
 
 JOIN_TIMEOUT = 1.0
 
@@ -79,14 +80,17 @@ class mail_thread(Thread):
     @note: Public member variables:
         timer
     @note: Private member variables:
+        __name
         __interval
         __mail_obj
     """
 
-    def __init__(self, t, server, uname, password, ssl, h, interval, \
+    def __init__(self, name, t, server, uname, password, ssl, h, interval, \
              mbox = 'INBOX'):
         """Override constructor
 
+        @type name: string
+        @param name: account name
         @type t: string
         @param t: server type
         @type server: string
@@ -106,9 +110,13 @@ class mail_thread(Thread):
             I{Default = 'INBOX'}
         """
 
-        Thread.__init__(self, None, None, 'mail-thread', (), {})
+        global mail_thrs
+
+        Thread.__init__(self, None, None, 'mail-thread-%d' % len(mail_thrs),
+                        (), {})
         self.setDaemon(True)
 
+        self.__name = name
         self.__interval = float(interval)
         if not globals().has_key('%sprl' % t):
             print >> sys.stderr, _('pymailheaders: unknown server type')
@@ -125,18 +133,29 @@ class mail_thread(Thread):
     def fetch(self):
         """Check and get mails
 
-        This will set the global variables messages.
+        This will set the global variables messages. messages will be in the form
+
+        ({name: [(datetime, sender, subject), ...], ...},  <--- unread mails
+         {name: [(datetime, sender, subject), ...], ...})  <--- read mails
+
+        This allows each account to clear its own section when updating.
         """
 
         global messages
         global lock
 
         try:
+            res = self.__mail_obj.get_mail()
             lock.acquire()
-            messages = self.__mail_obj.get_mail()
+            messages[0][self.__name] = res[0]
+            messages[1][self.__name] = res[1]
             lock.release()
         except Error, strerr:
-            messages = [(True, _('Error'), str(strerr))]
+            lock.acquire()
+            messages[0].clear()
+            messages[1].clear()
+            messages[0][self.__name] = [(datetime.now(), _('Error'),
+                                         str(strerr))]
             lock.release()
             self.connect()
 
@@ -153,12 +172,18 @@ class mail_thread(Thread):
         except TryAgain:
             self.__connected = False
             lock.acquire()
-            messages = [(True, _('Error'), _('Network not available'))]
+            messages[0].clear()
+            messages[1].clear()
+            messages[0][self.__name] = [(datetime.now(), _('Error'),
+                                         _('Network not available'))]
             lock.release()
         except Error, strerr:
             self.__connected = False
             lock.acquire()
-            messages = [(True, _('Error'), str(strerr))]
+            messages[0].clear()
+            messages[1].clear()
+            messages[0][self.__name] = [(datetime.now(), _('Error'),
+                                         str(strerr))]
             lock.release()
 
     def refresh(self):
@@ -182,27 +207,78 @@ class mail_thread(Thread):
 
 # update GUI
 def update_gui():
+    """The variable passed to the GUI thread is in the following form
+
+    ([(name, datetime, sender, subject), ...],  <--- unread mails
+     [(name, datetime, sender, subject), ...])  <--- read mails
+
+    sorted in reverse chronological order.
+    """
+
     global lock
     global messages
     global gui_thr
 
+    msgs = ([], [])
+
     lock.acquire()
-    gui_thr.display(messages)
+    for k, v in messages[0].iteritems():
+        for j in v:
+            msgs[0].append((k, j[0], j[1], j[2]))
+    for k, v in messages[1].iteritems():
+        for j in v:
+            msgs[1].append((k, j[0], j[1], j[2]))
     lock.release()
 
-def on_refresh_activate():
-    global mail_thr
+    cmp_func = lambda x, y: cmp(x[1], y[1])
+    msgs[0].sort(cmp_func, reverse = True)
+    msgs[1].sort(cmp_func, reverse = True)
+    gui_thr.display(msgs)
 
-    if mail_thr:
-        gui.gobject.idle_add(mail_thr.refresh)
+def on_refresh_activate():
+    global mail_thrs
+
+    for acct in  mail_thrs.itervalues():
+        gui.gobject.idle_add(acct.refresh)
 
 def on_account_changed(opts):
-    global mail_thr
+    global conf
+    global mail_thrs
+    global lock
+    global messages
 
-    delete_mail_thr()
-    new_mail_thr(opts)
-    if mail_thr and not mail_thr.isAlive():
-        mail_thr.start()
+    for k, v in opts.iteritems():
+        delete_mail_thr(k)
+
+        # if the account name has changed
+        if 'name' in v:
+            lock.acquire()
+            if k in messages[0]:
+                del messages[0][k]
+            if k in messages[1]:
+                del messages[1][k]
+            lock.release()
+            conf.remove_account(k)
+            k = v['name']
+
+        new_mail_thr(k, v)
+        if k in mail_thrs and not mail_thrs[k].isAlive():
+            mail_thrs[k].start()
+
+def on_account_removed(name):
+    global conf
+    global lock
+    global messages
+
+    lock.acquire()
+    if name in messages[0]:
+        del messages[0][name]
+    if name in messages[1]:
+        del messages[1][name]
+    lock.release()
+
+    delete_mail_thr(name)
+    conf.remove_account(name)
 
 def on_config_save(opts):
     global conf
@@ -212,17 +288,22 @@ def on_config_save(opts):
 
     # write settings to config file
     for k, v in opts.iteritems():
-        conf.set(k, v)
+        if k == 'accounts':
+            for name, opt in v.iteritems():
+                for i, j in opt.iteritems():
+                    conf.set(i, j, name)
+        else:
+            conf.set(k, v)
     conf.write()
 
 def on_exit(signum = None, frame = None):
     gui.gtk.quit()
 
-def new_mail_thr(opts):
-    global mail_thr
+def new_mail_thr(name, opts):
+    global mail_thrs
     global gui_thr
 
-    if type(opts) != dict or mail_thr != None:
+    if type(opts) != dict or name in mail_thrs:
         return
 
     if not opts['type'] or not opts['server'] or \
@@ -230,23 +311,39 @@ def new_mail_thr(opts):
         gui_thr.show_settings(None)
         return
 
-    h = opts['height'] / gui_thr.get_font_size()
-    mail_thr = mail_thread(opts['type'], opts['server'], \
-                           opts['username'], opts['password'], \
-                           opts['encrypted'], h, opts['interval'])
+    h = gui_thr.get_max_messages()
+    mail_thrs[name] = mail_thread(name, opts['type'], opts['server'], \
+                                  opts['username'], opts['password'], \
+                                  opts['encrypted'], h, opts['interval'])
 
-def delete_mail_thr():
-    global mail_thr
+def new_mail_thrs(opts):
+    global mail_thrs
+    global gui_thr
 
-    if not mail_thr:
+    if type(opts) != dict or mail_thrs:
         return
 
-    # stop mail thread
-    mail_thr.timer.set()
-    mail_thr.join(JOIN_TIMEOUT)
+    for k, v in opts.iteritems():
+        new_mail_thr(k, v)
 
-    # clean up the mess
-    mail_thr = None
+def delete_mail_thr(name):
+    global mail_thrs
+
+    if not mail_thrs or name not in mail_thrs:
+        return
+
+    mail_thrs[name].timer.set()
+    mail_thrs[name].join(JOIN_TIMEOUT)
+    del mail_thrs[name]
+
+def delete_mail_thrs():
+    # get a list of all the mail threads first, otherwise the dictionary size
+    # will change in the middle of this process
+    keys = mail_thrs.keys()
+
+    # stop all mail threads
+    for k in keys:
+        delete_mail_thr(k)
 
 def is_posix():
     if sys.platform == 'win32':
@@ -263,26 +360,12 @@ def main():
     global lock
     global conf
     global gui_thr
-    global mail_thr
+    global mail_thrs
     global messages
 
     # parse command-line arguments
     usage = 'usage: %prog [options]... args...'
     parser = OptionParser(usage)
-    parser.add_option('-t', '--type', dest = 'type', default = '', \
-                      help = 'server type: imap, pop, feed')
-    parser.add_option('-s', '--server', dest = 'server', default = '', \
-                      help = 'server to connect to')
-    parser.add_option('-a', '--auth', action='store_true', dest = 'auth', \
-                      help = 'server requires authentication')
-    parser.add_option('-u', '--username', dest = 'username', default = '', \
-                      help = 'username to log onto the server')
-    parser.add_option('-p', '--password', dest = 'password', default = '', \
-                      help = 'password')
-    parser.add_option('-e', '--ssl', action = 'store_true', \
-                      dest = 'encrypted', help = 'user SSL for the server')
-    parser.add_option('-i', '--interval', dest = 'interval', type = 'int', \
-                      help = 'update interval in seconds')
     parser.add_option('-c', '--config-file', dest = 'config', \
                       help = 'configuration file path')
     parser.add_option('-w', '--width', dest = 'width', type = 'int', \
@@ -299,7 +382,7 @@ def main():
     if options.config:
         exp_path = os.path.expanduser(options.config)
         config_file = os.path.isabs(exp_path) and exp_path or \
-                      os.path.join(CWD, exp_path)
+                      os.path.join(cwd, exp_path)
     else:
         # default config file location
         if is_posix():
@@ -339,22 +422,25 @@ def main():
     # set up signal handlers
     handlers = {'on_refresh_activate': on_refresh_activate,
                 'on_config_save': on_config_save,
-                'on_account_changed': on_account_changed}
+                'on_account_changed': on_account_changed,
+                'on_account_removed': on_account_removed}
     gui_thr.signal_autoconnect(handlers)
 
-    new_mail_thr(opts)
+    new_mail_thrs(opts['accounts'])
 
     try:
-        # start thread
-        if mail_thr and not mail_thr.isAlive():
-            mail_thr.start()
+        # start all threads
+        for mail_thr in mail_thrs.itervalues():
+            if not mail_thr.isAlive():
+                mail_thr.start()
+
         gui.gtk.gdk.threads_enter()
         gui.gtk.main()
         gui.gtk.gdk.threads_leave()
     except KeyboardInterrupt:
         pass
 
-    delete_mail_thr()
+    delete_mail_thrs()
 
 # rock n' roll
 if __name__ == '__main__':
