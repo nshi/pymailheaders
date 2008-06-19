@@ -24,7 +24,7 @@ VERSION = 'Beta 0.4.3'
 HOMEPAGE = 'http://pymailheaders.sourceforge.net'
 MAINTAINER = _('Ning "ZeeGeek" Shi')
 EMAIL = 'zeegeek@gmail.com'
-AUTHOR = ['%s <%s>' % (MAINTAINER, EMAIL), \
+AUTHOR = ['%s <%s>' % (MAINTAINER, EMAIL),
           _('Peter "Flying Eagle" Zhou') + '<peterzhoulei@gmail.com>']
 COPYRIGHT = _('Copyright') + u' \xa9 2008 %s ' % MAINTAINER
 DESCRIPTION = _('A mail header fetching and monitoring program')

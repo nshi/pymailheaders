@@ -111,7 +111,7 @@ class feed:
                    not isinstance(self.__feed.bozo_exception, \
                                   feedparser.NonXMLContentType):
                 a = self.__feed.bozo_exception
-                raise Error('feedprl (get_mail)', \
+                raise Error('feedprl (get_mail)',
                             hasattr(a, 'getMessage') and a.getMessage() or a)
         except:
             raise

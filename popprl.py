@@ -165,14 +165,14 @@ class pop:
                 # 3. get unique IDs
                 response = self.__connection.uidl(i)
                 if response[0:3] != '+OK':
-                    raise Error('popprl (get_mail)', \
+                    raise Error('popprl (get_mail)',
                                 _('Fetching message ID failed'))
                 uid = re.search('([\S]*)$', response).group(1)
 
                 # 4. get message hearders
                 response = self.__connection.top(i, 0)
                 if response[0][0:3] != '+OK':
-                    raise Error('popprl (get_mail)', \
+                    raise Error('popprl (get_mail)',
                                 _('Fetching messages failed'))
 
                 def d(x):

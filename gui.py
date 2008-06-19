@@ -149,40 +149,34 @@ class gui(gtk.Window):
 
     def __create_map(self):
         # Option name to function pointer mapping
-        self.__set = {'height': lambda x: \
-                      self.__resize_height(x),
-                      'width': lambda x: \
-                      self.__resize_width(x),
-                      'background': lambda x: \
-                      getattr(self.__text, 'modify_base')\
-                      (gtk.STATE_NORMAL, gtk.gdk.color_parse(x)),
-                      'foreground': lambda x: \
-                      getattr(self.__text, 'modify_text')\
-                      (gtk.STATE_NORMAL, gtk.gdk.color_parse(x)),
-                      'foreground new': lambda x: \
-                      getattr(self.__new_tag, 'set_property')\
-                      ('foreground', x),
-                      'font': lambda x: \
-                      getattr(self.__text, 'modify_font')\
-                      (pango.FontDescription(x)),
-                      'border': lambda x: \
-                      getattr(self.__window, 'set_border_width')\
-                      (int(x)),
-                      'decorated': getattr(self.__window, \
-                                           'set_decorated'),
-                      'focus': getattr(self.__window, \
-                                       'set_accept_focus'),
-                      'top': getattr(self.__window, \
-                                     'set_keep_above'),
-                      'pager': lambda x: \
-                      getattr(self.__window, 'set_property')\
-                      ('skip-pager-hint', not x),
-                      'taskbar': lambda x: \
-                      getattr(self.__window, 'set_property')\
-                      ('skip-taskbar-hint', not x),
-                      'sticky': lambda x: \
-                      getattr(self.__window,
-                              '%stick' % ((x and 's') or 'uns'))()}
+        self.__set = {'height': lambda x: self.__resize_height(x),
+                      'width': lambda x: self.__resize_width(x),
+                      'background': lambda x:
+                          getattr(self.__text, 'modify_base')\
+                          (gtk.STATE_NORMAL, gtk.gdk.color_parse(x)),
+                      'foreground': lambda x:
+                          getattr(self.__text, 'modify_text')\
+                          (gtk.STATE_NORMAL, gtk.gdk.color_parse(x)),
+                      'foreground new': lambda x:
+                          getattr(self.__new_tag, 'set_property')\
+                          ('foreground', x),
+                      'font': lambda x:
+                          getattr(self.__text, 'modify_font')\
+                          (pango.FontDescription(x)),
+                      'border': lambda x:
+                          getattr(self.__window, 'set_border_width')(int(x)),
+                      'decorated': getattr(self.__window, 'set_decorated'),
+                      'focus': getattr(self.__window, 'set_accept_focus'),
+                      'top': getattr(self.__window, 'set_keep_above'),
+                      'pager': lambda x:
+                          getattr(self.__window, 'set_property')\
+                          ('skip-pager-hint', not x),
+                      'taskbar': lambda x:
+                          getattr(self.__window, 'set_property')\
+                          ('skip-taskbar-hint', not x),
+                      'sticky': lambda x:
+                          getattr(self.__window,
+                                  '%stick' % ((x and 's') or 'uns'))()}
 
     def __refresh(self, widget):
         if self.__handlers['on_refresh_activate']:
@@ -202,12 +196,12 @@ class gui(gtk.Window):
                 # seems to be a bug of PyGTK here with
                 # event.time argument, but it doesn't matter
                 # that much
-                self.__window.begin_move_drag(event.button, \
-                                              int(event.x_root), \
-                                              int(event.y_root), \
+                self.__window.begin_move_drag(event.button,
+                                              int(event.x_root),
+                                              int(event.y_root),
                                               event.time)
             elif event.button == 3:
-                self.__menu.popup(None, None, None, \
+                self.__menu.popup(None, None, None,
                                   event.button, event.time)
 
     def __on_redraw(self, widget, event):
@@ -563,9 +557,9 @@ class gui(gtk.Window):
                 w.set_color(gtk.gdk.color_parse(v))
             elif k == 'font':
                 not w.set_font_name(v) and \
-                    gtk.MessageDialog(type = gtk.MESSAGE_ERROR, \
+                    gtk.MessageDialog(type = gtk.MESSAGE_ERROR,
                                       message_format = \
-                                      _('Font specified does not exist!'), \
+                                          _('Font specified does not exist!'),
                                       buttons = gtk.BUTTONS_OK)
             elif k == 'accounts':
                 w = self.__tree.get_widget('account_name')
@@ -637,7 +631,7 @@ class gui(gtk.Window):
                     self.__buffer.insert_with_tags(i, line)
 
         # clear current view
-        self.__buffer.delete(self.__buffer.get_start_iter(), \
+        self.__buffer.delete(self.__buffer.get_start_iter(),
                              self.__buffer.get_end_iter())
         # display messages
         a(messages[0], True)

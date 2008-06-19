@@ -85,8 +85,8 @@ class mail_thread(Thread):
         __mail_obj
     """
 
-    def __init__(self, name, t, server, uname, password, ssl, h, interval, \
-             mbox = 'INBOX'):
+    def __init__(self, name, t, server, uname, password, ssl, h, interval,
+                 mbox = 'INBOX'):
         """Override constructor
 
         @type name: string
@@ -121,11 +121,11 @@ class mail_thread(Thread):
         if not globals().has_key('%sprl' % t):
             print >> sys.stderr, _('pymailheaders: unknown server type')
             sys.exit(1)
-        self.__mail_obj = getattr(globals()['%sprl' % t], t)(server, \
-                                                             uname, \
-                                                             password, \
-                                                             ssl, \
-                                                             h, \
+        self.__mail_obj = getattr(globals()['%sprl' % t], t)(server,
+                                                             uname,
+                                                             password,
+                                                             ssl,
+                                                             h,
                                                              mbox)
         self.__connected = False
         self.timer = Event()
@@ -312,8 +312,8 @@ def new_mail_thr(name, opts):
         return
 
     h = gui_thr.get_max_messages()
-    mail_thrs[name] = mail_thread(name, opts['type'], opts['server'], \
-                                  opts['username'], opts['password'], \
+    mail_thrs[name] = mail_thread(name, opts['type'], opts['server'],
+                                  opts['username'], opts['password'],
                                   opts['encrypted'], h, opts['interval'])
 
 def new_mail_thrs(opts):
@@ -366,16 +366,16 @@ def main():
     # parse command-line arguments
     usage = 'usage: %prog [options]... args...'
     parser = OptionParser(usage)
-    parser.add_option('-c', '--config-file', dest = 'config', \
+    parser.add_option('-c', '--config-file', dest = 'config',
                       help = 'configuration file path')
-    parser.add_option('-w', '--width', dest = 'width', type = 'int', \
+    parser.add_option('-w', '--width', dest = 'width', type = 'int',
                       help = 'width of the window')
-    parser.add_option('-g', '--height', dest = 'height', type = 'int', \
+    parser.add_option('-g', '--height', dest = 'height', type = 'int',
                       help = 'height of the window')
     parser.add_option('--bg', dest = 'background', help = 'backgound color')
-    parser.add_option('--fg', dest = 'foreground', \
+    parser.add_option('--fg', dest = 'foreground',
                       help = 'foreground color')
-    parser.add_option('--fgn', dest = 'foreground new', \
+    parser.add_option('--fgn', dest = 'foreground new',
                       help = 'foreground color for new messages')
     (options, args) = parser.parse_args()
 

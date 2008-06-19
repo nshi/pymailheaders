@@ -170,11 +170,11 @@ class imap:
             if self.__size < num[1]:
                 num_to_fetch = str(num[0] - num[1])
             else:
-                num_to_fetch = str(num[0] < self.__size and 1 \
+                num_to_fetch = str(num[0] < self.__size and 1
                                    or num[0] - self.__size)
-            mail_list = self.__connection.fetch(num_to_fetch + ':' + \
-                                                str(num[0]), '(FLAGS BODY.PEEK' \
-                                                + '[HEADER.FIELDS ' \
+            mail_list = self.__connection.fetch(num_to_fetch + ':' +
+                                                str(num[0]), '(FLAGS BODY.PEEK'
+                                                + '[HEADER.FIELDS '
                                                 + '(DATE FROM SUBJECT)])')
             if mail_list[0] != 'OK':
                 raise Error('imapprl (get_mail)', response[1])
