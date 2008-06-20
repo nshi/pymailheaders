@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Copyright (C) YEAR Ning Shi
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Pymailheaders\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-04-28 16:33+0800\n"
+"POT-Creation-Date: 2008-06-20 11:25+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,16 +16,12 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../pymailheaders.py:95
-msgid "pymailheaders: unknown server type"
+#: ../config.py:171
+msgid "invalid account name"
 msgstr ""
 
-#: ../pymailheaders.py:120 ../pymailheaders.py:137 ../pymailheaders.py:142
-msgid "Error"
-msgstr ""
-
-#: ../pymailheaders.py:137
-msgid "Network not available"
+#: ../config.py:213
+msgid "invalid value type"
 msgstr ""
 
 #: ../constants.py:25
@@ -44,38 +40,6 @@ msgstr ""
 msgid "A mail header fetching and monitoring program"
 msgstr ""
 
-#: ../config.py:173
-msgid "invalid value type"
-msgstr ""
-
-#: ../imapprl.py:194
-msgid "Invalid encoding"
-msgstr ""
-
-#: ../popprl.py:75
-msgid "Logout failed"
-msgstr ""
-
-#: ../popprl.py:103 ../popprl.py:106
-msgid "Login failed"
-msgstr ""
-
-#: ../popprl.py:159
-msgid "Fetching message ID failed"
-msgstr ""
-
-#: ../popprl.py:174
-msgid "Fetching messages failed"
-msgstr ""
-
-#: ../gui.py:90
-msgid "Failed to get main window from glade file."
-msgstr ""
-
-#: ../gui.py:425
-msgid "Font specified does not exist!"
-msgstr ""
-
 #: ../glade/pymailheaders.glade:7
 msgid "pymailheaders"
 msgstr ""
@@ -89,102 +53,122 @@ msgid "How often in seconds Pymailheaders checks for new messages"
 msgstr ""
 
 #: ../glade/pymailheaders.glade:86
+msgid "Name:"
+msgstr ""
+
+#: ../glade/pymailheaders.glade:97
 msgid "Server Type:"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:96
+#: ../glade/pymailheaders.glade:109
 msgid ""
 "IMAP4\n"
 "POP3\n"
 "XML Feed"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:111
+#: ../glade/pymailheaders.glade:126
 msgid ""
 "If enabled, username and password will be sent to the server encrypted (SSL)"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:112
+#: ../glade/pymailheaders.glade:127
 msgid "Encrypted"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:131
+#: ../glade/pymailheaders.glade:146
 msgid "Password to login to the server"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:148
+#: ../glade/pymailheaders.glade:163
 msgid "Username to login to the server"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:163
+#: ../glade/pymailheaders.glade:178
 msgid "Server address"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:178
+#: ../glade/pymailheaders.glade:193
 msgid "Update Interval:"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:191
+#: ../glade/pymailheaders.glade:206
 msgid "Server:"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:204
+#: ../glade/pymailheaders.glade:219
 msgid "If enabled, the server needs authentication"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:205
+#: ../glade/pymailheaders.glade:220
 msgid "Authentication"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:223
+#: ../glade/pymailheaders.glade:238
 msgid "Username:"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:236
+#: ../glade/pymailheaders.glade:251
 msgid "Password:"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:252
+#: ../glade/pymailheaders.glade:266
+msgid "Account names"
+msgstr ""
+
+#: ../glade/pymailheaders.glade:273
+msgid "Enter or modify account name"
+msgstr ""
+
+#: ../glade/pymailheaders.glade:289
+msgid "Add a new account"
+msgstr ""
+
+#: ../glade/pymailheaders.glade:304
+msgid "Remove currently selected account"
+msgstr ""
+
+#: ../glade/pymailheaders.glade:335
 msgid "<b>Account</b>"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:281
+#: ../glade/pymailheaders.glade:364
 msgid "If enabled, Pymailheaders will always on top of other windows"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:282
+#: ../glade/pymailheaders.glade:365
 msgid "Keep on Top"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:299
+#: ../glade/pymailheaders.glade:382
 msgid "If enabled, Pymailheaders window will show up in the pager"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:300
+#: ../glade/pymailheaders.glade:383
 msgid "Appear in Pager"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:318
+#: ../glade/pymailheaders.glade:401
 msgid "If enabled, Pymailheaders window will show up in the taskbar"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:319
+#: ../glade/pymailheaders.glade:402
 msgid "Appear in taskbar"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:337
+#: ../glade/pymailheaders.glade:420
 msgid "If enabled, Pymailheaders window will show up on every workspace"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:338
+#: ../glade/pymailheaders.glade:421
 msgid "Stick to every workspace"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:355
+#: ../glade/pymailheaders.glade:438
 msgid "Window Size:"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:365
+#: ../glade/pymailheaders.glade:448
 msgid ""
 "Smal (300x80)\n"
 "Medium (400x100)\n"
@@ -192,110 +176,150 @@ msgid ""
 "Custom"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:385
+#: ../glade/pymailheaders.glade:468
 msgid "Width:"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:395
+#: ../glade/pymailheaders.glade:478
 msgid "Initial window width when Pymailheaders starts"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:422
+#: ../glade/pymailheaders.glade:505
 msgid "Height:"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:432
+#: ../glade/pymailheaders.glade:515
 msgid "Initial window height when Pymailheaders starts"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:457
+#: ../glade/pymailheaders.glade:540
 msgid "Change window border size"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:475
+#: ../glade/pymailheaders.glade:558
 msgid ""
 "If enabled, Pymailheaders window can be focused and will show up in window "
 "switching menu"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:476
+#: ../glade/pymailheaders.glade:559
 msgid "Recieve Focus"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:494
+#: ../glade/pymailheaders.glade:577
 msgid ""
 "If enabled, Pymailheaders window will have a title bar and borders like a "
 "normal window"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:495
+#: ../glade/pymailheaders.glade:578
 msgid "Show Title Bar"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:513
+#: ../glade/pymailheaders.glade:596
 msgid "Change text font"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:515
+#: ../glade/pymailheaders.glade:598
 msgid "Font"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:532
+#: ../glade/pymailheaders.glade:615
 msgid "Change text color for new messages"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:534
+#: ../glade/pymailheaders.glade:617
 msgid "New Messages Color"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:549
+#: ../glade/pymailheaders.glade:632
 msgid "Change text color"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:551
+#: ../glade/pymailheaders.glade:634
 msgid "Foreground Color"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:566
+#: ../glade/pymailheaders.glade:649
 msgid "Change background color"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:568
+#: ../glade/pymailheaders.glade:651
 msgid "Background Color"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:583
+#: ../glade/pymailheaders.glade:666
 msgid "Border Size:"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:596
+#: ../glade/pymailheaders.glade:679
 msgid "Font:"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:609
+#: ../glade/pymailheaders.glade:692
 msgid "New Messages:"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:622
+#: ../glade/pymailheaders.glade:705
 msgid "Foreground:"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:635
+#: ../glade/pymailheaders.glade:718
 msgid "Background:"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:651
+#: ../glade/pymailheaders.glade:734
 msgid "<b>Display</b>"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:677
+#: ../glade/pymailheaders.glade:760
 msgid "Click to ignore all the changes"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:688
+#: ../glade/pymailheaders.glade:771
 msgid "Click to save settings"
 msgstr ""
 
-#: ../glade/pymailheaders.glade:742
+#: ../glade/pymailheaders.glade:825
 msgid "_Quit"
+msgstr ""
+
+#: ../gui.py:96
+msgid "Failed to get main window from glade file."
+msgstr ""
+
+#: ../gui.py:562
+msgid "Font specified does not exist!"
+msgstr ""
+
+#: ../imapprl.py:198 ../popprl.py:187
+msgid "Invalid encoding"
+msgstr ""
+
+#: ../popprl.py:81
+msgid "Logout failed"
+msgstr ""
+
+#: ../popprl.py:109 ../popprl.py:112
+msgid "Login failed"
+msgstr ""
+
+#: ../popprl.py:169
+msgid "Fetching message ID failed"
+msgstr ""
+
+#: ../popprl.py:176
+msgid "Fetching messages failed"
+msgstr ""
+
+#: ../pymailheaders.py:122
+msgid "pymailheaders: unknown server type"
+msgstr ""
+
+#: ../pymailheaders.py:157 ../pymailheaders.py:177 ../pymailheaders.py:185
+msgid "Error"
+msgstr ""
+
+#: ../pymailheaders.py:178
+msgid "Network not available"
 msgstr ""
