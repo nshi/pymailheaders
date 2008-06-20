@@ -62,184 +62,60 @@
                         <property name="column_spacing">5</property>
                         <property name="row_spacing">5</property>
                         <child>
-                          <widget class="GtkVBox" id="vbox1">
+                          <widget class="GtkSpinButton" id="interval">
                             <property name="visible">True</property>
-                            <child>
-                              <widget class="GtkComboBoxEntry" id="account_name">
-                                <property name="visible">True</property>
-                                <property name="items" translatable="yes"></property>
-                                <signal name="changed" handler="on_account_name_changed"/>
-                                <child internal-child="entry">
-                                  <widget class="GtkEntry" id="account_name_entry">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <signal name="focus_out_event" handler="on_account_name_focus_out"/>
-                                    <signal name="activate" handler="on_account_name_edited"/>
-                                  </widget>
-                                </child>
-                              </widget>
-                            </child>
-                            <child>
-                              <widget class="GtkHBox" id="hbox1">
-                                <property name="visible">True</property>
-                                <property name="spacing">5</property>
-                                <child>
-                                  <widget class="GtkButton" id="add_account_button">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                    <property name="label" translatable="yes">gtk-add</property>
-                                    <property name="use_stock">True</property>
-                                    <property name="response_id">0</property>
-                                    <signal name="clicked" handler="on_add_account_clicked"/>
-                                  </widget>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkButton" id="remove_account_button">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                    <property name="label" translatable="yes">gtk-remove</property>
-                                    <property name="use_stock">True</property>
-                                    <property name="response_id">0</property>
-                                    <signal name="clicked" handler="on_remove_account_clicked"/>
-                                  </widget>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="pack_type">GTK_PACK_END</property>
-                                    <property name="position">1</property>
-                                  </packing>
-                                </child>
-                              </widget>
-                              <packing>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
+                            <property name="can_focus">True</property>
+                            <property name="tooltip" translatable="yes">How often in seconds Pymailheaders checks for new messages</property>
+                            <property name="adjustment">60 10 3600 1 10 10</property>
+                            <property name="climb_rate">1</property>
+                            <property name="numeric">True</property>
+                            <signal name="value_changed" handler="on_interval_changed"/>
                           </widget>
                           <packing>
                             <property name="left_attach">1</property>
                             <property name="right_attach">2</property>
-                            <property name="y_options"></property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkLabel" id="password_label">
-                            <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="label" translatable="yes">Password:</property>
-                          </widget>
-                          <packing>
-                            <property name="top_attach">5</property>
-                            <property name="bottom_attach">6</property>
-                            <property name="x_options">GTK_FILL</property>
-                            <property name="y_options"></property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkLabel" id="username_label">
-                            <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="label" translatable="yes">Username:</property>
-                          </widget>
-                          <packing>
-                            <property name="top_attach">4</property>
-                            <property name="bottom_attach">5</property>
-                            <property name="x_options">GTK_FILL</property>
-                            <property name="y_options"></property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkCheckButton" id="auth">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip" translatable="yes">If enabled, the server needs authentication</property>
-                            <property name="label" translatable="yes">Authentication</property>
-                            <property name="use_underline">True</property>
-                            <property name="response_id">0</property>
-                            <property name="active">True</property>
-                            <property name="draw_indicator">True</property>
-                            <signal name="toggled" handler="on_auth_toggled"/>
-                          </widget>
-                          <packing>
-                            <property name="top_attach">3</property>
-                            <property name="bottom_attach">4</property>
-                            <property name="x_options"></property>
-                            <property name="y_options"></property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkLabel" id="server_label">
-                            <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="label" translatable="yes">Server:</property>
-                          </widget>
-                          <packing>
-                            <property name="top_attach">2</property>
-                            <property name="bottom_attach">3</property>
-                            <property name="x_options">GTK_FILL</property>
-                            <property name="y_options"></property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkLabel" id="interval_label">
-                            <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="label" translatable="yes">Update Interval:</property>
-                          </widget>
-                          <packing>
                             <property name="top_attach">6</property>
                             <property name="bottom_attach">7</property>
+                            <property name="y_options"></property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="account_name_label">
+                            <property name="visible">True</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Name:</property>
+                          </widget>
+                          <packing>
                             <property name="x_options">GTK_FILL</property>
                             <property name="y_options"></property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkEntry" id="server">
+                          <widget class="GtkLabel" id="type_label">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip" translatable="yes">Server address</property>
-                            <signal name="changed" handler="on_server_changed"/>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Server Type:</property>
                           </widget>
                           <packing>
-                            <property name="left_attach">1</property>
-                            <property name="right_attach">2</property>
-                            <property name="top_attach">2</property>
-                            <property name="bottom_attach">3</property>
+                            <property name="top_attach">1</property>
+                            <property name="bottom_attach">2</property>
+                            <property name="x_options">GTK_FILL</property>
                             <property name="y_options"></property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkEntry" id="username">
+                          <widget class="GtkComboBox" id="type">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip" translatable="yes">Username to login to the server</property>
-                            <signal name="changed" handler="on_username_changed"/>
+                            <property name="items" translatable="yes">IMAP4
+POP3
+XML Feed</property>
+                            <signal name="changed" handler="on_type_changed"/>
                           </widget>
                           <packing>
                             <property name="left_attach">1</property>
                             <property name="right_attach">2</property>
-                            <property name="top_attach">4</property>
-                            <property name="bottom_attach">5</property>
-                            <property name="y_options"></property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkEntry" id="password">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip" translatable="yes">Password to login to the server</property>
-                            <property name="visibility">False</property>
-                            <property name="invisible_char">*</property>
-                            <signal name="changed" handler="on_password_changed"/>
-                          </widget>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="right_attach">2</property>
-                            <property name="top_attach">5</property>
-                            <property name="bottom_attach">6</property>
+                            <property name="top_attach">1</property>
+                            <property name="bottom_attach">2</property>
                             <property name="y_options"></property>
                           </packing>
                         </child>
@@ -264,60 +140,188 @@
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkComboBox" id="type">
-                            <property name="visible">True</property>
-                            <property name="items" translatable="yes">IMAP4
-POP3
-XML Feed</property>
-                            <signal name="changed" handler="on_type_changed"/>
-                          </widget>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="right_attach">2</property>
-                            <property name="top_attach">1</property>
-                            <property name="bottom_attach">2</property>
-                            <property name="y_options"></property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkLabel" id="type_label">
-                            <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="label" translatable="yes">Server Type:</property>
-                          </widget>
-                          <packing>
-                            <property name="top_attach">1</property>
-                            <property name="bottom_attach">2</property>
-                            <property name="x_options">GTK_FILL</property>
-                            <property name="y_options"></property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkLabel" id="account_name_label">
-                            <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="label" translatable="yes">Name:</property>
-                          </widget>
-                          <packing>
-                            <property name="x_options">GTK_FILL</property>
-                            <property name="y_options"></property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkSpinButton" id="interval">
+                          <widget class="GtkEntry" id="password">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="tooltip" translatable="yes">How often in seconds Pymailheaders checks for new messages</property>
-                            <property name="adjustment">60 10 3600 1 10 10</property>
-                            <property name="climb_rate">1</property>
-                            <property name="numeric">True</property>
-                            <signal name="value_changed" handler="on_interval_changed"/>
+                            <property name="tooltip" translatable="yes">Password to login to the server</property>
+                            <property name="visibility">False</property>
+                            <property name="invisible_char">*</property>
+                            <signal name="changed" handler="on_password_changed"/>
                           </widget>
                           <packing>
                             <property name="left_attach">1</property>
                             <property name="right_attach">2</property>
+                            <property name="top_attach">5</property>
+                            <property name="bottom_attach">6</property>
+                            <property name="y_options"></property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkEntry" id="username">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="tooltip" translatable="yes">Username to login to the server</property>
+                            <signal name="changed" handler="on_username_changed"/>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="right_attach">2</property>
+                            <property name="top_attach">4</property>
+                            <property name="bottom_attach">5</property>
+                            <property name="y_options"></property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkEntry" id="server">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="tooltip" translatable="yes">Server address</property>
+                            <signal name="changed" handler="on_server_changed"/>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="right_attach">2</property>
+                            <property name="top_attach">2</property>
+                            <property name="bottom_attach">3</property>
+                            <property name="y_options"></property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="interval_label">
+                            <property name="visible">True</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Update Interval:</property>
+                          </widget>
+                          <packing>
                             <property name="top_attach">6</property>
                             <property name="bottom_attach">7</property>
+                            <property name="x_options">GTK_FILL</property>
+                            <property name="y_options"></property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="server_label">
+                            <property name="visible">True</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Server:</property>
+                          </widget>
+                          <packing>
+                            <property name="top_attach">2</property>
+                            <property name="bottom_attach">3</property>
+                            <property name="x_options">GTK_FILL</property>
+                            <property name="y_options"></property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkCheckButton" id="auth">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="tooltip" translatable="yes">If enabled, the server needs authentication</property>
+                            <property name="label" translatable="yes">Authentication</property>
+                            <property name="use_underline">True</property>
+                            <property name="response_id">0</property>
+                            <property name="active">True</property>
+                            <property name="draw_indicator">True</property>
+                            <signal name="toggled" handler="on_auth_toggled"/>
+                          </widget>
+                          <packing>
+                            <property name="top_attach">3</property>
+                            <property name="bottom_attach">4</property>
+                            <property name="x_options"></property>
+                            <property name="y_options"></property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="username_label">
+                            <property name="visible">True</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Username:</property>
+                          </widget>
+                          <packing>
+                            <property name="top_attach">4</property>
+                            <property name="bottom_attach">5</property>
+                            <property name="x_options">GTK_FILL</property>
+                            <property name="y_options"></property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="password_label">
+                            <property name="visible">True</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Password:</property>
+                          </widget>
+                          <packing>
+                            <property name="top_attach">5</property>
+                            <property name="bottom_attach">6</property>
+                            <property name="x_options">GTK_FILL</property>
+                            <property name="y_options"></property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkVBox" id="vbox1">
+                            <property name="visible">True</property>
+                            <child>
+                              <widget class="GtkComboBoxEntry" id="account_name">
+                                <property name="visible">True</property>
+                                <property name="tooltip" translatable="yes">Account names</property>
+                                <property name="items" translatable="yes"></property>
+                                <signal name="changed" handler="on_account_name_changed"/>
+                                <child internal-child="entry">
+                                  <widget class="GtkEntry" id="account_name_entry">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip" translatable="yes">Enter or modify account name</property>
+                                    <signal name="focus_out_event" handler="on_account_name_focus_out"/>
+                                    <signal name="activate" handler="on_account_name_edited"/>
+                                  </widget>
+                                </child>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkHBox" id="hbox1">
+                                <property name="visible">True</property>
+                                <property name="spacing">5</property>
+                                <child>
+                                  <widget class="GtkButton" id="add_account_button">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                    <property name="tooltip" translatable="yes">Add a new account</property>
+                                    <property name="label">gtk-add</property>
+                                    <property name="use_stock">True</property>
+                                    <property name="response_id">0</property>
+                                    <signal name="clicked" handler="on_add_account_clicked"/>
+                                  </widget>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkButton" id="remove_account_button">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                    <property name="tooltip" translatable="yes">Remove currently selected account</property>
+                                    <property name="label">gtk-remove</property>
+                                    <property name="use_stock">True</property>
+                                    <property name="response_id">0</property>
+                                    <signal name="clicked" handler="on_remove_account_clicked"/>
+                                  </widget>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="pack_type">GTK_PACK_END</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                              </widget>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="right_attach">2</property>
                             <property name="y_options"></property>
                           </packing>
                         </child>
@@ -354,193 +358,139 @@ XML Feed</property>
                         <property name="column_spacing">5</property>
                         <property name="row_spacing">5</property>
                         <child>
-                          <widget class="GtkLabel" id="background_label">
-                            <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="label" translatable="yes">Background:</property>
-                          </widget>
-                          <packing>
-                            <property name="top_attach">2</property>
-                            <property name="bottom_attach">3</property>
-                            <property name="x_options">GTK_FILL</property>
-                            <property name="y_options"></property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkLabel" id="foreground_label">
-                            <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="label" translatable="yes">Foreground:</property>
-                          </widget>
-                          <packing>
-                            <property name="top_attach">3</property>
-                            <property name="bottom_attach">4</property>
-                            <property name="x_options">GTK_FILL</property>
-                            <property name="y_options"></property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkLabel" id="new_foreground_label">
-                            <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="label" translatable="yes">New Messages:</property>
-                          </widget>
-                          <packing>
-                            <property name="top_attach">4</property>
-                            <property name="bottom_attach">5</property>
-                            <property name="x_options">GTK_FILL</property>
-                            <property name="y_options"></property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkLabel" id="font_label">
-                            <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="label" translatable="yes">Font:</property>
-                          </widget>
-                          <packing>
-                            <property name="top_attach">5</property>
-                            <property name="bottom_attach">6</property>
-                            <property name="x_options">GTK_FILL</property>
-                            <property name="y_options"></property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkLabel" id="border_label">
-                            <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="label" translatable="yes">Border Size:</property>
-                          </widget>
-                          <packing>
-                            <property name="top_attach">6</property>
-                            <property name="bottom_attach">7</property>
-                            <property name="x_options">GTK_FILL</property>
-                            <property name="y_options"></property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkColorButton" id="background">
+                          <widget class="GtkCheckButton" id="top">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="tooltip" translatable="yes">Change background color</property>
+                            <property name="tooltip" translatable="yes">If enabled, Pymailheaders will always on top of other windows</property>
+                            <property name="label" translatable="yes">Keep on Top</property>
+                            <property name="use_underline">True</property>
                             <property name="response_id">0</property>
-                            <property name="title" translatable="yes">Background Color</property>
-                            <signal name="color_set" handler="on_background_changed"/>
+                            <property name="draw_indicator">True</property>
+                            <signal name="toggled" handler="on_top_toggled"/>
                           </widget>
                           <packing>
-                            <property name="left_attach">1</property>
                             <property name="right_attach">2</property>
-                            <property name="top_attach">2</property>
-                            <property name="bottom_attach">3</property>
+                            <property name="top_attach">9</property>
+                            <property name="bottom_attach">10</property>
                             <property name="y_options"></property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkColorButton" id="foreground">
+                          <widget class="GtkCheckButton" id="pager">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="tooltip" translatable="yes">Change text color</property>
-                            <property name="response_id">0</property>
-                            <property name="title" translatable="yes">Foreground Color</property>
-                            <signal name="color_set" handler="on_foreground_changed"/>
-                          </widget>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="right_attach">2</property>
-                            <property name="top_attach">3</property>
-                            <property name="bottom_attach">4</property>
-                            <property name="y_options"></property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkColorButton" id="foreground new">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip" translatable="yes">Change text color for new messages</property>
-                            <property name="response_id">0</property>
-                            <property name="title" translatable="yes">New Messages Color</property>
-                            <signal name="color_set" handler="on_foreground_new_changed"/>
-                          </widget>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="right_attach">2</property>
-                            <property name="top_attach">4</property>
-                            <property name="bottom_attach">5</property>
-                            <property name="y_options"></property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkFontButton" id="font">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip" translatable="yes">Change text font</property>
-                            <property name="response_id">0</property>
-                            <property name="title" translatable="yes">Font</property>
-                            <property name="use_font">True</property>
-                            <property name="use_size">True</property>
-                            <signal name="font_set" handler="on_font_changed"/>
-                          </widget>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="right_attach">2</property>
-                            <property name="top_attach">5</property>
-                            <property name="bottom_attach">6</property>
-                            <property name="y_options"></property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkCheckButton" id="decorated">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip" translatable="yes">If enabled, Pymailheaders window will have a title bar and borders like a normal window</property>
-                            <property name="label" translatable="yes">Show Title Bar</property>
+                            <property name="tooltip" translatable="yes">If enabled, Pymailheaders window will show up in the pager</property>
+                            <property name="label" translatable="yes">Appear in Pager</property>
                             <property name="use_underline">True</property>
                             <property name="response_id">0</property>
                             <property name="active">True</property>
                             <property name="draw_indicator">True</property>
-                            <signal name="toggled" handler="on_decorated_toggled"/>
+                            <signal name="toggled" handler="on_pager_toggled"/>
                           </widget>
                           <packing>
                             <property name="right_attach">2</property>
-                            <property name="top_attach">7</property>
-                            <property name="bottom_attach">8</property>
+                            <property name="top_attach">10</property>
+                            <property name="bottom_attach">11</property>
                             <property name="y_options"></property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkCheckButton" id="focus">
+                          <widget class="GtkCheckButton" id="taskbar">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="tooltip" translatable="yes">If enabled, Pymailheaders window can be focused and will show up in window switching menu</property>
-                            <property name="label" translatable="yes">Recieve Focus</property>
+                            <property name="tooltip" translatable="yes">If enabled, Pymailheaders window will show up in the taskbar</property>
+                            <property name="label" translatable="yes">Appear in taskbar</property>
                             <property name="use_underline">True</property>
                             <property name="response_id">0</property>
                             <property name="active">True</property>
                             <property name="draw_indicator">True</property>
-                            <signal name="toggled" handler="on_focus_toggled"/>
+                            <signal name="toggled" handler="on_taskbar_toggled"/>
                           </widget>
                           <packing>
                             <property name="right_attach">2</property>
-                            <property name="top_attach">8</property>
-                            <property name="bottom_attach">9</property>
+                            <property name="top_attach">11</property>
+                            <property name="bottom_attach">12</property>
                             <property name="y_options"></property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkSpinButton" id="border">
+                          <widget class="GtkCheckButton" id="sticky">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="tooltip" translatable="yes">Change window border size</property>
-                            <property name="adjustment">0 0 10 1 10 10</property>
-                            <property name="climb_rate">1</property>
-                            <property name="numeric">True</property>
-                            <signal name="value_changed" handler="on_border_changed"/>
+                            <property name="tooltip" translatable="yes">If enabled, Pymailheaders window will show up on every workspace</property>
+                            <property name="label" translatable="yes">Stick to every workspace</property>
+                            <property name="use_underline">True</property>
+                            <property name="response_id">0</property>
+                            <property name="draw_indicator">True</property>
+                            <signal name="toggled" handler="on_sticky_toggled"/>
+                          </widget>
+                          <packing>
+                            <property name="right_attach">2</property>
+                            <property name="top_attach">12</property>
+                            <property name="bottom_attach">13</property>
+                            <property name="y_options"></property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="size_label">
+                            <property name="visible">True</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Window Size:</property>
+                          </widget>
+                          <packing>
+                            <property name="x_options">GTK_FILL</property>
+                            <property name="y_options"></property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkComboBox" id="size">
+                            <property name="visible">True</property>
+                            <property name="items" translatable="yes">Smal (300x80)
+Medium (400x100)
+Big (600x130)
+Custom</property>
+                            <signal name="changed" handler="on_size_changed"/>
                           </widget>
                           <packing>
                             <property name="left_attach">1</property>
                             <property name="right_attach">2</property>
-                            <property name="top_attach">6</property>
-                            <property name="bottom_attach">7</property>
+                            <property name="y_options"></property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkHBox" id="width_hbox">
+                            <property name="visible">True</property>
+                            <property name="sensitive">False</property>
+                            <property name="spacing">3</property>
+                            <child>
+                              <widget class="GtkLabel" id="width_label">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">Width:</property>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkSpinButton" id="width">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="tooltip" translatable="yes">Initial window width when Pymailheaders starts</property>
+                                <property name="adjustment">400 100 10000 1 10 10</property>
+                                <property name="climb_rate">1</property>
+                                <property name="numeric">True</property>
+                                <signal name="value_changed" handler="on_width_changed"/>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </widget>
+                          <packing>
+                            <property name="top_attach">1</property>
+                            <property name="bottom_attach">2</property>
+                            <property name="x_options"></property>
                             <property name="y_options"></property>
                           </packing>
                         </child>
@@ -584,139 +534,193 @@ XML Feed</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkHBox" id="width_hbox">
+                          <widget class="GtkSpinButton" id="border">
                             <property name="visible">True</property>
-                            <property name="sensitive">False</property>
-                            <property name="spacing">3</property>
-                            <child>
-                              <widget class="GtkLabel" id="width_label">
-                                <property name="visible">True</property>
-                                <property name="label" translatable="yes">Width:</property>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkSpinButton" id="width">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="tooltip" translatable="yes">Initial window width when Pymailheaders starts</property>
-                                <property name="adjustment">400 100 10000 1 10 10</property>
-                                <property name="climb_rate">1</property>
-                                <property name="numeric">True</property>
-                                <signal name="value_changed" handler="on_width_changed"/>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
-                          </widget>
-                          <packing>
-                            <property name="top_attach">1</property>
-                            <property name="bottom_attach">2</property>
-                            <property name="x_options"></property>
-                            <property name="y_options"></property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkComboBox" id="size">
-                            <property name="visible">True</property>
-                            <property name="items" translatable="yes">Smal (300x80)
-Medium (400x100)
-Big (600x130)
-Custom</property>
-                            <signal name="changed" handler="on_size_changed"/>
+                            <property name="can_focus">True</property>
+                            <property name="tooltip" translatable="yes">Change window border size</property>
+                            <property name="adjustment">0 0 10 1 10 10</property>
+                            <property name="climb_rate">1</property>
+                            <property name="numeric">True</property>
+                            <signal name="value_changed" handler="on_border_changed"/>
                           </widget>
                           <packing>
                             <property name="left_attach">1</property>
                             <property name="right_attach">2</property>
+                            <property name="top_attach">6</property>
+                            <property name="bottom_attach">7</property>
                             <property name="y_options"></property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkLabel" id="size_label">
+                          <widget class="GtkCheckButton" id="focus">
                             <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="label" translatable="yes">Window Size:</property>
+                            <property name="can_focus">True</property>
+                            <property name="tooltip" translatable="yes">If enabled, Pymailheaders window can be focused and will show up in window switching menu</property>
+                            <property name="label" translatable="yes">Recieve Focus</property>
+                            <property name="use_underline">True</property>
+                            <property name="response_id">0</property>
+                            <property name="active">True</property>
+                            <property name="draw_indicator">True</property>
+                            <signal name="toggled" handler="on_focus_toggled"/>
                           </widget>
                           <packing>
+                            <property name="right_attach">2</property>
+                            <property name="top_attach">8</property>
+                            <property name="bottom_attach">9</property>
+                            <property name="y_options"></property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkCheckButton" id="decorated">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="tooltip" translatable="yes">If enabled, Pymailheaders window will have a title bar and borders like a normal window</property>
+                            <property name="label" translatable="yes">Show Title Bar</property>
+                            <property name="use_underline">True</property>
+                            <property name="response_id">0</property>
+                            <property name="active">True</property>
+                            <property name="draw_indicator">True</property>
+                            <signal name="toggled" handler="on_decorated_toggled"/>
+                          </widget>
+                          <packing>
+                            <property name="right_attach">2</property>
+                            <property name="top_attach">7</property>
+                            <property name="bottom_attach">8</property>
+                            <property name="y_options"></property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkFontButton" id="font">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="tooltip" translatable="yes">Change text font</property>
+                            <property name="response_id">0</property>
+                            <property name="title" translatable="yes">Font</property>
+                            <property name="use_font">True</property>
+                            <property name="use_size">True</property>
+                            <signal name="font_set" handler="on_font_changed"/>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="right_attach">2</property>
+                            <property name="top_attach">5</property>
+                            <property name="bottom_attach">6</property>
+                            <property name="y_options"></property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkColorButton" id="foreground new">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="tooltip" translatable="yes">Change text color for new messages</property>
+                            <property name="response_id">0</property>
+                            <property name="title" translatable="yes">New Messages Color</property>
+                            <signal name="color_set" handler="on_foreground_new_changed"/>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="right_attach">2</property>
+                            <property name="top_attach">4</property>
+                            <property name="bottom_attach">5</property>
+                            <property name="y_options"></property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkColorButton" id="foreground">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="tooltip" translatable="yes">Change text color</property>
+                            <property name="response_id">0</property>
+                            <property name="title" translatable="yes">Foreground Color</property>
+                            <signal name="color_set" handler="on_foreground_changed"/>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="right_attach">2</property>
+                            <property name="top_attach">3</property>
+                            <property name="bottom_attach">4</property>
+                            <property name="y_options"></property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkColorButton" id="background">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="tooltip" translatable="yes">Change background color</property>
+                            <property name="response_id">0</property>
+                            <property name="title" translatable="yes">Background Color</property>
+                            <signal name="color_set" handler="on_background_changed"/>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="right_attach">2</property>
+                            <property name="top_attach">2</property>
+                            <property name="bottom_attach">3</property>
+                            <property name="y_options"></property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="border_label">
+                            <property name="visible">True</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Border Size:</property>
+                          </widget>
+                          <packing>
+                            <property name="top_attach">6</property>
+                            <property name="bottom_attach">7</property>
                             <property name="x_options">GTK_FILL</property>
                             <property name="y_options"></property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkCheckButton" id="sticky">
+                          <widget class="GtkLabel" id="font_label">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip" translatable="yes">If enabled, Pymailheaders window will show up on every workspace</property>
-                            <property name="label" translatable="yes">Stick to every workspace</property>
-                            <property name="use_underline">True</property>
-                            <property name="response_id">0</property>
-                            <property name="draw_indicator">True</property>
-                            <signal name="toggled" handler="on_sticky_toggled"/>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Font:</property>
                           </widget>
                           <packing>
-                            <property name="right_attach">2</property>
-                            <property name="top_attach">12</property>
-                            <property name="bottom_attach">13</property>
+                            <property name="top_attach">5</property>
+                            <property name="bottom_attach">6</property>
+                            <property name="x_options">GTK_FILL</property>
                             <property name="y_options"></property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkCheckButton" id="taskbar">
+                          <widget class="GtkLabel" id="new_foreground_label">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip" translatable="yes">If enabled, Pymailheaders window will show up in the taskbar</property>
-                            <property name="label" translatable="yes">Appear in taskbar</property>
-                            <property name="use_underline">True</property>
-                            <property name="response_id">0</property>
-                            <property name="active">True</property>
-                            <property name="draw_indicator">True</property>
-                            <signal name="toggled" handler="on_taskbar_toggled"/>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">New Messages:</property>
                           </widget>
                           <packing>
-                            <property name="right_attach">2</property>
-                            <property name="top_attach">11</property>
-                            <property name="bottom_attach">12</property>
+                            <property name="top_attach">4</property>
+                            <property name="bottom_attach">5</property>
+                            <property name="x_options">GTK_FILL</property>
                             <property name="y_options"></property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkCheckButton" id="pager">
+                          <widget class="GtkLabel" id="foreground_label">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip" translatable="yes">If enabled, Pymailheaders window will show up in the pager</property>
-                            <property name="label" translatable="yes">Appear in Pager</property>
-                            <property name="use_underline">True</property>
-                            <property name="response_id">0</property>
-                            <property name="active">True</property>
-                            <property name="draw_indicator">True</property>
-                            <signal name="toggled" handler="on_pager_toggled"/>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Foreground:</property>
                           </widget>
                           <packing>
-                            <property name="right_attach">2</property>
-                            <property name="top_attach">10</property>
-                            <property name="bottom_attach">11</property>
+                            <property name="top_attach">3</property>
+                            <property name="bottom_attach">4</property>
+                            <property name="x_options">GTK_FILL</property>
                             <property name="y_options"></property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkCheckButton" id="top">
+                          <widget class="GtkLabel" id="background_label">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip" translatable="yes">If enabled, Pymailheaders will always on top of other windows</property>
-                            <property name="label" translatable="yes">Keep on Top</property>
-                            <property name="use_underline">True</property>
-                            <property name="response_id">0</property>
-                            <property name="draw_indicator">True</property>
-                            <signal name="toggled" handler="on_top_toggled"/>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Background:</property>
                           </widget>
                           <packing>
-                            <property name="right_attach">2</property>
-                            <property name="top_attach">9</property>
-                            <property name="bottom_attach">10</property>
+                            <property name="top_attach">2</property>
+                            <property name="bottom_attach">3</property>
+                            <property name="x_options">GTK_FILL</property>
                             <property name="y_options"></property>
                           </packing>
                         </child>
