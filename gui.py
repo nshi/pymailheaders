@@ -238,6 +238,16 @@ class gui(gtk.Window):
         self.__text.set_property('width-request', w)
         self.__window.set_resizable(False)
 
+    def __invalidate(self, widget):
+        # invalidate a widget by highlighting it
+        if hasattr(widget, 'modify_base'):
+            widget.modify_base(gtk.STATE_NORMAL, gtk.gdk.color_parse('#FF0000'))
+
+    def __validate(self, widget):
+        # validate a widget by removing the highlighting
+        if hasattr(widget, 'modify_base'):
+            widget.modify_base(gtk.STATE_NORMAL, None)
+
     def __clear_acct(self):
         self.__tree.get_widget('account_name').set_active(-1)
         self.__tree.get_widget('account_name_entry').set_text('')
