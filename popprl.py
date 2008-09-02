@@ -181,8 +181,11 @@ class pop:
                     try:
                         y = decode_header(re.sub(r'(=\?([^\?]*\?){3}=)',
                                                  r' \1 ', x))
-                        return ''.join(s[1] and s[0].decode(s[1]) or
-                                       s[0] for s in y)
+                        res = ''.join(s[1] and s[0].decode(s[1]) or
+                                      s[0] for s in y)
+                        # Strips multiple contiguous white spaces into one.
+                        res = ' '.join(res.split())
+                        return res
                     except UnicodeDecodeError:
                         raise Error('popprl (get_mail)', _('Invalid encoding'))
 
