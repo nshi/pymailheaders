@@ -48,10 +48,11 @@ gettext.textdomain(app_name)
 import __builtin__
 __builtin__._ = lambda x: x
 try:
-    trans = gettext.translation(app_name, 'po',
-                                languages = [locale.getdefaultlocale()[0]])
-    if trans:
-        __builtin__._ = trans.ugettext
+    locales = locale.getdefaultlocale()
+    if locales[0]:
+        trans = gettext.translation(app_name, 'po', [locales[0]])
+        if trans:
+            __builtin__._ = trans.ugettext
 except IOError:
     pass
 
