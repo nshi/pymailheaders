@@ -39,8 +39,6 @@ class config:
         __config
     """
 
-    __section = 'settings'
-
     __acct_opts = ('type',
                    'server',
                    'username',
@@ -99,13 +97,14 @@ class config:
 
         self.__config = SafeConfigParser()
         self.__config_file = filename
+        self.__section = 'settings'
 
         try:
             # if the file does not exist, create it and write
             # default values to it.
             if not os.path.isfile(self.__config_file):
-                for k, v in self.__defaults.iteritems():
-                    if k not in self.__acct_opts:
+                for k, v in self.__class__.__defaults.iteritems():
+                    if k not in self.__class__.__acct_opts:
                         self.set(k, v)
                 self.write()
 
@@ -118,8 +117,8 @@ class config:
             # Insert default values
             # I have to do this because ConfigParser will insert a
             # section called DEFAULT if I use the defaults method.
-            for k, v in self.__defaults.iteritems():
-                if k not in self.__acct_opts and not self.__has(k):
+            for k, v in self.__class__.__defaults.iteritems():
+                if k not in self.__class__.__acct_opts and not self.__has(k):
                     self.set(k, v)
         except (IOError, ParsingError, MissingSectionHeaderError), strerr:
             raise Error('config (__init__)', str(strerr))
@@ -134,7 +133,7 @@ class config:
 
         self.write()
 
-    def __has(self, opt, acct = __section):
+    def __has(self, opt, acct = None):
         """Determine if an option exists in the config file
 
         @type opt: string
@@ -144,6 +143,9 @@ class config:
         @rtype: bool
         @return: True if it has the option, False otherwise.
         """
+
+        if acct is None:
+            acct = self.__section
 
         return self.__config.has_option(acct, opt)
 
@@ -156,7 +158,7 @@ class config:
 
         self.__config.remove_section(acct)
 
-    def remove_option(self, opt, acct = __section):
+    def remove_option(self, opt, acct = None):
         """Removes an option from an account
 
         @type opt: string
@@ -165,12 +167,15 @@ class config:
         @param acct: account name
         """
 
+        if acct is None:
+            acct = self.__section
+
         try:
             self.__config.remove_option(acct, opt)
         except NoSectionError, strerr:
             raise Error('config (remove_option)', _('invalid account name'))
 
-    def set(self, opt, val, acct = __section):
+    def set(self, opt, val, acct = None):
         """Set option's value to value
 
         @type opt: string
@@ -181,9 +186,12 @@ class config:
         @param acct: account name
         """
 
+        if acct is None:
+            acct = self.__section
+
         try:
             # convert from boolean values
-            if opt in self.__bool_vals:
+            if opt in self.__class__.__bool_vals:
                 if type(val) != bool:
                     raise TypeError
 
@@ -192,7 +200,7 @@ class config:
                 else:
                     self.__config.set(acct, opt, 'no')
             # convert from integers
-            elif opt in self.__int_vals:
+            elif opt in self.__class__.__int_vals:
                 if type(val) != int:
                     raise TypeError
 
@@ -214,7 +222,7 @@ class config:
         except:
             raise
 
-    def get(self, opt, acct = __section):
+    def get(self, opt, acct = None):
         """Get option's value
 
         If the option has a boolean value, convert it into boolean type.
@@ -231,12 +239,15 @@ class config:
         @return: option's value
         """
 
+        if acct is None:
+            acct = self.__section
+
         try:
             # convert to boolean values
-            if opt in self.__bool_vals:
+            if opt in self.__class__.__bool_vals:
                 return self.__config.getboolean(acct, opt)
             # convert to integers
-            elif opt in self.__int_vals:
+            elif opt in self.__class__.__int_vals:
                 return self.__config.getint(acct, opt)
 
             return self.__config.get(acct, opt)
@@ -261,7 +272,7 @@ class config:
                 opts = self.__config.options(sec)
 
                 for k in opts:
-                    if k in self.__acct_opts:
+                    if k in self.__class__.__acct_opts:
                         # migrate old config file to the new format
                         old_sec = None
                         if sec == self.__section:
@@ -292,8 +303,8 @@ class config:
         try:
             # make sure that all options will be written into the
             # config file
-            for k, v in self.__defaults.iteritems():
-                if k not in self.__acct_opts and not self.__has(k):
+            for k, v in self.__class__.__defaults.iteritems():
+                if k not in self.__class__.__acct_opts and not self.__has(k):
                     self.set(k, v)
 
             fd = open(self.__config_file, 'w')
