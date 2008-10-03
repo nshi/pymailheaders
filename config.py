@@ -298,7 +298,7 @@ class config:
                             self.remove_option(k)
 
                         if sec not in optvals['accounts']:
-                            optvals['accounts'][sec] = self.make_empty_acct()
+                            optvals['accounts'][sec] = {}
                         optvals['accounts'][sec][k] = self.get(k, sec)
 
                         # restore the section name we set earlier

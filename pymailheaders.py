@@ -303,19 +303,23 @@ def on_exit(signum = None, frame = None):
 def new_mail_thr(name, opts):
     global mail_thrs
     global gui_thr
+    global conf
 
     if type(opts) != dict or name in mail_thrs:
         return
 
-    if not opts['type'] or not opts['server'] or \
-           (opts['auth'] and (not opts['username'] or not opts['password'])):
+    acct = conf.make_empty_acct()
+    acct.update(opts)
+
+    if not acct['type'] or not acct['server'] or \
+           (acct['auth'] and (not acct['username'] or not acct['password'])):
         gui_thr.show_settings(None)
         return
 
     h = gui_thr.get_max_messages()
-    mail_thrs[name] = mail_thread(name, opts['type'], opts['server'],
-                                  opts['username'], opts['password'],
-                                  opts['encrypted'], h, opts['interval'])
+    mail_thrs[name] = mail_thread(name, acct['type'], acct['server'],
+                                  acct['username'], acct['password'],
+                                  acct['encrypted'], h, acct['interval'])
 
 def new_mail_thrs(opts):
     global mail_thrs
