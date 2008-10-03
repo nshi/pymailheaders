@@ -137,7 +137,7 @@ class imap:
                 self.__connection = imaplib.IMAP4_SSL(self.__server)
             else:
                 self.__connection = imaplib.IMAP4(self.__server)
-            self.__connection.socket().settimeout(self.__TIMEOUT)
+            self.__connection.socket().settimeout(self.__class__.__TIMEOUT)
 
             response = self.__connection.login(self.__uname, self.__pass)
             if response[0] != 'OK':
