@@ -42,10 +42,6 @@ class feed:
         __feed
     """
 
-    __mbox = ''
-    __url = ''
-    __feed = {}
-
     def __init__(self, server, uname, password, ssl, h, mbox):
         """Constructor
 
@@ -69,15 +65,17 @@ class feed:
         else:
             # get rid of 'http[s]://'
             self.__server = re.sub('^[^/]*:/*', '', server)
-            if ssl != None:
-                self.__ssl = ssl
-        if mbox != 'INBOX':
-            self.__mbox = mbox
-        # replace @ to html code
-        if uname and password:
-            self.__uname = uname.replace('@', '%40')
-            self.__pass = password
+            if ssl:
+                self.__ssl = True
+            else:
+                self.__ssl = False
+        # replace @ with html code
+        self.__uname = uname.replace('@', '%40')
+        self.__pass = password
         self.__size = h
+        self.__mbox = mbox
+        self.__url = ''
+        self.__feed = {}
 
     def connect(self):
         """Form URL.
