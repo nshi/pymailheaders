@@ -45,8 +45,6 @@ class pop:
         __message_dict
     """
 
-    __message_dict = []
-
     def __init__(self, server, uname, password, ssl, h, mbox):
         """Constructor
 
@@ -69,6 +67,7 @@ class pop:
         self.__pass = password
         self.__ssl = ssl
         self.__size = h
+        self.__message_dict = []
 
     def __disconnect(self):
         """Destructor
