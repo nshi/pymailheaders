@@ -153,7 +153,7 @@ class config:
 
         return self.__config.has_option(acct, opt)
 
-    def __make_empty_acct(self):
+    def make_empty_acct(self):
         """Generates an empty account with default settings.
 
         @rtype: dictionary
@@ -298,7 +298,7 @@ class config:
                             self.remove_option(k)
 
                         if sec not in optvals['accounts']:
-                            optvals['accounts'][sec] = self.__make_empty_acct()
+                            optvals['accounts'][sec] = self.make_empty_acct()
                         optvals['accounts'][sec][k] = self.get(k, sec)
 
                         # restore the section name we set earlier
