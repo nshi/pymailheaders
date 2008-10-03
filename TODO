@@ -7,6 +7,8 @@
    CLOSED: [2007-05-16 Wed 00:18]
 ** DONE config file support
    CLOSED: [2007-04-12 Thu 01:19]
+** DONE clear up class attributes and instance attributes
+   CLOSED: [2008-10-02 Thu 22:43]
 *** TODO better way to save password
 *** TODO mbox support
 *** DONE clean up error messages
