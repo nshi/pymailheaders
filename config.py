@@ -47,7 +47,11 @@ class config:
                    'encrypted',
                    'interval')
 
-    __defaults = {'auth': False,
+    __defaults = {'type': None,
+                  'server': '',
+                  'username': '',
+                  'password': '',
+                  'auth': False,
                   'encrypted': False,
                   'interval': 180,
                   # GUI settings
@@ -148,6 +152,18 @@ class config:
             acct = self.__section
 
         return self.__config.has_option(acct, opt)
+
+    def __make_empty_acct(self):
+        """Generates an empty account with default settings.
+
+        @rtype: dictionary
+        @return: An empty account.
+        """
+
+        res = {}
+        for k in self.__class__.__acct_opts:
+            res[k] = self.__class__.__defaults[k]
+        return res
 
     def remove_account(self, acct):
         """Removes an account
@@ -282,7 +298,7 @@ class config:
                             self.remove_option(k)
 
                         if sec not in optvals['accounts']:
-                            optvals['accounts'][sec] = {}
+                            optvals['accounts'][sec] = self.__make_empty_acct()
                         optvals['accounts'][sec][k] = self.get(k, sec)
 
                         # restore the section name we set earlier
