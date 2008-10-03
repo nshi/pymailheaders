@@ -29,8 +29,6 @@ class feed:
     @attention: if an exception Error is thrown by any of the method, by
     disconnecting and connecting again, the problem should be solved.
 
-    @warning: B{Have to call connect() method before doing anything else}
-
     @note: Private member variables:
         __server
         __mbox
@@ -98,6 +96,9 @@ class feed:
         ([(datetime, sender, subject), ...],    <--- unread mails
          [(datetime, sender, subject), ...])    <--- read mails
         """
+
+        if not self.__url:
+            self.connect()
 
         # get feed
         try:
