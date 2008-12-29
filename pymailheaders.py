@@ -27,6 +27,7 @@ import os
 import os.path
 import locale
 import gettext
+import logging
 
 # switch to the directory where this file resides in, so that it can find the
 # glade file
@@ -382,6 +383,10 @@ def main():
                       help = 'foreground color')
     parser.add_option('--fgn', dest = 'foreground new',
                       help = 'foreground color for new messages')
+    parser.add_option('-l', '--log', dest = 'log',
+                      help = 'Log file')
+    parser.add_option('--level', dest = 'level',
+                      help = 'Log level: critial, error, warning, info, debug')
     (options, args) = parser.parse_args()
 
     if options.config:
@@ -416,6 +421,26 @@ def main():
     for k in options.iterkeys():
         if not opts.has_key(k) or options[k]:
             opts[k] = options[k]
+
+    # Logging information
+    if 'log' in opts:
+        TARGET = opts['log']
+    else:
+        TARGET = None
+    LEVEL_LIST = {'critical': logging.CRITICAL,
+                  'error': logging.ERROR,
+                  'warning': logging.WARNING,
+                  'info': logging.INFO,
+                  'debug': logging.DEBUG}
+    if 'level' in opts and opts['level'] in LEVEL_LIST:
+        LEVEL = LEVEL_LIST[opts['level']]
+    else:
+        LEVEL = LEVEL_LIST['critical']
+    FORMAT = '%(asctime)s [%(name)s:%(lineno)-4d] %(levelname)-5s: %(message)s'
+    logging.basicConfig(level = LEVEL,
+                        format = FORMAT,
+                        datefmt = '%H:%M:%S',
+                        filename = TARGET)
 
     # setup signal handler so that settings will be saved even if the
     # process is killed
