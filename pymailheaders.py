@@ -120,8 +120,9 @@ class mail_thread(Thread):
 
         self.__name = name
         self.__interval = float(interval)
+        self.__logger = logging.getLogger('mail_thread')
         if not globals().has_key('%sprl' % t):
-            print >> sys.stderr, _('pymailheaders: unknown server type')
+            self.__logger.error(_('pymailheaders: unknown server type'))
             sys.exit(1)
         self.__mail_obj = getattr(globals()['%sprl' % t], t)(server,
                                                              uname,
@@ -147,12 +148,16 @@ class mail_thread(Thread):
         global lock
 
         try:
+            self.__logger.debug('Get mail')
+
             res = self.__mail_obj.get_mail()
             lock.acquire()
             messages[0][self.__name] = res[0]
             messages[1][self.__name] = res[1]
             lock.release()
         except Error, strerr:
+            self.__logger.error(str(strerr))
+
             lock.acquire()
             messages[0].clear()
             messages[1].clear()
@@ -169,9 +174,13 @@ class mail_thread(Thread):
         global lock
 
         try:
+            self.__logger.debug('Connect')
+
             self.__mail_obj.connect()
             self.__connected = True
         except TryAgain:
+            self.__logger.info('Network not available')
+
             self.__connected = False
             lock.acquire()
             messages[0].clear()
@@ -180,6 +189,8 @@ class mail_thread(Thread):
                                          _('Network not available'))]
             lock.release()
         except Error, strerr:
+            self.__logger.error(str(strerr))
+
             self.__connected = False
             lock.acquire()
             messages[0].clear()
@@ -197,6 +208,8 @@ class mail_thread(Thread):
         if self.__connected:
                 self.fetch()
 
+        self.__logger.debug('Update gui when it is idle')
+
         gui.gobject.idle_add(update_gui)
 
     def run(self):
@@ -205,7 +218,9 @@ class mail_thread(Thread):
 
         while not self.timer.isSet():
             self.refresh()
+            self.__logger.debug('Starting timer')
             self.timer.wait(self.__interval)
+            self.__logger.debug('Timer set')
 
 # update GUI
 def update_gui():
@@ -222,6 +237,8 @@ def update_gui():
     global gui_thr
 
     msgs = ([], [])
+
+    logging.debug('Update gui')
 
     lock.acquire()
     for k, v in messages[0].iteritems():
@@ -299,6 +316,8 @@ def on_config_save(opts):
     conf.write()
 
 def on_exit(signum = None, frame = None):
+    logging.debug('Quit')
+
     gui.gtk.quit()
 
 def new_mail_thr(name, opts):
@@ -308,6 +327,8 @@ def new_mail_thr(name, opts):
 
     if type(opts) != dict or name in mail_thrs:
         return
+
+    logging.debug('Create new mail thread')
 
     acct = conf.make_empty_acct()
     acct.update(opts)
@@ -337,6 +358,8 @@ def delete_mail_thr(name):
 
     if not mail_thrs or name not in mail_thrs:
         return
+
+    logging.debug('Delete mail thread')
 
     mail_thrs[name].timer.set()
     mail_thrs[name].join(JOIN_TIMEOUT)
@@ -435,8 +458,9 @@ def main():
     if 'level' in opts and opts['level'] in LEVEL_LIST:
         LEVEL = LEVEL_LIST[opts['level']]
     else:
-        LEVEL = LEVEL_LIST['critical']
-    FORMAT = '%(asctime)s [%(name)s:%(lineno)-4d] %(levelname)-5s: %(message)s'
+        LEVEL = LEVEL_LIST['error']
+    FORMAT = '%(asctime)s [(%(threadName)-13s) %(name)-11s:%(lineno)-4d]' + \
+        ' %(levelname)-5s: %(message)s'
     logging.basicConfig(level = LEVEL,
                         format = FORMAT,
                         datefmt = '%H:%M:%S',

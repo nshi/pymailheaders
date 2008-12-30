@@ -18,6 +18,7 @@
 
 import feedparser
 import re
+import logging
 from time import mktime
 from datetime import datetime
 
@@ -74,10 +75,13 @@ class feed:
         self.__mbox = mbox
         self.__url = ''
         self.__feed = {}
+        self.__logger = logging.getLogger('feed')
 
     def connect(self):
         """Form URL.
         """
+
+        self.__logger.debug('Connect')
 
         # assemble URL
         if self.__ssl:
@@ -100,6 +104,8 @@ class feed:
         if not self.__url:
             self.connect()
 
+        self.__logger.debug('Get mail')
+
         # get feed
         try:
             self.__feed = feedparser.parse(self.__url)
@@ -113,6 +119,7 @@ class feed:
                 raise Error('feedprl (get_mail)',
                             hasattr(a, 'getMessage') and a.getMessage() or a)
         except:
+            self.__logger.error('Failed parsing feed')
             raise
 
         # parse sender addresses and subjects

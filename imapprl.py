@@ -19,6 +19,7 @@
 import imaplib
 import socket
 import re
+import logging
 from email import message_from_string
 from email.utils import parseaddr, parsedate_tz, mktime_tz
 from email.Header import decode_header
@@ -71,18 +72,23 @@ class imap:
         self.__pass = password
         self.__ssl = ssl
         self.__size = h
+        self.__logger = logging.getLogger('imap')
 
     def __del__(self):
         """Destructor
         Should log out and destroy the connection.
         """
 
+        self.__logger.debug('Destroy')
+
         try:
             response = self.__connection.logout()
             if response[0] != 'BYE':
+                self.__logger.error(response[1])
                 raise Error('imapprl (__del__)', response[1])
         except (socket.error, socket.gaierror, imaplib.IMAP4.error,
                 imaplib.IMAP4.abort), strerr:
+            self.__logger.error(str(strerr))
             raise Error('imapprl (__del__)', str(strerr))
         except:
             raise
@@ -94,12 +100,16 @@ class imap:
         @return: (total number of messages, number of new messages)
         """
 
+        self.__logger.debug('Check for new mails')
+
         try:
             response = self.__connection.status('INBOX', '(MESSAGES UNSEEN)')
             if response[0] != 'OK':
+                self.__logger.error(response[1])
                 raise Error('imapprl (__check)', response[1])
         except (socket.error, socket.gaierror, imaplib.IMAP4.error,
                 imaplib.IMAP4.abort), strerr:
+            self.__logger.error(str(strerr))
             raise Error('imapprl (__check)', str(strerr))
         except:
             raise
@@ -111,12 +121,16 @@ class imap:
         """Select a mailbox
         """
 
+        self.__logger.debug('Select mailbox')
+
         try:
             response = self.__connection.select(self.__mbox, True)
             if response[0] != 'OK':
+                self.__logger.error(response[1])
                 raise Error('imapprl (__select_mailbox)', response[1])
         except (socket.error, socket.gaierror, imaplib.IMAP4.error,
             imaplib.IMAP4.abort), strerr:
+            self.__logger.error(str(strerr))
             raise Error('imapprl (__select_mailbox)', str(strerr))
         except:
             raise
@@ -132,6 +146,8 @@ class imap:
         @raise TryAgain: when network is temporarily unavailable
         """
 
+        self.__logger.debug('Connect')
+
         try:
             if self.__ssl:
                 self.__connection = imaplib.IMAP4_SSL(self.__server)
@@ -141,10 +157,13 @@ class imap:
 
             response = self.__connection.login(self.__uname, self.__pass)
             if response[0] != 'OK':
+                self.__logger.error(response[1])
                 raise Error('imapprl (connect)', response[1])
         except socket.gaierror, (socket.EAI_AGAIN, strerr):
+            self.__logger.error(str(strerr))
             raise TryAgain('imapprl (connect)', strerr)
         except (socket.error, socket.gaierror, imaplib.IMAP4.error), strerr:
+            self.__logger.error(str(strerr))
             raise Error('imapprl (connect)', str(strerr))
         except:
             raise
@@ -159,6 +178,8 @@ class imap:
         """
 
         messages = ([], [])
+
+        self.__logger.debug('Get mail')
 
         try:
             num = self.__check()
@@ -177,13 +198,16 @@ class imap:
                                                 + '[HEADER.FIELDS '
                                                 + '(DATE FROM SUBJECT)])')
             if mail_list[0] != 'OK':
+                self.__logger.error(response[1])
                 raise Error('imapprl (get_mail)', response[1])
 
             response = self.__connection.close()
             if response[0] != 'OK':
+                self.__logger.error(response[1])
                 raise Error('imapprl (get_mail)', response[1])
         except (socket.error, socket.gaierror, imaplib.IMAP4.error,
                 imaplib.IMAP4.abort), strerr:
+            self.__logger.error(str(strerr))
             raise Error('imapprl (get_mail)', str(strerr))
         except:
             raise
@@ -198,6 +222,7 @@ class imap:
                 res = ' '.join(res.split())
                 return res
             except UnicodeDecodeError:
+                self.__logger.error('Invalid encoding')
                 raise Error('imapprl (get_mail)', _('Invalid encoding'))
 
         def a(x): return x != ')'
