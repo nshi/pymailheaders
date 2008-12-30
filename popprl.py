@@ -19,6 +19,7 @@
 import poplib
 import socket
 import re
+import logging
 from email import message_from_string
 from email.utils import parseaddr, parsedate_tz, mktime_tz
 from email.Header import decode_header
@@ -68,18 +69,23 @@ class pop:
         self.__ssl = ssl
         self.__size = h
         self.__message_dict = []
+        self.__logger = logging.getLogger('pop')
 
     def __disconnect(self):
         """Destructor
         Should log out and destroy the connection.
         """
 
+        self.__logger.debug('Destroy')
+
         try:
             response = self.__connection.quit()
             if response[0:3] != '+OK':
+                self.__logger.error('Failed to logout')
                 raise Error('popprl (__disconnect)', _('Logout failed'))
         except (socket.error, socket.gaierror, poplib.error_proto,
                 AttributeError), strerr:
+            self.__logger.error(str(strerr))
             raise Error('popprl (__disconnect)', strerr)
         except:
             raise
@@ -95,6 +101,8 @@ class pop:
         @raise TryAgain: when network is temporarily unavailable
         """
 
+        self.__logger.debug('Connect')
+
         try:
             if self.__ssl:
                 self.__connection = poplib.POP3_SSL(self.__server)
@@ -105,13 +113,19 @@ class pop:
             # text.
             response = self.__connection.user(self.__uname)
             if response[0:3] != '+OK':
+                self.__logger.error('Failed to login with username %s',
+                                    self.__uname)
                 raise Error('popprl (connect)', _('Login failed'))
             response = self.__connection.pass_(self.__pass)
             if response[0:3] != '+OK':
+                self.__logger.error('Failed to login with password %s',
+                                    self.__pass)
                 raise Error('popprl (connect)', _('Login failed'))
         except socket.gaierror, (socket.EAI_AGAIN, strerr):
+            self.__logger.error(str(strerr))
             raise TryAgain('popprl (connect)', strerr)
         except (socket.error, socket.gaierror, poplib.error_proto), strerr:
+            self.__logger.error(str(strerr))
             raise Error('popprl (connect)', strerr)
         except:
             raise
@@ -146,6 +160,8 @@ class pop:
 
         messages = ([], [])
 
+        self.__logger.debug('Get mail')
+
         try:
             # 1. connect to the server
             self.__connect()
@@ -164,6 +180,7 @@ class pop:
                 # 3. get unique IDs
                 response = self.__connection.uidl(i)
                 if response[0:3] != '+OK':
+                    self.__logger.error('Failed to fetch message ID')
                     raise Error('popprl (get_mail)',
                                 _('Fetching message ID failed'))
                 uid = re.search('([\S]*)$', response).group(1)
@@ -171,6 +188,7 @@ class pop:
                 # 4. get message hearders
                 response = self.__connection.top(i, 0)
                 if response[0][0:3] != '+OK':
+                    self.__logger.error('Failed to fetch message')
                     raise Error('popprl (get_mail)',
                                 _('Fetching messages failed'))
 
@@ -186,6 +204,7 @@ class pop:
                         res = ' '.join(res.split())
                         return res
                     except UnicodeDecodeError:
+                        self.__logger.error('Invalid encoding')
                         raise Error('popprl (get_mail)', _('Invalid encoding'))
 
                 def b(x):
@@ -216,6 +235,7 @@ class pop:
             # locking up the mailbox.
             self.__disconnect()
         except (socket.error, socket.gaierror, poplib.error_proto,), strerr:
+            self.__logger.error(str(strerr))
             raise Error('popprl (get_mail)', strerr)
         except:
             raise
