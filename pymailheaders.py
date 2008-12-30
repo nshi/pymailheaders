@@ -122,7 +122,7 @@ class mail_thread(Thread):
         self.__interval = float(interval)
         self.__logger = logging.getLogger('mail_thread')
         if not globals().has_key('%sprl' % t):
-            self.__logger.error(_('pymailheaders: unknown server type'))
+            self.__logger.error(_('pymailheaders: unknown server type %s'), t)
             sys.exit(1)
         self.__mail_obj = getattr(globals()['%sprl' % t], t)(server,
                                                              uname,

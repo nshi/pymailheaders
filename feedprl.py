@@ -119,7 +119,7 @@ class feed:
                 raise Error('feedprl (get_mail)',
                             hasattr(a, 'getMessage') and a.getMessage() or a)
         except:
-            self.__logger.error('Failed parsing feed')
+            self.__logger.error('Failed parsing feed: %s', repr(self.__feed))
             raise
 
         # parse sender addresses and subjects
