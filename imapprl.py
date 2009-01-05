@@ -129,7 +129,7 @@ class imap:
                 self.__logger.error(response[1])
                 raise Error('imapprl (__select_mailbox)', response[1])
         except (socket.error, socket.gaierror, imaplib.IMAP4.error,
-            imaplib.IMAP4.abort), strerr:
+                imaplib.IMAP4.abort), strerr:
             self.__logger.error(str(strerr))
             raise Error('imapprl (__select_mailbox)', str(strerr))
         except:
