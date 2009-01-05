@@ -155,6 +155,16 @@ class mail_thread(Thread):
             messages[0][self.__name] = res[0]
             messages[1][self.__name] = res[1]
             lock.release()
+        except TryAgain:
+            self.__logger.info('Network not available')
+
+            self.__connected = False
+            lock.acquire()
+            messages[0].clear()
+            messages[1].clear()
+            messages[0][self.__name] = [(datetime.now(), _('Error'),
+                                         _('Network not available'))]
+            lock.release()
         except Error, strerr:
             self.__logger.error(str(strerr))
 
@@ -203,10 +213,13 @@ class mail_thread(Thread):
         """Fetches mail and updates the GUI.
         """
 
+        global messages
+        global lock
+
         if not self.__connected:
-                self.connect()
+            self.connect()
         if self.__connected:
-                self.fetch()
+            self.fetch()
 
         self.__logger.debug('Update gui when it is idle')
 
@@ -334,7 +347,7 @@ def new_mail_thr(name, opts):
     acct.update(opts)
 
     if not acct['type'] or not acct['server'] or \
-           (acct['auth'] and (not acct['username'] or not acct['password'])):
+            (acct['auth'] and (not acct['username'] or not acct['password'])):
         gui_thr.show_settings(None)
         return
 
@@ -415,7 +428,7 @@ def main():
     if options.config:
         exp_path = os.path.expanduser(options.config)
         config_file = os.path.isabs(exp_path) and exp_path or \
-                      os.path.join(cwd, exp_path)
+            os.path.join(cwd, exp_path)
     else:
         # default config file location
         if is_posix():
