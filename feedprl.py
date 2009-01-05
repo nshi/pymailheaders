@@ -21,6 +21,7 @@ import re
 import logging
 from time import mktime
 from datetime import datetime
+from urllib2 import URLError
 
 from exception import *
 
@@ -108,18 +109,38 @@ class feed:
 
         # get feed
         try:
-            self.__feed = feedparser.parse(self.__url)
+            e = None
+            if 'etag' in self.__feed:
+                e = self.__feed.etag
+            m = None
+            if 'modified' in self.__feed:
+                m = self.__feed.modified
+            self.__logger.info('parsing %s', self.__url)
+            self.__feed = feedparser.parse(self.__url, etag = e, modified = m)
+
+            if 'status' in self.__feed and self.__feed.status == 304:
+                self.__logger.info('Feed has not changed since last check')
+
             # check if it's a well formed feed
             if self.__feed.bozo == 1 and \
-                   not isinstance(self.__feed.bozo_exception, \
-                                  feedparser.CharacterEncodingOverride) and \
-                   not isinstance(self.__feed.bozo_exception, \
-                                  feedparser.NonXMLContentType):
+                    not isinstance(self.__feed.bozo_exception,
+                                   feedparser.CharacterEncodingOverride) and \
+                                   not isinstance(self.__feed.bozo_exception,
+                                                  feedparser.NonXMLContentType):
                 a = self.__feed.bozo_exception
-                raise Error('feedprl (get_mail)',
-                            hasattr(a, 'getMessage') and a.getMessage() or a)
+
+                if isinstance(a, URLError):
+                    self.__logger.error(a.args)
+                    raise TryAgain('feedprl (get_mail)', a.args)
+                else:
+                    strerr = hasattr(a, 'getMessage') and a.getMessage() or \
+                        a.strerror
+
+                    self.__logger.error(strerr)
+                    raise Error('feedprl (get_mail)', strerr)
         except:
             self.__logger.error('Failed parsing feed: %s', repr(self.__feed))
+            self.__feed = {}
             raise
 
         # parse sender addresses and subjects
