@@ -72,6 +72,7 @@ class imap:
         self.__pass = password
         self.__ssl = ssl
         self.__size = h
+        self.__connection = None
         self.__logger = logging.getLogger('imap')
 
     def __del__(self):
@@ -82,6 +83,9 @@ class imap:
         self.__logger.debug('Destroy')
 
         try:
+            if not self.__connection:
+                return
+
             response = self.__connection.logout()
             if response[0] != 'BYE':
                 self.__logger.error(response[1])
