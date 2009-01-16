@@ -461,6 +461,7 @@ def main():
     # Logging information
     if 'log' in opts:
         TARGET = opts['log']
+        del opts['log']
     else:
         TARGET = None
     LEVEL_LIST = {'critical': logging.CRITICAL,
@@ -472,6 +473,8 @@ def main():
         LEVEL = LEVEL_LIST[opts['level']]
     else:
         LEVEL = LEVEL_LIST['error']
+    if 'level' in opts:
+        del opts['level']
     FORMAT = '%(asctime)s [(%(threadName)-13s) %(name)-11s:%(lineno)-4d]' + \
         ' %(levelname)-5s: %(message)s'
     logging.basicConfig(level = LEVEL,
