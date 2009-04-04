@@ -114,8 +114,9 @@ class mail_thread(Thread):
 
         global mail_thrs
 
-        Thread.__init__(self, None, None, 'mail-thread-%d' % len(mail_thrs),
-                        (), {})
+        Thread.__init__(self, group = None, target = None,
+                        name = 'mail-thread-%d' % len(mail_thrs),
+                        args = (), kwargs = {})
         self.setDaemon(True)
 
         self.__name = name
@@ -130,7 +131,6 @@ class mail_thread(Thread):
                                                              ssl,
                                                              h,
                                                              mbox)
-        self.__connected = False
         self.timer = Event()
 
     def fetch(self):
@@ -158,7 +158,6 @@ class mail_thread(Thread):
         except TryAgain:
             self.__logger.info('Network not available')
 
-            self.__connected = False
             lock.acquire()
             messages[0].clear()
             messages[1].clear()
@@ -168,40 +167,6 @@ class mail_thread(Thread):
         except Error, strerr:
             self.__logger.error(str(strerr))
 
-            lock.acquire()
-            messages[0].clear()
-            messages[1].clear()
-            messages[0][self.__name] = [(datetime.now(), _('Error'),
-                                         str(strerr))]
-            lock.release()
-            self.connect()
-
-    def connect(self):
-        """Connect to the server.
-        """
-
-        global messages
-        global lock
-
-        try:
-            self.__logger.debug('Connect')
-
-            self.__mail_obj.connect()
-            self.__connected = True
-        except TryAgain:
-            self.__logger.info('Network not available')
-
-            self.__connected = False
-            lock.acquire()
-            messages[0].clear()
-            messages[1].clear()
-            messages[0][self.__name] = [(datetime.now(), _('Error'),
-                                         _('Network not available'))]
-            lock.release()
-        except Error, strerr:
-            self.__logger.error(str(strerr))
-
-            self.__connected = False
             lock.acquire()
             messages[0].clear()
             messages[1].clear()
@@ -213,13 +178,7 @@ class mail_thread(Thread):
         """Fetches mail and updates the GUI.
         """
 
-        global messages
-        global lock
-
-        if not self.__connected:
-            self.connect()
-        if self.__connected:
-            self.fetch()
+        self.fetch()
 
         self.__logger.debug('Update gui when it is idle')
 
@@ -230,7 +189,7 @@ class mail_thread(Thread):
         """
 
         while not self.timer.isSet():
-            self.refresh()
+            gui.gobject.idle_add(self.refresh)
             self.__logger.debug('Starting timer')
             self.timer.wait(self.__interval)
             self.__logger.debug('Timer set')
