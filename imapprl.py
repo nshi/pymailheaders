@@ -81,21 +81,7 @@ class imap:
         """
 
         self.__logger.debug('Destroy')
-
-        try:
-            if not self.__connection:
-                return
-
-            response = self.__connection.logout()
-            if response[0] != 'BYE':
-                self.__logger.error(response[1])
-                raise Error('imapprl (__del__)', response[1])
-        except (socket.error, socket.gaierror, imaplib.IMAP4.error,
-                imaplib.IMAP4.abort), strerr:
-            self.__logger.error(str(strerr))
-            raise Error('imapprl (__del__)', str(strerr))
-        except:
-            raise
+        self.__disconnect()
 
     def __check(self):
         """Get the total number and the number of new messages in a mailbox.
@@ -139,7 +125,7 @@ class imap:
         except:
             raise
 
-    def connect(self):
+    def __connect(self):
         """Connect to the server and log in.
 
         If the connection has already established, return.
@@ -147,7 +133,7 @@ class imap:
         @attention: when exception TryAgain is thrown by this method,
         the calling program should try to connect again.
 
-        @raise TryAgain: when network is temporarily unavailable
+        @raise TryAgain: when network is temporarily unavailable.
         """
 
         self.__logger.debug('Connect')
@@ -172,6 +158,31 @@ class imap:
         except:
             raise
 
+    def __disconnect(self):
+        """Disconnect from the server.
+
+        If the connection has not been established, return.
+
+        @raise Error: when error occurs.
+        """
+
+        try:
+            if not self.__connection:
+                return
+
+            response = self.__connection.logout()
+            if response[0] != 'BYE':
+                self.__logger.error(response[1])
+                raise Error('imapprl (__disconnect)', response[1])
+        except (socket.error, socket.gaierror, imaplib.IMAP4.error,
+                imaplib.IMAP4.abort), strerr:
+            self.__logger.error(str(strerr))
+            raise Error('imapprl (__disconnect)', str(strerr))
+        except:
+            raise
+
+        self.__connection = None
+
     def get_mail(self):
         """Get mails.
 
@@ -180,6 +191,9 @@ class imap:
         ([(datetime, sender, subject), ...],    <--- unread mails
          [(datetime, sender, subject), ...])    <--- read mails
         """
+
+        if not self.__connection:
+            self.__connect()
 
         messages = ([], [])
 
@@ -249,5 +263,7 @@ class imap:
 
         messages[0].reverse()
         messages[1].reverse()
+
+        self.__disconnect()
 
         return messages

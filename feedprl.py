@@ -78,7 +78,7 @@ class feed:
         self.__feed = {}
         self.__logger = logging.getLogger('feed')
 
-    def connect(self):
+    def __connect(self):
         """Form URL.
         """
 
@@ -103,7 +103,7 @@ class feed:
         """
 
         if not self.__url:
-            self.connect()
+            self.__connect()
 
         self.__logger.debug('Get mail')
 
