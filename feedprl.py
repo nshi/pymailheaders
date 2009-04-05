@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # feedprl.py
-# Copyright 2008 Neil Shi <zeegeek@gmail.com>
+# Copyright 2009 Neil Shi <zeegeek@gmail.com>
 #
 # Feed Protocol
 # This is the xml feed protocol support module for pymailheaders.

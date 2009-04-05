@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # config.py
-# Copyright 2008 Neil Shi <zeegeek@gmail.com>
+# Copyright 2009 Neil Shi <zeegeek@gmail.com>
 #
 # Configuration File Parser
 # This file contains the configuration parser for pymailheaders

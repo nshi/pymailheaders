@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # popprl.py
-# Copyright 2008 Neil Shi <zeegeek@gmail.com>
+# Copyright 2009 Neil Shi <zeegeek@gmail.com>
 #
 # POP3 Protocol
 # This is the POP3 protocol support module for pymailheaders.

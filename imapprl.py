@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # imapprl.py
-# Copyright 2008 Neil Shi <zeegeek@gmail.com>
+# Copyright 2009 Neil Shi <zeegeek@gmail.com>
 #
 # IMAP Protocol
 # This is the IMAP protocol support module for pymailheaders.

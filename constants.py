@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # constants.py
-# Copyright 2008 Neil Shi <zeegeek@gmail.com>
+# Copyright 2009 Neil Shi <zeegeek@gmail.com>
 #
 # Constants
 # This file contains the version info of pymailheaders as global constants
@@ -26,7 +26,7 @@ MAINTAINER = _('Ning "ZeeGeek" Shi')
 EMAIL = 'zeegeek@gmail.com'
 AUTHOR = ['%s <%s>' % (MAINTAINER, EMAIL),
           _('Peter "Flying Eagle" Zhou') + '<peterzhoulei@gmail.com>']
-COPYRIGHT = _('Copyright') + u' \xa9 2008 %s ' % MAINTAINER
+COPYRIGHT = _('Copyright') + u' \xa9 2009 %s ' % MAINTAINER
 DESCRIPTION = _('A mail header fetching and monitoring program')
 LICENSE = """
 		    GNU GENERAL PUBLIC LICENSE

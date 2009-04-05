@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # exception.py
-# Copyright 2008 Neil Shi <zeegeek@gmail.com>
+# Copyright 2009 Neil Shi <zeegeek@gmail.com>
 #
 # Exception definitions
 # This file defines all the exceptions used by pymailheaders
