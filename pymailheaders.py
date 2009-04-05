@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # pymailheaders.py
-# Copyright 2009 Neil Shi <zeegeek@gmail.com>
+# Copyright 2009 Ning Shi <zeegeek@gmail.com>
 #
 # Main program of pymailheaders
 # This file creates mail fetching thread and gui thread.

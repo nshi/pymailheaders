@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # constants.py
-# Copyright 2009 Neil Shi <zeegeek@gmail.com>
+# Copyright 2009 Ning Shi <zeegeek@gmail.com>
 #
 # Constants
 # This file contains the version info of pymailheaders as global constants

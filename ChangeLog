@@ -1,4 +1,4 @@
-2008-04-07  Neil Shi  <zeegeek@gmail.com>
+2008-04-07  Ning Shi  <zeegeek@gmail.com>
 
 	* gui.py: Fixed minor GUI bugs.
 
@@ -10,13 +10,13 @@
 
 	* imapprl.py: Sets the socket timeout to 10 seconds.
 
-2007-05-17  Neil Shi  <zeegeek@gmail.com>
+2007-05-17  Ning Shi  <zeegeek@gmail.com>
 
 	* imapprl.py (imap.get_mail.d): Fixed mime headers decoding bug.
 
 	* popprl.py (pop.get_mail.d): Fixed mime headers decoding bug.
 
-2007-05-16  Neil Shi  <zeegeek@gmail.com>
+2007-05-16  Ning Shi  <zeegeek@gmail.com>
 
 	* popprl.py (pop.get_mail): Correctly decodes into unicode.
 
@@ -24,7 +24,7 @@
 
 	* feedprl.py (feed.get_mail): Improved encoding handling.
 
-2007-05-15  Neil Shi  <zeegeek@gmail.com>
+2007-05-15  Ning Shi  <zeegeek@gmail.com>
 
 	* gui.py (gui.__settings_save): It now saves settings to the
 	config file right away.
@@ -34,7 +34,7 @@
 	(imap.get_mail): Now it only fetches all the new messages unless
 	the window is big enough to hold more messages.
 
-2007-05-12  Neil Shi  <zeegeek@gmail.com>
+2007-05-12  Ning Shi  <zeegeek@gmail.com>
 
 	* gui.py (gui.__auth_toggled): Disable username and password entry
 	when authentication is unselected.
@@ -46,7 +46,7 @@
 	* feedprl.py (feed.get_mail.a): Displays sender's name only if there
 	is one.  Otherwise display the email address.
 
-2007-05-11  Neil Shi  <zeegeek@gmail.com>
+2007-05-11  Ning Shi  <zeegeek@gmail.com>
 
 	* imapprl.py (imap.get_mail): Displays sender's name only if there
 	is one.  Otherwise display the email address.
@@ -54,12 +54,12 @@
 	* popprl.py (pop.get_mail): Displays sender's name only if there
 	is one.  Otherwise display the email address.
 
-2007-04-24  Neil Shi  <zeegeek@gmail.com>
+2007-04-24  Ning Shi  <zeegeek@gmail.com>
 
 	* gui.py (gui.__position_changed): Now it remembers position on
 	quit correctly.
 
-2007-04-20  Neil Shi  <zeegeek@gmail.com>
+2007-04-20  Ning Shi  <zeegeek@gmail.com>
 
 	* pymailheaders.py (main): Now it fetches all messages and pass
 	them to the GUI.
@@ -69,29 +69,29 @@
 	* gui.py (gui): Changed GUI to GTK+.
 	(gui): Added settings and about dialog.
 
-2007-04-12  Neil Shi  <zeegeek@gmail.com>
+2007-04-12  Ning Shi  <zeegeek@gmail.com>
 
 	* config.py (config): Added configuration file support.
 
-2007-03-31  Neil Shi  <zeegeek@gmail.com>
+2007-03-31  Ning Shi  <zeegeek@gmail.com>
 
 	* imapprl.py (imap.get_mail): Fixed the bug of highlighting wrong
 	messages if the new messages are not at the top.  Use a new data
 	structure to store message entries.
 
-2007-03-14  Neil Shi  <zeegeek@gmail.com>
+2007-03-14  Ning Shi  <zeegeek@gmail.com>
 
 	* popprl.py: Added POP3 support.  But it's not storing new
 	messages' status correctly after rechecking.
 	* imapprl.py (imap.check): Moved this function to private.
 	* feedprl.py (feed.check): Deleted this function.
 
-2007-02-19  Neil Shi  <zeegeek@gmail.com>
+2007-02-19  Ning Shi  <zeegeek@gmail.com>
 
 	* imapprl.py (imap.get_mail): fixed a bug which was introduced in
 	previous release.  reverse() works in-place and always returns None.
 
-2007-02-18  Neil Shi  <zeegeek@gmail.com>
+2007-02-18  Ning Shi  <zeegeek@gmail.com>
 
 	* feedprl.py (feed.get_mail): added XML feed support, including
 	Gmail support.
