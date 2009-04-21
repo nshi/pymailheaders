@@ -67,6 +67,7 @@ import constants
 from exception import *
 
 # global varibals
+checker = None
 mail_thrs = {}
 gui_thr = None
 conf = None
@@ -188,11 +189,67 @@ class mail_thread(Thread):
         """Connect to the server and fetch for the first time
         """
 
+        global checker
+
         while not self.timer.isSet():
-            gui.gobject.idle_add(self.refresh)
+            checker.add(self)
             self.__logger.debug('Starting timer')
             self.timer.wait(self.__interval)
             self.__logger.debug('Timer set')
+
+class mail_checker(Thread):
+    """This class checks for mails in each account.
+
+    @note: Private member variables:
+        __unchecked
+        __quit
+        __flag
+    """
+
+    def __init__(self):
+        Thread.__init__(self, group = None, target = None,
+                        name = 'mail-checker', args = (), kwargs = {})
+        self.setDaemon(True)
+
+        self.__unchecked = []
+        self.__quit = False
+        self.__flag = Event()
+
+    def __check(self, mail_thread):
+        """Call the mail checking method on the mail thread.
+
+        @type mail_thread: mail_thread
+        @param mail_thread: the mail thread to check
+        """
+
+        mail_thread.refresh()
+
+    def add(self, mail_thread):
+        """Add the mail thread to the queue waiting to be checked.
+
+        @type mail_thread: mail_thread
+        @param mail_thread: the mail thread to check
+        """
+
+        if not mail_thread:
+            return
+
+        if mail_thread not in self.__unchecked:
+            self.__unchecked.append(mail_thread)
+
+        self.__flag.set()
+
+    def run(self):
+        """Starts the loop of checking for mails.
+        """
+
+        while not self.__quit:
+            self.__flag.clear()
+
+            while self.__unchecked:
+                self.__check(self.__unchecked.pop(0))
+
+            self.__flag.wait()
 
 # update GUI
 def update_gui():
@@ -228,9 +285,10 @@ def update_gui():
 
 def on_refresh_activate():
     global mail_thrs
+    global checker
 
     for acct in  mail_thrs.itervalues():
-        gui.gobject.idle_add(acct.refresh)
+        checker.add(acct)
 
 def on_account_changed(opts):
     global conf
@@ -362,6 +420,7 @@ def main():
     global conf
     global gui_thr
     global mail_thrs
+    global checker
     global messages
 
     # parse command-line arguments
@@ -456,9 +515,12 @@ def main():
     gui_thr.signal_autoconnect(handlers)
 
     new_mail_thrs(opts['accounts'])
+    checker = mail_checker()
 
     try:
         # start all threads
+        checker.start()
+
         for mail_thr in mail_thrs.itervalues():
             if not mail_thr.isAlive():
                 mail_thr.start()
