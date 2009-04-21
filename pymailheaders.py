@@ -118,7 +118,6 @@ class mail_thread(Thread):
         Thread.__init__(self, group = None, target = None,
                         name = 'mail-thread-%d' % len(mail_thrs),
                         args = (), kwargs = {})
-        self.setDaemon(True)
 
         self.__name = name
         self.__interval = float(interval)
@@ -225,6 +224,13 @@ class mail_checker(Thread):
         """
 
         mail_thread.refresh()
+
+    def quit(self):
+        """Terminates the checker.
+        """
+
+        self.__quit = True
+        self.__flag.set()
 
     def add(self, mail_thread):
         """Add the mail thread to the queue waiting to be checked.
@@ -536,6 +542,8 @@ def main():
         gui.gtk.gdk.threads_leave()
     except KeyboardInterrupt:
         pass
+
+    checker.quit()
 
     delete_mail_thrs()
 
