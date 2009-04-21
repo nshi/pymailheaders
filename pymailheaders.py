@@ -80,9 +80,8 @@ JOIN_TIMEOUT = 1.0
 class mail_thread(Thread):
     """This class creates the thread for fetching messages.
 
-    @note: Public member variables:
-        timer
     @note: Private member variables:
+        __timer
         __name
         __interval
         __mail_obj
@@ -131,7 +130,13 @@ class mail_thread(Thread):
                                                              ssl,
                                                              h,
                                                              mbox)
-        self.timer = Event()
+        self.__timer = Event()
+
+    def quit(self):
+        """Terminates the mail thread.
+        """
+
+        self.__timer.set()
 
     def fetch(self):
         """Check and get mails
@@ -190,10 +195,10 @@ class mail_thread(Thread):
 
         global checker
 
-        while not self.timer.isSet():
+        while not self.__timer.isSet():
             checker.add(self)
             self.__logger.debug('Starting timer')
-            self.timer.wait(self.__interval)
+            self.__timer.wait(self.__interval)
             self.__logger.debug('Timer set')
 
 class mail_checker(Thread):
@@ -403,7 +408,7 @@ def delete_mail_thr(name):
 
     logging.debug('Delete mail thread')
 
-    mail_thrs[name].timer.set()
+    mail_thrs[name].quit()
     mail_thrs[name].join(JOIN_TIMEOUT)
     del mail_thrs[name]
 
