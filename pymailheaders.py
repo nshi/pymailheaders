@@ -204,6 +204,7 @@ class mail_checker(Thread):
         __unchecked
         __quit
         __flag
+        __lock
     """
 
     def __init__(self):
@@ -214,6 +215,7 @@ class mail_checker(Thread):
         self.__unchecked = []
         self.__quit = False
         self.__flag = Event()
+        self.__lock = Lock()
 
     def __check(self, mail_thread):
         """Call the mail checking method on the mail thread.
@@ -234,8 +236,10 @@ class mail_checker(Thread):
         if not mail_thread:
             return
 
+        self.__lock.acquire()
         if mail_thread not in self.__unchecked:
             self.__unchecked.append(mail_thread)
+        self.__lock.release()
 
         self.__flag.set()
 
@@ -246,8 +250,10 @@ class mail_checker(Thread):
         while not self.__quit:
             self.__flag.clear()
 
+            self.__lock.acquire()
             while self.__unchecked:
                 self.__check(self.__unchecked.pop(0))
+            self.__lock.release()
 
             self.__flag.wait()
 
