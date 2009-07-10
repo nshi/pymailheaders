@@ -100,8 +100,10 @@ class imap:
         except (socket.error, socket.gaierror, imaplib.IMAP4.error,
                 imaplib.IMAP4.abort), strerr:
             self.__logger.error(str(strerr))
+            self.__disconnect()
             raise Error('imapprl (__check)', str(strerr))
         except:
+            self.__disconnect()
             raise
 
         num = re.search('\D+(\d+)\D+(\d+)', response[1][0]).groups()
@@ -121,8 +123,10 @@ class imap:
         except (socket.error, socket.gaierror, imaplib.IMAP4.error,
                 imaplib.IMAP4.abort), strerr:
             self.__logger.error(str(strerr))
+            self.__disconnect()
             raise Error('imapprl (__select_mailbox)', str(strerr))
         except:
+            self.__disconnect()
             raise
 
     def __connect(self):
