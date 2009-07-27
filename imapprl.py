@@ -260,6 +260,9 @@ class imap:
             dt = date and datetime.fromtimestamp(mktime_tz(date)) or \
                 datetime.now()
 
+            if '\\Deleted' in flags:
+                continue
+
             if '\\Seen' in flags:
                 messages[1].append((dt, sender, subject))
             else:
