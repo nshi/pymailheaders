@@ -28,7 +28,7 @@ class Error(Exception):
 
     def __init__(self, where, what):
         self.where = where
-        self.what = what and what or ''
+        self.what = what and str(what) or ''
 
     def __str__(self):
         return ': '.join([self.where, self.what])
