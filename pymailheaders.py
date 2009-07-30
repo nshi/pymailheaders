@@ -120,7 +120,7 @@ class mail_thread(Thread):
 
         self.__name = name
         self.__interval = float(interval)
-        self.__logger = logging.getLogger('mail_thread')
+        self.__logger = logging.getLogger(self.name)
         if not globals().has_key('%sprl' % t):
             self.__logger.error(_('pymailheaders: unknown server type %s'), t)
             sys.exit(1)
@@ -200,6 +200,7 @@ class mail_thread(Thread):
             self.__logger.debug('Starting timer')
             self.__timer.wait(self.__interval)
             self.__logger.debug('Timer set')
+        self.__logger.debug('Terminating...')
 
 class mail_checker(Thread):
     """This class checks for mails in each account.
@@ -220,6 +221,7 @@ class mail_checker(Thread):
         self.__quit = False
         self.__flag = Event()
         self.__lock = Lock()
+        self.__logger = logging.getLogger(self.name)
 
     def __check(self, mail_thread):
         """Call the mail checking method on the mail thread.
@@ -250,6 +252,8 @@ class mail_checker(Thread):
         self.__lock.acquire()
         if mail_thread not in self.__unchecked:
             self.__unchecked.append(mail_thread)
+        self.__logger.debug('%s added to the checking queue (%d)' %
+                            (mail_thread.name, len(self.__unchecked)))
         self.__lock.release()
 
         self.__flag.set()
