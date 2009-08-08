@@ -25,7 +25,6 @@ from email.utils import parseaddr, parsedate_tz, mktime_tz
 from email.Header import decode_header
 from datetime import datetime
 
-import chardet
 from exception import *
 
 class imap:
@@ -83,51 +82,51 @@ class imap:
         self.__logger.debug('Destroy')
         self.__disconnect()
 
-    def __check(self):
-        """Get the total number and the number of new messages in a mailbox.
+    def __command(self, cmd, method_name, *args, **kwargs):
+        """Run the IMAP command.
 
-        @rtype: tuple
-        @return: (total number of messages, number of new messages)
+        @type cmd: string
+        @param cmd: the IMAP command to run
+        @type method_name: string
+        @param method_name: the name of the method which called this method.
+        @rtype: list
+        @return: response from the IMAP command
         """
 
-        self.__logger.debug('Check for new mails')
-
         try:
-            response = self.__connection.status('INBOX', '(MESSAGES UNSEEN)')
+            response = getattr(self.__connection, cmd)(*args, **kwargs)
             if response[0] != 'OK':
                 self.__logger.error(response[1])
-                raise Error('imapprl (__check)', response[1])
+                raise Error('imapprl (%s)' % method_name, response[1])
+        except socket.gaierror, (socket.EAI_AGAIN, strerr):
+            self.__logger.error(str(strerr))
+            raise TryAgain('imapprl (%s)' % method_name, strerr)
         except (socket.error, socket.gaierror, imaplib.IMAP4.error,
                 imaplib.IMAP4.abort), strerr:
             self.__logger.error(str(strerr))
             self.__disconnect()
-            raise Error('imapprl (__check)', str(strerr))
+            raise Error('imapprl (%s)' % method_name, str(strerr))
         except:
             self.__disconnect()
             raise
 
-        num = re.search('\D+(\d+)\D+(\d+)', response[1][0]).groups()
-        return (int(num[0]), int(num[1]))
+        return response
 
     def __select_mailbox(self):
         """Select a mailbox
+
+        @rtype: int
+        @return: total number of messages in the mail box.
         """
 
         self.__logger.debug('Select mailbox')
 
-        try:
-            response = self.__connection.select(self.__mbox, True)
-            if response[0] != 'OK':
-                self.__logger.error(response[1])
-                raise Error('imapprl (__select_mailbox)', response[1])
-        except (socket.error, socket.gaierror, imaplib.IMAP4.error,
-                imaplib.IMAP4.abort), strerr:
-            self.__logger.error(str(strerr))
-            self.__disconnect()
-            raise Error('imapprl (__select_mailbox)', str(strerr))
-        except:
-            self.__disconnect()
-            raise
+        if not self.__connection:
+            self.__connect()
+
+        response = self.__command('select', '__select_mailbox',
+                                  self.__mbox, True)
+        return int(response[1][0])
 
     def __connect(self):
         """Connect to the server and log in.
@@ -142,6 +141,9 @@ class imap:
 
         self.__logger.debug('Connect')
 
+        if self.__connection:
+            return
+
         try:
             if self.__ssl:
                 self.__connection = imaplib.IMAP4_SSL(self.__server)
@@ -149,16 +151,14 @@ class imap:
                 self.__connection = imaplib.IMAP4(self.__server)
             self.__connection.socket().settimeout(self.__class__.__TIMEOUT)
 
-            response = self.__connection.login(self.__uname, self.__pass)
-            if response[0] != 'OK':
-                self.__logger.error(response[1])
-                raise Error('imapprl (connect)', response[1])
+            return self.__command('login', '__connect', self.__uname,
+                                  self.__pass)
         except socket.gaierror, (socket.EAI_AGAIN, strerr):
             self.__logger.error(str(strerr))
-            raise TryAgain('imapprl (connect)', strerr)
+            raise TryAgain('imapprl (__connect)', strerr)
         except (socket.error, socket.gaierror, imaplib.IMAP4.error), strerr:
             self.__logger.error(str(strerr))
-            raise Error('imapprl (connect)', str(strerr))
+            raise Error('imapprl (__connect)', str(strerr))
         except:
             raise
 
@@ -174,6 +174,11 @@ class imap:
             if not self.__connection:
                 return
 
+            response = self.__connection.close()
+            if response[0] != 'OK':
+                self.__logger.error(response[1])
+                raise Error('imapprl (__disconnect)', response[1])
+
             response = self.__connection.logout()
             if response[0] != 'BYE':
                 self.__logger.error(response[1])
@@ -184,8 +189,8 @@ class imap:
             raise Error('imapprl (__disconnect)', str(strerr))
         except:
             raise
-
-        self.__connection = None
+        finally:
+            self.__connection = None
 
     def get_mail(self):
         """Get mails.
@@ -203,36 +208,20 @@ class imap:
 
         self.__logger.debug('Get mail')
 
-        try:
-            num = self.__check()
-            self.__select_mailbox()
+        num = self.__select_mailbox()
 
-            # if the number of new messages is more than what the window can
-            # hold, get them all.  Otherwise, fill up the whole window with old
-            # messages at the bottom.
-            if self.__size < num[1]:
-                num_to_fetch = str(num[0] - num[1])
-            else:
-                num_to_fetch = str(num[0] < self.__size and 1
-                                   or num[0] - self.__size)
-            mail_list = self.__connection.fetch(num_to_fetch + ':' +
-                                                str(num[0]), '(FLAGS BODY.PEEK'
-                                                + '[HEADER.FIELDS '
-                                                + '(DATE FROM SUBJECT)])')
-            if mail_list[0] != 'OK':
-                self.__logger.error(response[1])
-                raise Error('imapprl (get_mail)', response[1])
+        # if the number of new messages is more than what the window can hold,
+        # get them all.  Otherwise, fill up the whole window with old messages
+        # at the bottom.
+        if self.__size < num:
+            num_to_fetch = str(num - self.__size)
+        else:
+            num_to_fetch = '1'
+        mail_list = self.__command('fetch', 'get_mail', num_to_fetch + ':' +
+                                   str(num), '(FLAGS BODY.PEEK'
+                                   + '[HEADER.FIELDS (DATE FROM SUBJECT)])')
 
-            response = self.__connection.close()
-            if response[0] != 'OK':
-                self.__logger.error(response[1])
-                raise Error('imapprl (get_mail)', response[1])
-        except (socket.error, socket.gaierror, imaplib.IMAP4.error,
-                imaplib.IMAP4.abort), strerr:
-            self.__logger.error(str(strerr))
-            raise Error('imapprl (get_mail)', str(strerr))
-        except:
-            raise
+        self.__disconnect()
 
         def d(x):
             # In case the string is not compliant with the standard, let's make
@@ -270,7 +259,5 @@ class imap:
 
         messages[0].reverse()
         messages[1].reverse()
-
-        self.__disconnect()
 
         return messages
