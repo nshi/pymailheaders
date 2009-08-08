@@ -121,8 +121,7 @@ class imap:
 
         self.__logger.debug('Select mailbox')
 
-        if not self.__connection:
-            self.__connect()
+        self.__connect()
 
         response = self.__command('select', '__select_mailbox',
                                   self.__mbox, True)
@@ -158,8 +157,10 @@ class imap:
             raise TryAgain('imapprl (__connect)', strerr)
         except (socket.error, socket.gaierror, imaplib.IMAP4.error), strerr:
             self.__logger.error(str(strerr))
+            self.__disconnect()
             raise Error('imapprl (__connect)', str(strerr))
         except:
+            self.__disconnect()
             raise
 
     def __disconnect(self):
@@ -201,8 +202,7 @@ class imap:
          [(datetime, sender, subject), ...])    <--- read mails
         """
 
-        if not self.__connection:
-            self.__connect()
+        self.__connect()
 
         messages = ([], [])
 
