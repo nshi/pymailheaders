@@ -115,7 +115,7 @@ class mail_thread(Thread):
         global mail_thrs
 
         Thread.__init__(self, group = None, target = None,
-                        name = 'mail-thread-%d' % len(mail_thrs),
+                        name = 'mail-thread-%s-%d' % (t, len(mail_thrs)),
                         args = (), kwargs = {})
 
         self.__name = name
@@ -410,7 +410,7 @@ def delete_mail_thr(name):
     if not mail_thrs or name not in mail_thrs:
         return
 
-    logging.debug('Delete mail thread')
+    logging.debug('Delete mail thread %s' % name)
 
     mail_thrs[name].quit()
     mail_thrs[name].join(JOIN_TIMEOUT)
