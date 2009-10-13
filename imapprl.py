@@ -224,6 +224,9 @@ class imap:
         self.__disconnect()
 
         def d(x):
+            if not x:
+                return ''
+
             # In case the string is not compliant with the standard, let's make
             # it correct.
             try:
@@ -235,6 +238,10 @@ class imap:
             except UnicodeDecodeError:
                 self.__logger.error('Invalid encoding')
                 raise Error('imapprl (get_mail)', _('Invalid encoding'))
+            except Exception, strerr:
+                self.__logger.error('Unknown error processing "%s": %s'
+                                    % (x, strerr))
+                raise Error('imapprl (get_mail)', strerr)
 
         def a(x): return x != ')'
 
