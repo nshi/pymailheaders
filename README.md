@@ -104,13 +104,6 @@ you do not need to provide username and password.  Example,
 > pymailheaders.py -t feed -s http://feedparser.org/docs/examples/atom10.xml
 
 
-SCREENSHOT
-==========
-
-* Pymailheaders running in KDE [pymailheaders.png]
-* Pymailheaders' settings dialog [settings.png]
-
-
 DOWNLOAD
 ========
 
