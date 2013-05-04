@@ -120,14 +120,3 @@ DOWNLOAD
 I'm not keeping the under-development code in SourceForge's Subversion
 repository any more.  All the code has been moved to a "GIT repository"
 [http://github.com/zeegeek/pymailheaders].
-
-
-LINKS
-=====
-
-* Chinese Homepage [http://ning.appspot.com/pymailheaders/zh]
-* Project Page [http://www.sourceforge.net/projects/pymailheaders]
-* Code Repository [http://github.com/zeegeek/pymailheaders]
-* My Homepage [http://www.zeegeek.cn]
-* My Blog [http://eblog.zeegeek.cn]
-* My Chinese Blog [http://blog.zeegeek.cn]
